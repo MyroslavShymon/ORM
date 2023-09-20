@@ -1,0 +1,1 @@
+export { test } from './orm/test-orm'
