@@ -46,23 +46,17 @@ class DataSource {
 
     async connectDatabase(dataToConnect: DataToConnect) {
         await this.dataSource.connect(dataToConnect);
+
         this.client = this.dataSource.client;
     }
 }
 
-export async function testConnection(type: DatabasesTypes) {
+export async function testConnection(dataToConnect: DataToConnect) {
     const dataSource = new DataSource();
-    if (type === DatabasesTypes.POSTGRES) {
+    if (dataToConnect.type === DatabasesTypes.POSTGRES) {
         dataSource.setDatabase(new DataSourcePostgres());
 
-        await dataSource.connectDatabase({
-            type: DatabasesTypes.POSTGRES,
-            user: 'postgres',
-            host: 'localhost',
-            database: 'postgres',
-            password: 'myrosia2016',
-            port: 5432,
-        })
+        await dataSource.connectDatabase(dataToConnect)
 
         try {
             const {rows} = await dataSource.client.query('SELECT current_user')
@@ -72,19 +66,14 @@ export async function testConnection(type: DatabasesTypes) {
             console.error(e);
         }
         finally {
-            dataSource.client.client.release();
+            dataSource.client.release();
         }
     }
 
-    if (type === DatabasesTypes.MYSQL) {
+    if (dataToConnect.type === DatabasesTypes.MYSQL) {
         dataSource.setDatabase(new DataSourceMySql());
 
-        await dataSource.connectDatabase({
-            type: DatabasesTypes.MYSQL,
-            host: 'localhost',
-            user: 'root',
-            database: 'first'
-        })
+        await dataSource.connectDatabase(dataToConnect)
 
         dataSource.client.query(
             "SELECT * FROM `table1`",
@@ -105,5 +94,5 @@ export async function testConnection(type: DatabasesTypes) {
     //     port: 5432,
     // })
     //
-    console.log("test test test 4")
+    console.log("test test test 5")
 }
