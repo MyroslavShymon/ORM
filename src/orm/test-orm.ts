@@ -1,33 +1,50 @@
-import {Pool, Client} from 'pg';
+import {Pool, Client, PoolConfig, PoolClient} from 'pg';
 
-const pool = new Pool({
-    user: 'postgres',
-    host: 'localhost',
-    database: 'postgres',
-    password: 'myrosia2016',
-    port: 5432,
+export enum DatabasesTypes {
+    POSTGRES = 'postgres',
+    MYSQL = 'mysql'
+}
 
-});
+export interface DataToConnect extends PoolConfig {
+    type: DatabasesTypes;
+}
+
+class ORM {
+    private pool: Pool;
+    client: PoolClient;
+
+
+    async connectPostgres(dataToConnection: DataToConnect) {
+        this.pool = new Pool(dataToConnection);
+        this.client = await this.pool.connect()
+    }
+
+
+}
+
+
 
 export async function testConnection() {
-    const client = await pool.connect();
+    const orm = new ORM()
+    await orm.connectPostgres({
+        type: DatabasesTypes.POSTGRES,
+        user: 'postgres',
+        host: 'localhost',
+        database: 'postgres',
+        password: 'myrosia2016',
+        port: 5432,
+    })
 
-    console.log("test test test")
-
+    console.log("test test test 2")
 
     try {
-        const {rows} = await client.query('SELECT current_user')
+        const {rows} = await orm.client.query('SELECT current_user')
         const currentUser = rows[0]['current_user'];
         console.log('currentUser', currentUser)
     } catch (e) {
         console.error(e);
     }
     finally {
-        client.release();
+        orm.client.release();
     }
-}
-
-
-export const test = (elements, field) => {
-    return elements.map((element) => element[field]);
 }
