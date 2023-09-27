@@ -12,6 +12,9 @@ const pool = new Pool({
 export async function testConnection() {
     const client = await pool.connect();
 
+    console.log("test test test")
+
+
     try {
         const {rows} = await client.query('SELECT current_user')
         const currentUser = rows[0]['current_user'];
