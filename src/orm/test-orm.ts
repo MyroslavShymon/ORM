@@ -1,7 +1,6 @@
 import {Pool, Client, PoolConfig, PoolClient} from 'pg';
-import {ConnectionOptions} from "mysql2";
+import {ConnectionOptions, createConnection} from "mysql2";
 import {Connection as BaseConnection} from "mysql2/typings/mysql/lib/Connection";
-const mysql = require('mysql2');
 
 
 export interface DataSourceInterface {
@@ -24,7 +23,7 @@ export class DataSourceMySql implements DataSourceInterface {
     client: BaseConnection;
 
     connect(dataToConnect: DataToConnect) {
-        this.client = mysql.createConnection(dataToConnect);
+        this.client = createConnection(dataToConnect);
     }
 }
 
@@ -106,5 +105,5 @@ export async function testConnection(type: DatabasesTypes) {
     //     port: 5432,
     // })
     //
-    console.log("test test test 3")
+    console.log("test test test 4")
 }
