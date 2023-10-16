@@ -1,1 +1,1 @@
-export { testConnection } from './orm/test-orm'
+export { testConnection, Column, Table } from './orm/test-orm'

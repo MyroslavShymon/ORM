@@ -44,22 +44,23 @@ class DataSource {
         this.dataSource = dataSource;
     }
 
-    async connectDatabase(dataToConnect: DataToConnect) {
-        await this.dataSource.connect(dataToConnect);
+    connectDatabase(dataToConnect: any) {
+        this.dataSource.connect(dataToConnect);
 
         this.client = this.dataSource.client;
     }
 }
+const dataSource = new DataSource();
 
-export async function testConnection(dataToConnect: DataToConnect) {
-    const dataSource = new DataSource();
+export function testConnection(dataToConnect: DataToConnect) {
+    console.log("try try try try try try try try 1111111")
     if (dataToConnect.type === DatabasesTypes.POSTGRES) {
         dataSource.setDatabase(new DataSourcePostgres());
 
-        await dataSource.connectDatabase(dataToConnect)
+        dataSource.connectDatabase(dataToConnect)
 
         try {
-            const {rows} = await dataSource.client.query('SELECT current_user')
+            const {rows} = dataSource.client.query('SELECT current_user')
             const currentUser = rows[0]['current_user'];
             console.log('currentUser', currentUser)
         } catch (e) {
@@ -72,8 +73,8 @@ export async function testConnection(dataToConnect: DataToConnect) {
 
     if (dataToConnect.type === DatabasesTypes.MYSQL) {
         dataSource.setDatabase(new DataSourceMySql());
-
-        await dataSource.connectDatabase(dataToConnect)
+        const {type, ...data} = dataToConnect;
+        dataSource.connectDatabase(data)
 
         dataSource.client.query(
             "SELECT * FROM `table1`",
@@ -84,7 +85,6 @@ export async function testConnection(dataToConnect: DataToConnect) {
             }
         );
     }
-    // const orm = new ORM()
     // await orm.connectPostgres({
     //     type: DatabasesTypes.POSTGRES,
     //     user: 'postgres',
@@ -93,6 +93,31 @@ export async function testConnection(dataToConnect: DataToConnect) {
     //     password: 'myrosia2016',
     //     port: 5432,
     // })
-    //
-    console.log("test test test 5")
+    console.log("try try try try try try try try 3333")
+}
+
+export function Column(sdf: string): any {
+    console.log("second(): factory evaluated", sdf);
+    return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+        console.log("second(): called", target, propertyKey, descriptor);
+    };
+}
+
+export function Table(args?: any): any {
+    return function (constructor: any): void {
+        const tableName = constructor.name;
+        const createTableSQL = `
+            CREATE TABLE IF NOT EXISTS ${tableName} (
+                id INT AUTO_INCREMENT PRIMARY KEY
+            );
+        `;
+
+        dataSource.client.query(createTableSQL, (err, results, fields) => {
+            if (err) {
+                console.error(err);
+            } else {
+                console.log(`Table ${tableName} created successfully.`);
+            }
+        });
+    };
 }
