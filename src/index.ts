@@ -1,3 +1,3 @@
 export { Table, Column } from './orm/decorators'
-export { DataSource } from './orm/data-source'
+export { DataSourceContext } from './orm/data-source-context'
 export { DatabaseManager } from './orm/database-manager'
