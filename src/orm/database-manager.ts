@@ -4,6 +4,7 @@ import {DataSourcePostgres} from "./data-source-postgres";
 import {DataSourceMySql} from "./data-source-mysql";
 import {DataSource} from "./data-source";
 import {PoolClient} from "pg";
+import {ConnectionClient} from "./types/connection-client";
 
 class DatabaseManager {
     _connectionData: ConnectionData;
@@ -13,7 +14,7 @@ class DatabaseManager {
         this._connectionData = connectionData;
     }
 
-    async connection(): Promise<DataSource> {
+    async connection(): Promise<ConnectionClient> {
         if (this._connectionData.type === DatabasesTypes.POSTGRES) {
             this._dataSource.setDatabase(new DataSourcePostgres());
 
@@ -44,7 +45,10 @@ class DatabaseManager {
             }
         }
 
-        return this._dataSource;
+        return {
+            dataSource: this._dataSource,
+            connectionData: this._connectionData,
+        };
     }
 
 
