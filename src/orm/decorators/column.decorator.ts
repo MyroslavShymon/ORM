@@ -1,10 +1,16 @@
 import 'reflect-metadata';
-import {ColumnOptionsInterface} from "../interfaces/decorators/column-options.interface";
+import {ColumnInterface} from "../interfaces/decorators/column/column.interface";
+import {ColumnDecoratorInterface} from "../interfaces/decorators/column/column-decorator.interface";
 
-export function Column(options: ColumnOptionsInterface) {
+export function Column({name, options}: ColumnDecoratorInterface) {
     return function (target: any, propertyKey: string) {
-        const columns = Reflect.getMetadata('columns', target) || [];
-        columns.push({ options, propertyKey });
+
+        if (!name || name === '') {
+            name = propertyKey;
+        }
+
+        const columns: ColumnInterface[] = Reflect.getMetadata('columns', target) || [];
+        columns.push({ name, options });
         Reflect.defineMetadata('columns', columns, target);
     };
 }

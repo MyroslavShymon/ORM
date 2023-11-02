@@ -5,6 +5,7 @@ import {DataSourcePostgres} from "./data-source-postgres";
 import {ConnectionData} from "./types/connection-data";
 import {DataSourceContextInterface} from "./interfaces/data-source-context.interface";
 import {EntityInterface} from "./interfaces/entity.interface";
+import {TableInterface} from "./interfaces/decorators/table/table.interface";
 
 class DataSourceContext implements DataSourceContextInterface {
     private _dataSource: DataSourceInterface;
@@ -23,7 +24,8 @@ class DataSourceContext implements DataSourceContextInterface {
     // Функція для виконання асинхронного створення таблиць і складання даних з декораторів
     async createTables(entities: EntityInterface[]): Promise<void> {
         for (const entity of entities) {
-            const table = Reflect.getMetadata('table', entity.prototype);
+            const table: TableInterface
+                = Reflect.getMetadata('table', entity.prototype);
             const columns = Reflect.getMetadata('columns', entity.prototype);
 
             const createTableSQL = this._dataSource.createTable(table, columns);
