@@ -6,6 +6,7 @@ import {ConnectionData} from "./types/connection-data";
 import {DataSourceContextInterface} from "./interfaces/data-source-context.interface";
 import {EntityInterface} from "./interfaces/entity.interface";
 import {TableInterface} from "./interfaces/decorators/table/table.interface";
+import {ColumnMetadataInterface} from "./interfaces/decorators/column/column-metadata.interface";
 
 class DataSourceContext implements DataSourceContextInterface {
     private _dataSource: DataSourceInterface;
@@ -26,9 +27,16 @@ class DataSourceContext implements DataSourceContextInterface {
         for (const entity of entities) {
             const table: TableInterface
                 = Reflect.getMetadata('table', entity.prototype);
-            const columns = Reflect.getMetadata('columns', entity.prototype);
+            const metadataColumns: ColumnMetadataInterface[]
+                = Reflect.getMetadata('columns', entity.prototype);
+
+            const columns = metadataColumns.map(metadataColumn => {
+                const {propertyKey, ...column} = metadataColumn;
+                return column;
+            })
 
             const createTableSQL = this._dataSource.createTable(table, columns);
+            console.log("createTableSQLcreateTableSQL", createTableSQL)
             await this._dataSource.client.query(createTableSQL);
         }
     }

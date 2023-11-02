@@ -1,5 +1,4 @@
 import 'reflect-metadata';
-import {TableInterface} from "../interfaces/decorators/table/table.interface";
 import {TableDecoratorInterface} from "../interfaces/decorators/table/table-decorator.interface";
 
 export function Table({name, options}: TableDecoratorInterface) {

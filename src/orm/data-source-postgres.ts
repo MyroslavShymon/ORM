@@ -3,6 +3,7 @@ import {Pool, PoolClient} from "pg";
 import {ConnectionData} from "./types/connection-data";
 import {ColumnInterface} from "./interfaces/decorators/column/column.interface";
 import {TableInterface} from "./interfaces/decorators/table/table.interface";
+import {PostgresqlDataTypes} from "./enums/postgresql-data-types";
 
 export class DataSourcePostgres implements DataSourceInterface {
     client: PoolClient;
@@ -25,10 +26,23 @@ export class DataSourcePostgres implements DataSourceInterface {
 
         const columnStrings = columns.map(({name, options}) => {
             if (!options.dataType) {
-                console.error("Ви не вказали тип колонки");
+                throw new Error("Ви не вказали тип колонки");
             }
 
-            return `"${name}" ${options.dataType}`
+            if (
+               (options.dataType === PostgresqlDataTypes.CHAR ||
+                options.dataType === PostgresqlDataTypes.VARCHAR) && !options.length
+            ) {
+                throw new Error("Ви не вказали довжину рядка");
+            }
+
+            let stringDataType = ''
+
+            if (options.length) {
+                stringDataType = `(${options.length})`
+            }
+
+            return `"${name}" ${options.dataType}${stringDataType}`;
         });
         createTableSQL += columnStrings.join(', ');
 
