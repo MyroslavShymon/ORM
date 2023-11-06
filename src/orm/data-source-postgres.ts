@@ -36,13 +36,39 @@ export class DataSourcePostgres implements DataSourceInterface {
                 throw new Error("Ви не вказали довжину рядка");
             }
 
-            let stringDataType = ''
+            // Отримуємо довжину рядка і робимо йому правильний формат
+            let stringLength = ''
 
             if (options.length) {
-                stringDataType = `(${options.length})`
+                stringLength = `(${options.length})`;
             }
 
-            return `"${name}" ${options.dataType}${stringDataType}`;
+            //Працюємо з NULL || NOT NULL
+            const isNullableString = options.nullable ? 'NULL' : 'NOT NULL';
+
+            // constraint check
+            let formCheckConstraint = '';
+
+            if (options.check) {
+                formCheckConstraint = `
+                ${options.checkConstraint ? `CONSTRAINT ${options.checkConstraint}` : ''} CHECK (${options.check})`
+            }
+
+
+            //default
+            let formDefault = '';
+
+            if (options.default) {
+                formDefault = `DEFAULT ${options.default}`
+            }
+
+            //unique
+
+            //NULLS NOT DISTINCT
+
+
+            return `"${name}" ${options.dataType}${stringLength} ${isNullableString}
+             ${formCheckConstraint} ${formDefault} ${options.unique ? 'UNIQUE' : ''} ${options.nullsNotDistinct ? 'NULLS NOT DISTINCT' : ''}`;
         });
         createTableSQL += columnStrings.join(', ');
 

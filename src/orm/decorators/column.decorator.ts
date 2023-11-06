@@ -9,6 +9,10 @@ export function Column({name, options}: ColumnDecoratorInterface) {
             name = propertyKey;
         }
 
+        if (!options.nullable) {
+            options.nullable = true;
+        }
+
         const columns: ColumnMetadataInterface[] = Reflect.getMetadata('columns', target) || [];
         columns.push({ name, options, propertyKey });
         Reflect.defineMetadata('columns', columns, target);
