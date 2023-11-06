@@ -15,6 +15,7 @@ class DatabaseManager implements DatabaseManagerInterface {
         this._connectionData = connectionData;
     }
 
+    //check git
     async connection(): Promise<ConnectionClient> {
         if (this._connectionData.type === DatabasesTypes.POSTGRES) {
             this._dataSource.setDatabase(new DataSourcePostgres());
