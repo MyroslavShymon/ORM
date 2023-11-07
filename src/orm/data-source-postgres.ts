@@ -1,7 +1,8 @@
 import { Pool, PoolClient } from 'pg';
-import { ColumnInterface, DataSourceInterface, TableInterface } from './interfaces';
+import { ColumnInterface, DataSourceInterface, TableInterface, TableOptionsInterface } from './interfaces';
 import { ConnectionData } from './types';
 import { PostgresqlDataTypes } from './enums';
+import { isArrayArrayOfArrays } from './utils';
 
 export class DataSourcePostgres implements DataSourceInterface {
 	client: PoolClient;
@@ -11,17 +12,49 @@ export class DataSourcePostgres implements DataSourceInterface {
 		this.client = await pool.connect();
 	}
 
-	createTable(table: TableInterface, columns: ColumnInterface[]): string {
-		console.log('POSTGRES');
-		console.log('TABLE', table);
-		console.log('COLUMN', columns);
+	private _handleOptionsOfTableDecorator({ unique, checkConstraint }: TableOptionsInterface): string {
+		const tableParameters = [];
 
-		let createTableSQL;
-		createTableSQL = `
-                CREATE TABLE IF NOT EXISTS "${table.name}" (
-                  id SERIAL PRIMARY KEY,
-            `;
+		if (checkConstraint) {
+			let formTableConstraint;
 
+			if (Array.isArray(checkConstraint)) {
+				formTableConstraint = checkConstraint
+					.map((constraint) =>
+						`${constraint.name ? `CONSTRAINT ${constraint.name}` : ''} CHECK (${constraint.check})`
+					)
+					.join(', \n\t\t');
+			} else {
+				formTableConstraint = `${checkConstraint.name ? `CONSTRAINT ${checkConstraint.name}` : ''} CHECK (${checkConstraint.check})\n`;
+			}
+
+			tableParameters.push(formTableConstraint);
+		}
+
+
+		if (unique) {
+			let formUniqueCombinationColumns;
+			const isSeveralUniqueCombinations = isArrayArrayOfArrays(unique);
+
+			if (isSeveralUniqueCombinations) {
+				formUniqueCombinationColumns = (unique as string[][])
+					.map((uniqueCombination) =>
+						`UNIQUE (${uniqueCombination.join(', ')})`
+					)
+					.join(', \n');
+			}
+
+			if (!isSeveralUniqueCombinations) {
+				formUniqueCombinationColumns = `UNIQUE (${unique.join(', ')})`;
+			}
+
+			tableParameters.push(formUniqueCombinationColumns);
+		}
+
+		return `${tableParameters.length > 0 ? `, ${tableParameters.join(', \n\t\t')}` : ''}`;
+	}
+
+	private _handleColumnDecorator(columns: ColumnInterface[]): string {
 		const columnStrings = columns.map(({ name, options }) => {
 			if (!options.dataType) {
 				throw new Error('Ви не вказали тип колонки');
@@ -41,37 +74,53 @@ export class DataSourcePostgres implements DataSourceInterface {
 				stringLength = `(${options.length})`;
 			}
 
+			// constraint check
+			let formConstraint = '';
+
+			if (options.check) {
+				formConstraint = `
+                ${options.nameOfCheckConstraint ? `CONSTRAINT ${options.nameOfCheckConstraint}` : ''} CHECK (${options.check})`;
+			}
+
 			//Працюємо з NULL || NOT NULL
 			const isNullableString = options.nullable ? 'NULL' : 'NOT NULL';
 
-			// constraint check
-			let formCheckConstraint = '';
-
-			if (options.check) {
-				formCheckConstraint = `
-                ${options.checkConstraint ? `CONSTRAINT ${options.checkConstraint}` : ''} CHECK (${options.check})`;
-			}
-
-
 			//default
-			let formDefault = '';
-
-			if (options.default) {
-				formDefault = `DEFAULT ${options.default}`;
-			}
+			const formDefaultValue = options.defaultValue ? `DEFAULT ${options.defaultValue}` : '';
 
 			//unique
+			const isUnique = options.unique ? 'UNIQUE' : '';
 
 			//NULLS NOT DISTINCT
-
+			const isNullsNotDistinct = options.nullsNotDistinct ? 'NULLS NOT DISTINCT' : '';
 
 			return `"${name}" ${options.dataType}${stringLength} ${isNullableString}
-             ${formCheckConstraint} ${formDefault} ${options.unique ? 'UNIQUE' : ''} ${options.nullsNotDistinct ? 'NULLS NOT DISTINCT' : ''}`;
+             ${formConstraint} ${formDefaultValue} ${isUnique} ${isNullsNotDistinct}`;
 		});
-		createTableSQL += columnStrings.join(', ');
 
-		createTableSQL += `);`;
+
+		return columnStrings.join(', ');
+	}
+
+	createTable(table: TableInterface, columns: ColumnInterface[]): string {
+		let createTableSQL;
+		createTableSQL = `
+                CREATE TABLE IF NOT EXISTS "${table.name}" (
+                  id SERIAL PRIMARY KEY,
+            `;
+
+		if (columns) {
+			createTableSQL += this._handleColumnDecorator(columns);
+		}
+		
+		if (table.options) {
+			createTableSQL += this._handleOptionsOfTableDecorator(table.options);
+		}
+
+		createTableSQL += '\n );';
 
 		return createTableSQL;
 	}
+
+
 }

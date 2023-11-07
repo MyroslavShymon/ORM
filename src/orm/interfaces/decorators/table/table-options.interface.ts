@@ -1,3 +1,6 @@
+import { ConstraintInterface } from './constraint.interface';
+
 export interface TableOptionsInterface {
-	tableName: string;
+	checkConstraint?: ConstraintInterface | ConstraintInterface[];
+	unique?: string[][] | string[];
 }

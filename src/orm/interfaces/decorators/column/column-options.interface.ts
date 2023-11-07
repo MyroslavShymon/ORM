@@ -5,8 +5,8 @@ export interface ColumnOptionsInterface {
 	nullable?: boolean;
 	length?: number;
 	check?: string;
-	checkConstraint?: string;
-	default?: string | number;
+	nameOfCheckConstraint?: string;
+	defaultValue?: string | number;
 	unique?: boolean;
 	nullsNotDistinct?: boolean;
 }
