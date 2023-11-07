@@ -1,11 +1,11 @@
-import {PostgresqlDataTypes} from "../../../enums/postgresql-data-types";
+import { PostgresqlDataTypes } from '../../../enums/postgresql-data-types';
 
 export interface StringDecoratorInterface {
-    type:
-        PostgresqlDataTypes.TEXT |
-        PostgresqlDataTypes.VARCHAR |
-        PostgresqlDataTypes.CHAR
-    length?: number;
+	type:
+		PostgresqlDataTypes.TEXT |
+		PostgresqlDataTypes.VARCHAR |
+		PostgresqlDataTypes.CHAR;
+	length?: number;
 }
 
 //TODO

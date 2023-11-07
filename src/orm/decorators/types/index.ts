@@ -1,1 +1,1 @@
-export * from './string.decorator'
+export * from './string.decorator';

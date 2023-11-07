@@ -1,3 +1,3 @@
 export interface TableOptionsInterface {
-    tableName: string;
+	tableName: string;
 }

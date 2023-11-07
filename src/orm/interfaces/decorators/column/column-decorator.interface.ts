@@ -1,6 +1,6 @@
-import {ColumnOptionsInterface} from "./column-options.interface";
+import { ColumnOptionsInterface } from './column-options.interface';
 
 export interface ColumnDecoratorInterface {
-    name?: string;
-    options?: ColumnOptionsInterface;
+	name?: string;
+	options?: ColumnOptionsInterface;
 }

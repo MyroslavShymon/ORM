@@ -1,6 +1,6 @@
-import {TableOptionsInterface} from "./table-options.interface";
+import { TableOptionsInterface } from './table-options.interface';
 
 export interface TableDecoratorInterface {
-    name?: string;
-    options?: TableOptionsInterface;
+	name?: string;
+	options?: TableOptionsInterface;
 }

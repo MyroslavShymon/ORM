@@ -1,79 +1,79 @@
-import {DataSourceInterface} from "./interfaces/data-source.interface";
-import {Pool, PoolClient} from "pg";
-import {ConnectionData} from "./types/connection-data";
-import {ColumnInterface} from "./interfaces/decorators/column/column.interface";
-import {TableInterface} from "./interfaces/decorators/table/table.interface";
-import {PostgresqlDataTypes} from "./enums/postgresql-data-types";
+import { DataSourceInterface } from './interfaces/data-source.interface';
+import { Pool, PoolClient } from 'pg';
+import { ConnectionData } from './types/connection-data';
+import { ColumnInterface } from './interfaces/decorators/column/column.interface';
+import { TableInterface } from './interfaces/decorators/table/table.interface';
+import { PostgresqlDataTypes } from './enums/postgresql-data-types';
 
 export class DataSourcePostgres implements DataSourceInterface {
-    client: PoolClient;
+	client: PoolClient;
 
-    async connect(dataToConnect: ConnectionData): Promise<void> {
-        const pool = new Pool(dataToConnect);
-        this.client = await pool.connect();
-    }
+	async connect(dataToConnect: ConnectionData): Promise<void> {
+		const pool = new Pool(dataToConnect);
+		this.client = await pool.connect();
+	}
 
-    createTable(table: TableInterface, columns: ColumnInterface[]): string {
-        console.log("POSTGRES")
-        console.log("TABLE", table);
-        console.log("COLUMN", columns);
+	createTable(table: TableInterface, columns: ColumnInterface[]): string {
+		console.log('POSTGRES');
+		console.log('TABLE', table);
+		console.log('COLUMN', columns);
 
-        let createTableSQL;
-        createTableSQL = `
+		let createTableSQL;
+		createTableSQL = `
                 CREATE TABLE IF NOT EXISTS "${table.name}" (
                   id SERIAL PRIMARY KEY,
             `;
 
-        const columnStrings = columns.map(({name, options}) => {
-            if (!options.dataType) {
-                throw new Error("Ви не вказали тип колонки");
-            }
+		const columnStrings = columns.map(({ name, options }) => {
+			if (!options.dataType) {
+				throw new Error('Ви не вказали тип колонки');
+			}
 
-            if (
-               (options.dataType === PostgresqlDataTypes.CHAR ||
-                options.dataType === PostgresqlDataTypes.VARCHAR) && !options.length
-            ) {
-                throw new Error("Ви не вказали довжину рядка");
-            }
+			if (
+				(options.dataType === PostgresqlDataTypes.CHAR ||
+					options.dataType === PostgresqlDataTypes.VARCHAR) && !options.length
+			) {
+				throw new Error('Ви не вказали довжину рядка');
+			}
 
-            // Отримуємо довжину рядка і робимо йому правильний формат
-            let stringLength = ''
+			// Отримуємо довжину рядка і робимо йому правильний формат
+			let stringLength = '';
 
-            if (options.length) {
-                stringLength = `(${options.length})`;
-            }
+			if (options.length) {
+				stringLength = `(${options.length})`;
+			}
 
-            //Працюємо з NULL || NOT NULL
-            const isNullableString = options.nullable ? 'NULL' : 'NOT NULL';
+			//Працюємо з NULL || NOT NULL
+			const isNullableString = options.nullable ? 'NULL' : 'NOT NULL';
 
-            // constraint check
-            let formCheckConstraint = '';
+			// constraint check
+			let formCheckConstraint = '';
 
-            if (options.check) {
-                formCheckConstraint = `
-                ${options.checkConstraint ? `CONSTRAINT ${options.checkConstraint}` : ''} CHECK (${options.check})`
-            }
-
-
-            //default
-            let formDefault = '';
-
-            if (options.default) {
-                formDefault = `DEFAULT ${options.default}`
-            }
-
-            //unique
-
-            //NULLS NOT DISTINCT
+			if (options.check) {
+				formCheckConstraint = `
+                ${options.checkConstraint ? `CONSTRAINT ${options.checkConstraint}` : ''} CHECK (${options.check})`;
+			}
 
 
-            return `"${name}" ${options.dataType}${stringLength} ${isNullableString}
+			//default
+			let formDefault = '';
+
+			if (options.default) {
+				formDefault = `DEFAULT ${options.default}`;
+			}
+
+			//unique
+
+			//NULLS NOT DISTINCT
+
+
+			return `"${name}" ${options.dataType}${stringLength} ${isNullableString}
              ${formCheckConstraint} ${formDefault} ${options.unique ? 'UNIQUE' : ''} ${options.nullsNotDistinct ? 'NULLS NOT DISTINCT' : ''}`;
-        });
-        createTableSQL += columnStrings.join(', ');
+		});
+		createTableSQL += columnStrings.join(', ');
 
-        createTableSQL += `);`
+		createTableSQL += `);`;
 
-        return createTableSQL;
-    }
+		return createTableSQL;
+	}
 }

@@ -1,3 +1,3 @@
 export enum MysqlDataTypes {
-    BOOLEAN = 'BOOLEAN',
+	BOOLEAN = 'BOOLEAN',
 }

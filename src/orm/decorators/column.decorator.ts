@@ -1,20 +1,20 @@
 import 'reflect-metadata';
-import {ColumnDecoratorInterface} from "../interfaces/decorators/column/column-decorator.interface";
-import {ColumnMetadataInterface} from "../interfaces/decorators/column/column-metadata.interface";
+import { ColumnDecoratorInterface } from '../interfaces/decorators/column/column-decorator.interface';
+import { ColumnMetadataInterface } from '../interfaces/decorators/column/column-metadata.interface';
 
-export function Column({name, options}: ColumnDecoratorInterface) {
-    return function (target: any, propertyKey: string) {
+export function Column({ name, options }: ColumnDecoratorInterface) {
+	return function(target: any, propertyKey: string) {
 
-        if (!name || name === '') {
-            name = propertyKey;
-        }
+		if (!name || name === '') {
+			name = propertyKey;
+		}
 
-        if (!options.nullable) {
-            options.nullable = true;
-        }
+		if (!options.nullable) {
+			options.nullable = true;
+		}
 
-        const columns: ColumnMetadataInterface[] = Reflect.getMetadata('columns', target) || [];
-        columns.push({ name, options, propertyKey });
-        Reflect.defineMetadata('columns', columns, target);
-    };
+		const columns: ColumnMetadataInterface[] = Reflect.getMetadata('columns', target) || [];
+		columns.push({ name, options, propertyKey });
+		Reflect.defineMetadata('columns', columns, target);
+	};
 }
