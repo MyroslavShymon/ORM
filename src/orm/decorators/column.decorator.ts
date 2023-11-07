@@ -1,6 +1,5 @@
 import 'reflect-metadata';
-import { ColumnDecoratorInterface } from '../interfaces/decorators/column/column-decorator.interface';
-import { ColumnMetadataInterface } from '../interfaces/decorators/column/column-metadata.interface';
+import { ColumnDecoratorInterface, ColumnMetadataInterface } from '../interfaces';
 
 export function Column({ name, options }: ColumnDecoratorInterface) {
 	return function(target: any, propertyKey: string) {

@@ -1,4 +1,4 @@
-import { PostgresqlDataTypes } from '../../../enums/postgresql-data-types';
+import { PostgresqlDataTypes } from '../../../enums';
 
 export interface StringDecoratorInterface {
 	type:

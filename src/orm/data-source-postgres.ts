@@ -1,9 +1,7 @@
-import { DataSourceInterface } from './interfaces/data-source.interface';
+import { ColumnInterface, DataSourceInterface, TableInterface } from './interfaces';
 import { Pool, PoolClient } from 'pg';
-import { ConnectionData } from './types/connection-data';
-import { ColumnInterface } from './interfaces/decorators/column/column.interface';
-import { TableInterface } from './interfaces/decorators/table/table.interface';
-import { PostgresqlDataTypes } from './enums/postgresql-data-types';
+import { ConnectionData } from './types';
+import { PostgresqlDataTypes } from './enums';
 
 export class DataSourcePostgres implements DataSourceInterface {
 	client: PoolClient;

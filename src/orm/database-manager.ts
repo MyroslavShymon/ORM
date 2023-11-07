@@ -1,11 +1,10 @@
 import 'reflect-metadata';
-import { ConnectionData } from './types/connection-data';
-import { DatabasesTypes } from './enums/databases-types';
+import { ConnectionClient, ConnectionData } from './types';
+import { DatabasesTypes } from './enums';
 import { DataSourcePostgres } from './data-source-postgres';
 import { DataSourceMySql } from './data-source-mysql';
 import { DataSourceContext } from './data-source-context';
-import { ConnectionClient } from './types/connection-client';
-import { DatabaseManagerInterface } from './interfaces/database-manager.interface';
+import { DatabaseManagerInterface } from './interfaces';
 
 class DatabaseManager implements DatabaseManagerInterface {
 	_connectionData: ConnectionData;

@@ -1,6 +1,5 @@
-import { ConnectionData } from '../types/connection-data';
-import { ColumnInterface } from './decorators/column/column.interface';
-import { TableInterface } from './decorators/table/table.interface';
+import { ConnectionData } from '../types';
+import { ColumnInterface, TableInterface } from './decorators';
 
 export interface DataSourceInterface {
 	client;

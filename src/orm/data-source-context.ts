@@ -1,12 +1,14 @@
-import { DataSourceInterface } from './interfaces/data-source.interface';
+import {
+	ColumnMetadataInterface,
+	DataSourceContextInterface,
+	DataSourceInterface,
+	EntityInterface,
+	TableInterface
+} from './interfaces';
 import { PoolClient } from 'pg';
 import { Connection } from 'mysql2/promise';
 import { DataSourcePostgres } from './data-source-postgres';
-import { ConnectionData } from './types/connection-data';
-import { DataSourceContextInterface } from './interfaces/data-source-context.interface';
-import { EntityInterface } from './interfaces/entity.interface';
-import { TableInterface } from './interfaces/decorators/table/table.interface';
-import { ColumnMetadataInterface } from './interfaces/decorators/column/column-metadata.interface';
+import { ConnectionData } from './types';
 
 class DataSourceContext implements DataSourceContextInterface {
 	private _dataSource: DataSourceInterface;

@@ -1,8 +1,6 @@
-import { DataSourceInterface } from './interfaces/data-source.interface';
-import { ConnectionData } from './types/connection-data';
+import { ColumnInterface, DataSourceInterface, TableInterface } from './interfaces';
+import { ConnectionData } from './types';
 import { Connection, createConnection } from 'mysql2/promise';
-import { ColumnInterface } from './interfaces/decorators/column/column.interface';
-import { TableInterface } from './interfaces/decorators/table/table.interface';
 
 export class DataSourceMySql implements DataSourceInterface {
 	client: Connection;

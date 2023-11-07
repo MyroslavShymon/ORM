@@ -2,7 +2,7 @@ import { DataSourceInterface } from './data-source.interface';
 import { DataSourcePostgres } from '../data-source-postgres';
 import { PoolClient } from 'pg';
 import { Connection } from 'mysql2/promise';
-import { ConnectionData } from '../types/connection-data';
+import { ConnectionData } from '../types';
 import { EntityInterface } from './entity.interface';
 
 export interface DataSourceContextInterface {
