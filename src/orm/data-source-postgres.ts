@@ -1,5 +1,5 @@
-import { ColumnInterface, DataSourceInterface, TableInterface } from './interfaces';
 import { Pool, PoolClient } from 'pg';
+import { ColumnInterface, DataSourceInterface, TableInterface } from './interfaces';
 import { ConnectionData } from './types';
 import { PostgresqlDataTypes } from './enums';
 

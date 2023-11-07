@@ -1,3 +1,5 @@
+import { PoolClient } from 'pg';
+import { Connection } from 'mysql2/promise';
 import {
 	ColumnMetadataInterface,
 	DataSourceContextInterface,
@@ -5,8 +7,6 @@ import {
 	EntityInterface,
 	TableInterface
 } from './interfaces';
-import { PoolClient } from 'pg';
-import { Connection } from 'mysql2/promise';
 import { DataSourcePostgres } from './data-source-postgres';
 import { ConnectionData } from './types';
 
