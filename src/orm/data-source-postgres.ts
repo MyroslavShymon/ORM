@@ -3,6 +3,7 @@ import { ColumnInterface, DataSourceInterface, TableInterface, TableOptionsInter
 import { ConnectionData } from './types';
 import { PostgresqlDataTypes } from './enums';
 import { isArrayArrayOfArrays } from './utils';
+import { ComputedColumnInterface } from './interfaces/decorators/computed-column';
 
 export class DataSourcePostgres implements DataSourceInterface {
 	client: PoolClient;
@@ -102,7 +103,16 @@ export class DataSourcePostgres implements DataSourceInterface {
 		return columnStrings.join(', ');
 	}
 
-	createTable(table: TableInterface, columns: ColumnInterface[]): string {
+	private _handleComputedColumnDecorator(computedColumns: ComputedColumnInterface[]): string {
+		//TODO змінити назву
+		const formComputedColumns = computedColumns
+			.map(({ name, stored, calculate, dataType }) =>
+				`${name} ${dataType} GENERATED ALWAYS AS (${calculate}) ${stored === true ? 'STORED' : ''}`);
+		
+		return `${formComputedColumns.length > 0 ? `, ${formComputedColumns.join(', \n\t\t')}` : ''}`;
+	}
+
+	createTable(table: TableInterface, columns: ColumnInterface[], computedColumns: ComputedColumnInterface[]): string {
 		let createTableSQL;
 		createTableSQL = `
                 CREATE TABLE IF NOT EXISTS "${table.name}" (
@@ -112,7 +122,11 @@ export class DataSourcePostgres implements DataSourceInterface {
 		if (columns) {
 			createTableSQL += this._handleColumnDecorator(columns);
 		}
-		
+
+		if (computedColumns) {
+			createTableSQL += this._handleComputedColumnDecorator(computedColumns);
+		}
+
 		if (table.options) {
 			createTableSQL += this._handleOptionsOfTableDecorator(table.options);
 		}

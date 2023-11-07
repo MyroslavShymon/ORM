@@ -9,6 +9,7 @@ import {
 } from './interfaces';
 import { DataSourcePostgres } from './data-source-postgres';
 import { ConnectionData } from './types';
+import { ComputedColumnMetadataInterface } from './interfaces/decorators/computed-column';
 
 class DataSourceContext implements DataSourceContextInterface {
 	private _dataSource: DataSourceInterface;
@@ -31,13 +32,26 @@ class DataSourceContext implements DataSourceContextInterface {
 				= Reflect.getMetadata('table', entity.prototype);
 			const metadataColumns: ColumnMetadataInterface[]
 				= Reflect.getMetadata('columns', entity.prototype);
+			const metadataComputedColumns: ComputedColumnMetadataInterface[]
+				= Reflect.getMetadata('computed-columns', entity.prototype);
 
-			const columns = metadataColumns.map(metadataColumn => {
-				const { propertyKey, ...column } = metadataColumn;
-				return column;
-			});
+			let columns;
+			if (metadataColumns) {
+				columns = metadataColumns.map(metadataColumn => {
+					const { propertyKey, ...column } = metadataColumn;
+					return column;
+				});
+			}
 
-			const createTableSQL = this._dataSource.createTable(table, columns);
+			let computedColumns;
+			if (metadataComputedColumns) {
+				computedColumns = metadataComputedColumns.map(metadataColumn => {
+					const { propertyKey, ...column } = metadataColumn;
+					return column;
+				});
+			}
+
+			const createTableSQL = this._dataSource.createTable(table, columns, computedColumns);
 			console.log('createTableSQLcreateTableSQL', createTableSQL);
 			await this._dataSource.client.query(createTableSQL);
 		}

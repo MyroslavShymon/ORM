@@ -2,15 +2,15 @@
   "name": "@myroslavss/orm",
   "version": "0.0.1",
   "description": "My orm for practise sql",
-  "main": "../dist/lib/es5/index.js",
-  "module": "../dist/lib/es6/index.js",
+  "main": "lib/es5/index.js",
+  "module": "lib/es6/index.js",
   "sideEffects": false,
   "repository": {
     "type": "git",
     "url": "git@github.com:MyroslavShymon/MyroslavsShy-ORM.git"
   },
   "files": [
-    "../dist/lib",
+    "lib",
     "CHANGELOG.md",
     "LICENSE",
     "package.json",
