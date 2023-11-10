@@ -5,13 +5,19 @@ import { DataSourcePostgres } from './data-source-postgres';
 import { DataSourceMySql } from './data-source-mysql';
 import { DataSourceContext } from './data-source-context';
 import { DatabaseManagerInterface } from './interfaces';
+import { TableManipulation } from './table-manipulation';
 
 class DatabaseManager implements DatabaseManagerInterface {
 	_connectionData: ConnectionData;
-	_dataSource: DataSourceContext = new DataSourceContext();
+	_dataSource: DataSourceContext;
 
-	constructor(connectionData: ConnectionData) {
+	_tableManipulation: TableManipulation;
+
+	constructor(connectionData: ConnectionData, dataSource: DataSourceContext) {
 		this._connectionData = connectionData;
+		this._dataSource = dataSource;
+
+		this._tableManipulation = new TableManipulation(connectionData, dataSource);
 	}
 
 	//check git
@@ -75,6 +81,10 @@ class DatabaseManager implements DatabaseManagerInterface {
 
 	get dataSource(): DataSourceContext {
 		return this._dataSource;
+	}
+
+	get tableManipulation(): TableManipulation {
+		return this._tableManipulation;
 	}
 }
 

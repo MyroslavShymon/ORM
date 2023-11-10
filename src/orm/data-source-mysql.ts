@@ -23,4 +23,8 @@ export class DataSourceMySql implements DataSourceInterface {
 
 		return createTableSQL;
 	}
+
+	getCurrentTimestamp(): string {
+		return 'SELECT NOW();';
+	}
 }

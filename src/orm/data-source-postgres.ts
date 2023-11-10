@@ -96,19 +96,23 @@ export class DataSourcePostgres implements DataSourceInterface {
 			const isNullsNotDistinct = options.nullsNotDistinct ? 'NULLS NOT DISTINCT' : '';
 
 			return `"${name}" ${options.dataType}${stringLength} ${isNullableString}
-             ${formConstraint} ${formDefaultValue} ${isUnique} ${isNullsNotDistinct}`;
+             ${formConstraint} ${formDefaultValue} ${isUnique} ${isNullsNotDistinct} \t`;
 		});
-
-
-		return columnStrings.join(', ');
+		// this.aa
+		console.log('columnStrings', columnStrings);
+		return columnStrings.join(',');
 	}
+
+	// get aa(){
+	// 	return "dfsdf"
+	// }
 
 	private _handleComputedColumnDecorator(computedColumns: ComputedColumnInterface[]): string {
 		//TODO змінити назву
 		const formComputedColumns = computedColumns
 			.map(({ name, stored, calculate, dataType }) =>
 				`${name} ${dataType} GENERATED ALWAYS AS (${calculate}) ${stored === true ? 'STORED' : ''}`);
-		
+
 		return `${formComputedColumns.length > 0 ? `, ${formComputedColumns.join(', \n\t\t')}` : ''}`;
 	}
 
@@ -136,5 +140,7 @@ export class DataSourcePostgres implements DataSourceInterface {
 		return createTableSQL;
 	}
 
-
+	getCurrentTimestamp(): string {
+		return 'SELECT current_timestamp;';
+	}
 }
