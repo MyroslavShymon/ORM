@@ -25,6 +25,12 @@ class DataSourceContext implements DataSourceContextInterface {
 		this._client = await this._dataSource.client;
 	}
 
+	async getCurrentTime(): Promise<Object> {
+		const getCurrentTimestampQuery = this._dataSource.getCurrentTimestamp();
+
+		return this._dataSource.client.query(getCurrentTimestampQuery);
+	}
+
 	// Функція для виконання асинхронного створення таблиць і складання даних з декораторів
 	async createTables(entities: EntityInterface[]): Promise<void> {
 		for (const entity of entities) {

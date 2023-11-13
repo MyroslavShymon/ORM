@@ -14,4 +14,6 @@ export interface DataSourceContextInterface {
 	connectDatabase(connectionData: ConnectionData): Promise<void>;
 
 	createTables(entities: EntityInterface[]): Promise<void>;
+
+	getCurrentTime(): Promise<Object>;
 }

@@ -8,4 +8,6 @@ export interface DataSourceInterface {
 	connect(dataToConnect: ConnectionData);
 
 	createTable(table?: TableInterface, columns?: ColumnInterface[], computedColumns?: ComputedColumnInterface[]): string;
+
+	getCurrentTimestamp(): string;
 }

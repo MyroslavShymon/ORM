@@ -17,48 +17,32 @@ class DatabaseManager implements DatabaseManagerInterface {
 		this._connectionData = connectionData;
 		this._dataSource = dataSource;
 
-		this._tableManipulation = new TableManipulation(connectionData, dataSource);
-	}
-
-	//check git
-	async connection(): Promise<ConnectionClient> {
-		if (this._connectionData.type === DatabasesTypes.POSTGRES) {
+		if (connectionData.type === DatabasesTypes.POSTGRES) {
 			this._dataSource.setDatabase(new DataSourcePostgres());
-
-			try {
-				await this._dataSource.connectDatabase(this._connectionData);
-				if (this._connectionData.entities)
-					await this._dataSource.createTables(this._connectionData.entities);
-
-				if (!this._connectionData.entities) {
-					const results = await this._dataSource.client.query('SELECT current_timestamp;');
-					console.log('results', results);
-				}
-			} catch (error) {
-				console.error('error', error);
-			} finally {
-				// await this._dataSource.client.release();
-				console.log(`Table created successfully`);
-			}
 		}
 
 		if (this._connectionData.type === DatabasesTypes.MYSQL) {
 			this._dataSource.setDatabase(new DataSourceMySql());
+		}
 
-			try {
-				await this._dataSource.connectDatabase(this._connectionData);
-				if (this._connectionData.entities)
-					await this._dataSource.createTables(this._connectionData.entities);
+		this._tableManipulation = new TableManipulation(connectionData, dataSource);
+	}
 
-				if (!this._connectionData.entities) {
-					const results = await this._dataSource.client.query('SELECT NOW();');
-					console.log('results', results);
-				}
-			} catch (error) {
-				console.error('error', error);
-			} finally {
-				console.log(`Table created successfully`);
+	async connection(): Promise<ConnectionClient> {
+		try {
+			await this._dataSource.connectDatabase(this._connectionData);
+			if (this._connectionData.entities)
+				await this._dataSource.createTables(this._connectionData.entities);
+
+			if (!this._connectionData.entities) {
+				const results = await this._dataSource.getCurrentTime();
+				console.log('Database is work, current timestamp: ', results);
 			}
+		} catch (error) {
+			console.error('error', error);
+		} finally {
+			// await this._dataSource.client.release();
+			console.log(`Table created successfully`);
 		}
 
 		return {
