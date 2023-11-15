@@ -1,19 +1,15 @@
 import 'reflect-metadata';
 import { ConnectionClient, ConnectionData } from './types';
 import { DatabasesTypes } from './enums';
-import { DataSourcePostgres } from './data-source-postgres';
-import { DataSourceMySql } from './data-source-mysql';
-import { DataSourceContext } from './data-source-context';
-import { DatabaseManagerInterface } from './interfaces';
-import { TableManipulation } from './table-manipulation';
+import { DatabaseManagerInterface, DataSourceContextInterface, TableManipulationInterface } from './interfaces';
+import { DataSourcePostgres } from './strategy/strategies/postgres';
+import { DataSourceMySql } from './strategy/strategies/mysql';
 
 class DatabaseManager implements DatabaseManagerInterface {
-	_connectionData: ConnectionData;
-	_dataSource: DataSourceContext;
+	private _connectionData: ConnectionData;
+	private _dataSource: DataSourceContextInterface;
 
-	_tableManipulation: TableManipulation;
-
-	constructor(connectionData: ConnectionData, dataSource: DataSourceContext) {
+	constructor(connectionData: ConnectionData, dataSource: DataSourceContextInterface) {
 		this._connectionData = connectionData;
 		this._dataSource = dataSource;
 
@@ -24,15 +20,13 @@ class DatabaseManager implements DatabaseManagerInterface {
 		if (this._connectionData.type === DatabasesTypes.MYSQL) {
 			this._dataSource.setDatabase(new DataSourceMySql());
 		}
-
-		this._tableManipulation = new TableManipulation(connectionData, dataSource);
 	}
 
 	async connection(): Promise<ConnectionClient> {
 		try {
 			await this._dataSource.connectDatabase(this._connectionData);
 			if (this._connectionData.entities)
-				await this._dataSource.createTables(this._connectionData.entities);
+				await this._dataSource.tableCreator.createTables(this._connectionData.entities);
 
 			if (!this._connectionData.entities) {
 				const results = await this._dataSource.getCurrentTime();
@@ -55,7 +49,7 @@ class DatabaseManager implements DatabaseManagerInterface {
 		this._connectionData = connectionData;
 	}
 
-	set dataSource(dataSource: DataSourceContext) {
+	set dataSource(dataSource: DataSourceContextInterface) {
 		this._dataSource = dataSource;
 	}
 
@@ -63,12 +57,12 @@ class DatabaseManager implements DatabaseManagerInterface {
 		return this._connectionData;
 	}
 
-	get dataSource(): DataSourceContext {
+	get dataSource(): DataSourceContextInterface {
 		return this._dataSource;
 	}
-
-	get tableManipulation(): TableManipulation {
-		return this._tableManipulation;
+	
+	get tableManipulation(): TableManipulationInterface {
+		return this._dataSource.tableManipulation;
 	}
 }
 

@@ -1,34 +1,12 @@
-import { PoolClient } from 'pg';
-import { Connection } from 'mysql2/promise';
-import {
-	ColumnMetadataInterface,
-	DataSourceContextInterface,
-	DataSourceInterface,
-	EntityInterface,
-	TableInterface
-} from './interfaces';
-import { DataSourcePostgres } from './data-source-postgres';
-import { ConnectionData } from './types';
-import { ComputedColumnMetadataInterface } from './interfaces/decorators/computed-column';
+import { ColumnMetadataInterface, DataSourceInterface, EntityInterface, TableInterface } from '../../interfaces';
+import { ComputedColumnMetadataInterface } from '../../interfaces/decorators/computed-column';
+import { TableCreatorInterface } from './interfaces';
 
-class DataSourceContext implements DataSourceContextInterface {
+export class TableCreator implements TableCreatorInterface {
 	private _dataSource: DataSourceInterface;
-	private _client: DataSourceInterface extends DataSourcePostgres ? PoolClient : Connection;
 
-	setDatabase(dataSource: DataSourceInterface): void {
+	constructor(dataSource: DataSourceInterface) {
 		this._dataSource = dataSource;
-	}
-
-	async connectDatabase(connectionData: ConnectionData): Promise<void> {
-		await this._dataSource.connect(connectionData);
-
-		this._client = await this._dataSource.client;
-	}
-
-	async getCurrentTime(): Promise<Object> {
-		const getCurrentTimestampQuery = this._dataSource.getCurrentTimestamp();
-
-		return this._dataSource.client.query(getCurrentTimestampQuery);
 	}
 
 	// Функція для виконання асинхронного створення таблиць і складання даних з декораторів
@@ -58,14 +36,8 @@ class DataSourceContext implements DataSourceContextInterface {
 			}
 
 			const createTableSQL = this._dataSource.createTable(table, columns, computedColumns);
-			console.log('createTableSQLcreateTableSQL', createTableSQL);
+			console.log('Sql of table create', createTableSQL);
 			await this._dataSource.client.query(createTableSQL);
 		}
 	}
-
-	get client(): DataSourceInterface extends DataSourcePostgres ? PoolClient : Connection {
-		return this._client;
-	}
 }
-
-export { DataSourceContext };

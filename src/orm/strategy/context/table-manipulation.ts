@@ -1,13 +1,14 @@
-import { AddColumnInterface, AlterTableResultInterface, TableManipulationInterface } from './interfaces';
-import { ConnectionData } from './types';
-import { DataSourceContext } from './data-source-context';
+import {
+	AddColumnInterface,
+	AlterTableResultInterface,
+	DataSourceInterface,
+	TableManipulationInterface
+} from '../../interfaces';
 
 export class TableManipulation implements TableManipulationInterface {
-	_connectionData: ConnectionData;
-	_dataSource: DataSourceContext;
+	private _dataSource: DataSourceInterface;
 
-	constructor(connectionData: ConnectionData, dataSource: DataSourceContext) {
-		this._connectionData = connectionData;
+	constructor(dataSource: DataSourceInterface) {
 		this._dataSource = dataSource;
 	}
 
@@ -17,8 +18,10 @@ export class TableManipulation implements TableManipulationInterface {
 		};
 	};
 
-	addColumn = (tableName: string) => async (parameters: AddColumnInterface): Promise<void> => {
-		
+	addColumn = (tableName: string) => async (parameters: AddColumnInterface): Promise<Object> => {
+		const addColumnSql = this._dataSource.addColumn(tableName, parameters);
+		console.log('Add column Sql ', addColumnSql);
+		return this._dataSource.client.query(addColumnSql);
 	};
 
 	deleteColumn(parameters: {}) {

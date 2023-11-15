@@ -1,4 +1,4 @@
-// Типи даних в postgresql
+// Типи даних в postgres
 export enum PostgresqlDataTypes {
 	SMALLINT = 'SMALLINT', // маленьке ціло числене число
 	INTEGER = 'INTEGER', // середнє ціло числене число

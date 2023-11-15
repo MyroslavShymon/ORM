@@ -1,11 +1,11 @@
 import { ConnectionClient, ConnectionData } from '../types';
-import { DataSourceContext } from '../data-source-context';
-import { TableManipulation } from '../table-manipulation';
+import { TableManipulationInterface } from './table-manipulations';
+import { DataSourceContextInterface } from './data-source-context.interface';
 
 export interface DatabaseManagerInterface {
 	connectionData: ConnectionData;
-	dataSource: DataSourceContext;
-	tableManipulation: TableManipulation;
+	dataSource: DataSourceContextInterface;
+	tableManipulation: TableManipulationInterface;
 
 	connection(): Promise<ConnectionClient>;
 }

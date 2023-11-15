@@ -1,7 +1,7 @@
-import { DataSourceContext } from '../data-source-context';
 import { ConnectionData } from './connection-data';
+import { DataSourceContextInterface } from '../interfaces';
 
 export type ConnectionClient = {
-	dataSource: DataSourceContext,
+	dataSource: DataSourceContextInterface,
 	connectionData: ConnectionData,
 }

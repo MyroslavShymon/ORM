@@ -1,16 +1,32 @@
-import { Pool, PoolClient } from 'pg';
-import { ColumnInterface, DataSourceInterface, TableInterface, TableOptionsInterface } from './interfaces';
-import { ConnectionData } from './types';
-import { PostgresqlDataTypes } from './enums';
-import { isArrayArrayOfArrays } from './utils';
-import { ComputedColumnInterface } from './interfaces/decorators/computed-column';
+import { ColumnInterface, TableInterface, TableOptionsInterface } from '../../../../interfaces';
+import { isArrayArrayOfArrays } from '../../../../utils';
+import { PostgresqlDataTypes } from '../../../../enums';
+import { ComputedColumnInterface } from '../../../../interfaces/decorators/computed-column';
+import { TableBuilderInterface } from '../interfaces';
 
-export class DataSourcePostgres implements DataSourceInterface {
-	client: PoolClient;
+export class TableBuilder implements TableBuilderInterface {
+	createTable(table: TableInterface, columns: ColumnInterface[], computedColumns: ComputedColumnInterface[]): string {
+		let createTableSQL;
+		createTableSQL = `
+                CREATE TABLE IF NOT EXISTS "${table.name}" (
+                  id SERIAL PRIMARY KEY,
+            `;
 
-	async connect(dataToConnect: ConnectionData): Promise<void> {
-		const pool = new Pool(dataToConnect);
-		this.client = await pool.connect();
+		if (columns) {
+			createTableSQL += this._handleColumnDecorator(columns);
+		}
+
+		if (computedColumns) {
+			createTableSQL += this._handleComputedColumnDecorator(computedColumns);
+		}
+
+		if (table.options) {
+			createTableSQL += this._handleOptionsOfTableDecorator(table.options);
+		}
+
+		createTableSQL += '\n );';
+
+		return createTableSQL;
 	}
 
 	private _handleOptionsOfTableDecorator({ unique, checkConstraint }: TableOptionsInterface): string {
@@ -103,10 +119,6 @@ export class DataSourcePostgres implements DataSourceInterface {
 		return columnStrings.join(',');
 	}
 
-	// get aa(){
-	// 	return "dfsdf"
-	// }
-
 	private _handleComputedColumnDecorator(computedColumns: ComputedColumnInterface[]): string {
 		//TODO змінити назву
 		const formComputedColumns = computedColumns
@@ -114,33 +126,5 @@ export class DataSourcePostgres implements DataSourceInterface {
 				`${name} ${dataType} GENERATED ALWAYS AS (${calculate}) ${stored === true ? 'STORED' : ''}`);
 
 		return `${formComputedColumns.length > 0 ? `, ${formComputedColumns.join(', \n\t\t')}` : ''}`;
-	}
-
-	createTable(table: TableInterface, columns: ColumnInterface[], computedColumns: ComputedColumnInterface[]): string {
-		let createTableSQL;
-		createTableSQL = `
-                CREATE TABLE IF NOT EXISTS "${table.name}" (
-                  id SERIAL PRIMARY KEY,
-            `;
-
-		if (columns) {
-			createTableSQL += this._handleColumnDecorator(columns);
-		}
-
-		if (computedColumns) {
-			createTableSQL += this._handleComputedColumnDecorator(computedColumns);
-		}
-
-		if (table.options) {
-			createTableSQL += this._handleOptionsOfTableDecorator(table.options);
-		}
-
-		createTableSQL += '\n );';
-
-		return createTableSQL;
-	}
-
-	getCurrentTimestamp(): string {
-		return 'SELECT current_timestamp;';
 	}
 }
