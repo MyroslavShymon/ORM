@@ -1,9 +1,9 @@
 import 'reflect-metadata';
-import { ConnectionClient, ConnectionData } from './types';
-import { DatabasesTypes } from './enums';
-import { DatabaseManagerInterface, DataSourceContextInterface, TableManipulationInterface } from './interfaces';
-import { DataSourcePostgres } from './strategy/strategies/postgres';
-import { DataSourceMySql } from './strategy/strategies/mysql';
+import { ConnectionClient, ConnectionData, DatabaseManagerInterface, DatabasesTypes } from './core';
+import { DataSourcePostgres } from './strategies/postgres';
+import { DataSourceMySql } from './strategies/mysql';
+import { DataSourceContextInterface, TableManipulationInterface } from './context';
+
 
 class DatabaseManager implements DatabaseManagerInterface {
 	private _connectionData: ConnectionData;
@@ -60,7 +60,7 @@ class DatabaseManager implements DatabaseManagerInterface {
 	get dataSource(): DataSourceContextInterface {
 		return this._dataSource;
 	}
-	
+
 	get tableManipulation(): TableManipulationInterface {
 		return this._dataSource.tableManipulation;
 	}
