@@ -1,14 +1,14 @@
-import { ColumnInterface, ComputedColumnInterface, TableInterface } from './decorators';
-import { AddColumnInterface } from './add-column.interface';
-import { ConnectionData } from '../types';
-import {
-	TableAltererInterface as TableAltererInterfaceMysql,
-	TableBuilderInterface as TableBuilderInterfaceMysql
-} from '../../strategies/mysql';
+import { ConnectionData } from '@core/types';
+import { ColumnInterface, ComputedColumnInterface, TableInterface } from '@core/interfaces/decorators';
+import { AddColumnInterface } from '@core/interfaces/add-column.interface';
 import {
 	TableAltererInterface as TableAltererInterfacePostgres,
 	TableBuilderInterface as TableBuilderInterfacePostgres
 } from '../../strategies/postgres';
+import {
+	TableAltererInterface as TableAltererInterfaceMysql,
+	TableBuilderInterface as TableBuilderInterfaceMysql
+} from '../../strategies/mysql';
 
 export interface DataSourceInterface {
 	client;

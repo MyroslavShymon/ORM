@@ -1,5 +1,5 @@
-import { AddColumnInterface, DataSourceInterface } from '../core';
-import { AlterTableResultInterface, TableManipulationInterface } from './interfaces';
+import { AlterTableResultInterface, TableManipulationInterface } from '@context/interfaces';
+import { AddColumnInterface, DataSourceInterface } from '@core/interfaces';
 
 export class TableManipulation implements TableManipulationInterface {
 	private _dataSource: DataSourceInterface;

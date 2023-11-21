@@ -1,4 +1,4 @@
-import { MysqlDataTypes } from '../../../../core';
+import { MysqlDataTypes } from '@core/enums';
 
 export interface ColumnOptionsInterfaceMysql {
 	dataType: MysqlDataTypes;

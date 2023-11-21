@@ -1,6 +1,5 @@
-import { TableAltererInterface } from '../interfaces';
-import { AddColumnInterface } from '../../../core';
-import { DataSourceMySql } from '../data-source-mysql';
+import { DataSourceMySql, TableAltererInterface } from '@strategies/mysql';
+import { AddColumnInterface } from '@core/interfaces';
 
 export class TableAlterer implements TableAltererInterface {
 	addColumn(tableName: string, parameters: AddColumnInterface<DataSourceMySql>): string {

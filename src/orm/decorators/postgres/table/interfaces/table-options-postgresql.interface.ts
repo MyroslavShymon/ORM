@@ -1,4 +1,4 @@
-import { ConstraintInterface } from './constraint.interface';
+import { ConstraintInterface } from '@decorators/postgres';
 
 export interface TableOptionsPostgresqlInterface {
 	checkConstraint?: ConstraintInterface | ConstraintInterface[];

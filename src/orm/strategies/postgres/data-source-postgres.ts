@@ -3,13 +3,12 @@ import {
 	AddColumnInterface,
 	ColumnInterface,
 	ComputedColumnInterface,
-	ConnectionData,
 	DataSourceInterface,
 	TableInterface
-} from '../../core';
-import { TableAltererInterface, TableBuilderInterface } from './interfaces';
-import { TableAlterer, TableBuilder } from './components';
-
+} from '@core/interfaces';
+import { ConnectionData } from '@core/types';
+import { TableAltererInterface, TableBuilderInterface } from '@strategies/postgres/interfaces';
+import { TableAlterer, TableBuilder } from '@strategies/postgres/components';
 
 export class DataSourcePostgres implements DataSourceInterface {
 	client: PoolClient;

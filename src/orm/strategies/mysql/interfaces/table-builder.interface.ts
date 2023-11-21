@@ -1,5 +1,5 @@
-import { DataSourceMySql } from '../data-source-mysql';
-import { ColumnInterface, ComputedColumnInterface, TableInterface } from '../../../core';
+import { ColumnInterface, ComputedColumnInterface, TableInterface } from '@core/interfaces';
+import { DataSourceMySql } from '@strategies/mysql';
 
 export interface TableBuilderInterface {
 	createTable(

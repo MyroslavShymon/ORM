@@ -2,7 +2,7 @@
   "name": "@myroslavss/orm",
   "version": "0.0.1",
   "description": "My orm for practise sql",
-  "main": "lib/es5/index.js",
+  "main": "index.js",
   "module": "lib/es6/index.js",
   "sideEffects": false,
   "repository": {

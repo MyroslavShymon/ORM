@@ -1,5 +1,5 @@
-import { ColumnInterface, ComputedColumnInterface, TableInterface } from '../../../core';
-import { DataSourcePostgres } from '../data-source-postgres';
+import { DataSourcePostgres } from '@strategies/postgres';
+import { ColumnInterface, ComputedColumnInterface, TableInterface } from '@core/interfaces';
 
 export interface TableBuilderInterface {
 	createTable(

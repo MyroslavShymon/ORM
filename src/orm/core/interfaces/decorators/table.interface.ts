@@ -1,8 +1,8 @@
-import { TableOptionsPostgresqlInterface as TableOptionsInterfacePostgres } from '../../../decorators/postgres';
-import { TableOptionsMysqlInterface as TableOptionsInterfaceMysql } from '../../../decorators/mysql';
-import { DataSourcePostgres } from '../../../strategies/postgres';
+import { DataSourcePostgres } from '@strategies/postgres';
+import { TableOptionsPostgresqlInterface } from '@decorators/postgres';
+import { TableOptionsMysqlInterface } from '@decorators/mysql';
 
 export interface TableInterface<DB> {
 	name: string;
-	options?: DB extends DataSourcePostgres ? TableOptionsInterfacePostgres : TableOptionsInterfaceMysql;
+	options?: DB extends DataSourcePostgres ? TableOptionsPostgresqlInterface : TableOptionsMysqlInterface;
 }

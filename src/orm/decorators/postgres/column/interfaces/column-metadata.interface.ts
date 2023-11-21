@@ -1,4 +1,4 @@
-import { ColumnOptionsInterfacePostgres } from './column-options-postgresql.interface';
+import { ColumnOptionsInterfacePostgres } from '@decorators/postgres';
 
 export interface ColumnMetadataInterface {
 	name: string;

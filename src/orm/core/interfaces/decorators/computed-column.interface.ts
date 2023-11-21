@@ -1,5 +1,5 @@
-import { MysqlDataTypes, PostgresqlDataTypes } from '../../enums';
-import { DataSourcePostgres } from '../../../strategies/postgres';
+import { DataSourcePostgres } from '@strategies/postgres';
+import { MysqlDataTypes, PostgresqlDataTypes } from '@core/enums';
 
 export interface ComputedColumnInterface<DB> {
 	name: string;

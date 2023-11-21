@@ -1,7 +1,6 @@
 import 'reflect-metadata';
-import { StringDecoratorInterface } from './interfaces';
-import { PostgresqlDataTypes } from '../../../core';
-import { ColumnMetadataInterface } from '../column';
+import { ColumnMetadataInterface, StringDecoratorInterface } from '@decorators/postgres';
+import { PostgresqlDataTypes } from '@core/enums';
 
 export function String({ type, length }: StringDecoratorInterface) {
 	return function(target: any, propertyKey: string) {

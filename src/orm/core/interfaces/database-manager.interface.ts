@@ -1,5 +1,5 @@
-import { ConnectionClient, ConnectionData } from '../types';
-import { DataSourceContextInterface, TableManipulationInterface } from '../../context';
+import { ConnectionClient, ConnectionData } from '@core/types';
+import { DataSourceContextInterface, TableManipulationInterface } from '@context/interfaces';
 
 export interface DatabaseManagerInterface {
 	connectionData: ConnectionData;

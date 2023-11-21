@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { TableDecoratorInterface } from './interfaces';
+import { TableDecoratorInterface } from '@decorators/postgres';
 
 export function Table({ name, options }: TableDecoratorInterface) {
 	return function(constructor: Function) {

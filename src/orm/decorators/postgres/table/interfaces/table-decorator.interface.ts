@@ -1,4 +1,4 @@
-import { TableOptionsPostgresqlInterface } from './table-options-postgresql.interface';
+import { TableOptionsPostgresqlInterface } from '@decorators/postgres';
 
 export interface TableDecoratorInterface {
 	name?: string;

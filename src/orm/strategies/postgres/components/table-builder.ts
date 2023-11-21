@@ -1,8 +1,8 @@
-import { TableOptionsPostgresqlInterface as TableOptionsInterfacePostgres } from '../../../decorators/postgres';
-import { TableBuilderInterface } from '../interfaces';
-import { DataSourcePostgres } from '../data-source-postgres';
-import { ColumnInterface, ComputedColumnInterface, PostgresqlDataTypes, TableInterface } from '../../../core';
-import { isArrayArrayOfArrays } from '../../../utils';
+import { DataSourcePostgres, TableBuilderInterface } from '@strategies/postgres';
+import { ColumnInterface, ComputedColumnInterface, TableInterface } from '@core/interfaces';
+import { TableOptionsPostgresqlInterface } from '@decorators/postgres';
+import { isArrayArrayOfArrays } from '@utils/index';
+import { PostgresqlDataTypes } from '@core/enums';
 
 export class TableBuilder implements TableBuilderInterface {
 	createTable(
@@ -33,7 +33,7 @@ export class TableBuilder implements TableBuilderInterface {
 		return createTableSQL;
 	}
 
-	private _handleOptionsOfTableDecorator({ unique, checkConstraint }: TableOptionsInterfacePostgres): string {
+	private _handleOptionsOfTableDecorator({ unique, checkConstraint }: TableOptionsPostgresqlInterface): string {
 		const tableParameters = [];
 
 		if (checkConstraint) {

@@ -1,4 +1,4 @@
-import { ComputedColumnDecoratorInterface, ComputedColumnMetadataInterface } from './interfaces';
+import { ComputedColumnDecoratorInterface, ComputedColumnMetadataInterface } from '@decorators/postgres';
 
 export function ComputedColumn({ name, stored, calculate, dataType }: ComputedColumnDecoratorInterface) {
 	return function(target: any, propertyKey: string) {

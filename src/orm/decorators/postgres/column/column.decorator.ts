@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { ColumnDecoratorInterface, ColumnMetadataInterface } from './interfaces';
+import { ColumnDecoratorInterface, ColumnMetadataInterface } from '@decorators/postgres';
 
 export function Column({ name, options }: ColumnDecoratorInterface) {
 	return function(target: any, propertyKey: string) {

@@ -1,5 +1,5 @@
-import { AlterTableResultInterface } from './alter-table-result.interface';
-import { AddColumnInterface, DataSourceInterface } from '../../../core';
+import { AlterTableResultInterface } from '@context/interfaces';
+import { AddColumnInterface, DataSourceInterface } from '@core/interfaces';
 
 export interface TableManipulationInterface {
 	alterTable(tableName: string): AlterTableResultInterface<DataSourceInterface>;

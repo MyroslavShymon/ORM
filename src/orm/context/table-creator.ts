@@ -1,6 +1,6 @@
-import { TableCreatorInterface } from './interfaces';
-import { DataSourceInterface, EntityInterface, TableInterface } from '../core';
-import { ColumnMetadataInterface, ComputedColumnMetadataInterface } from '../decorators';
+import { TableCreatorInterface } from '@context/interfaces';
+import { DataSourceInterface, EntityInterface, TableInterface } from '@core/interfaces';
+import { ColumnMetadataInterface, ComputedColumnMetadataInterface } from '@decorators/postgres';
 
 export class TableCreator implements TableCreatorInterface {
 	private _dataSource: DataSourceInterface;

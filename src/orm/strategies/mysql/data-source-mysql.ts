@@ -3,13 +3,12 @@ import {
 	AddColumnInterface,
 	ColumnInterface,
 	ComputedColumnInterface,
-	ConnectionData,
 	DataSourceInterface,
 	TableInterface
-} from '../../core';
-import { TableAltererInterface, TableBuilderInterface } from './interfaces';
-import { TableAlterer, TableBuilder } from './components';
-
+} from '@core/interfaces';
+import { ConnectionData } from '@core/types';
+import { TableAltererInterface, TableBuilderInterface } from '@strategies/mysql/interfaces';
+import { TableAlterer, TableBuilder } from '@strategies/mysql/components';
 
 export class DataSourceMySql implements DataSourceInterface {
 	client: Connection;

@@ -1,4 +1,4 @@
-import { PostgresqlDataTypes } from '../../../../core';
+import { PostgresqlDataTypes } from '@core/enums';
 
 export interface ColumnOptionsInterfacePostgres {
 	dataType: PostgresqlDataTypes;

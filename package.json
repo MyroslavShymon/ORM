@@ -5,13 +5,14 @@
   "author": "Myroslav Shymon <myroslavshymon@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "compile": "mkdir dist 2>nul && rd /q /s dist && tsc && tsc --build tsconfig.es5.json"
+    "compile": "tsc && tsc-alias"
   },
   "devDependencies": {
     "@types/node": "^20.7.0",
     "@types/pg": "^8.10.2",
     "prettier": "3.0.3",
-    "typescript": "^5.0.4"
+    "ts-node": "^10.9.1",
+    "tsc-alias": "^1.8.8"
   },
   "dependencies": {
     "mysql": "^2.18.1",
