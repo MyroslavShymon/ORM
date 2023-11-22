@@ -10,73 +10,29 @@ export class TableBuilder implements TableBuilderInterface {
 		columns: ColumnInterface<DataSourcePostgres>[],
 		computedColumns: ComputedColumnInterface<DataSourcePostgres>[]
 	): string {
-		let createTableSQL;
-		createTableSQL = `
-                CREATE TABLE IF NOT EXISTS "${table.name}" (
-                  id SERIAL PRIMARY KEY,
-            `;
+		let createTableQuery;
+		createTableQuery = `\n\tCREATE TABLE IF NOT EXISTS "${table.name}" (
+                  id SERIAL PRIMARY KEY,\n\t\t`;
 
 		if (columns) {
-			createTableSQL += this._handleColumnDecorator(columns);
+			createTableQuery += this._handleColumns(columns);
 		}
 
 		if (computedColumns) {
-			createTableSQL += this._handleComputedColumnDecorator(computedColumns);
+			createTableQuery += this._handleComputedColumns(computedColumns);
 		}
 
 		if (table.options) {
-			createTableSQL += this._handleOptionsOfTableDecorator(table.options);
+			createTableQuery += this._handleOptionsOfTable(table.options);
 		}
 
-		createTableSQL += '\n );';
+		createTableQuery += '\n );';
 
-		return createTableSQL;
+		return createTableQuery;
 	}
 
-	private _handleOptionsOfTableDecorator({ unique, checkConstraint }: TableOptionsPostgresqlInterface): string {
-		const tableParameters = [];
-
-		if (checkConstraint) {
-			let formTableConstraint;
-
-			if (Array.isArray(checkConstraint)) {
-				formTableConstraint = checkConstraint
-					.map((constraint) =>
-						`${constraint.name ? `CONSTRAINT ${constraint.name}` : ''} CHECK (${constraint.check})`
-					)
-					.join(', \n\t\t');
-			} else {
-				formTableConstraint = `${checkConstraint.name ? `CONSTRAINT ${checkConstraint.name}` : ''} CHECK (${checkConstraint.check})\n`;
-			}
-
-			tableParameters.push(formTableConstraint);
-		}
-
-
-		if (unique) {
-			let formUniqueCombinationColumns;
-			const isSeveralUniqueCombinations = isArrayArrayOfArrays(unique);
-
-			if (isSeveralUniqueCombinations) {
-				formUniqueCombinationColumns = (unique as string[][])
-					.map((uniqueCombination) =>
-						`UNIQUE (${uniqueCombination.join(', ')})`
-					)
-					.join(', \n');
-			}
-
-			if (!isSeveralUniqueCombinations) {
-				formUniqueCombinationColumns = `UNIQUE (${unique.join(', ')})`;
-			}
-
-			tableParameters.push(formUniqueCombinationColumns);
-		}
-
-		return `${tableParameters.length > 0 ? `, ${tableParameters.join(', \n\t\t')}` : ''}`;
-	}
-
-	private _handleColumnDecorator(columns: ColumnInterface<DataSourcePostgres>[]): string {
-		const columnStrings = columns.map(({ name, options }) => {
+	private _handleColumns(columns: ColumnInterface<DataSourcePostgres>[]): string {
+		const formattedColumnStrings = columns.map(({ name, options }) => {
 			if (!options.dataType) {
 				throw new Error('Ви не вказали тип колонки');
 			}
@@ -88,47 +44,97 @@ export class TableBuilder implements TableBuilderInterface {
 				throw new Error('Ви не вказали довжину рядка');
 			}
 
+			const columnAttributes = [`"${name}" ${options.dataType}`];
+
 			// Отримуємо довжину рядка і робимо йому правильний формат
-			let stringLength = '';
 
 			if (options.length) {
-				stringLength = `(${options.length})`;
-			}
-
-			// constraint check
-			let formConstraint = '';
-
-			if (options.check) {
-				formConstraint = `
-                ${options.nameOfCheckConstraint ? `CONSTRAINT ${options.nameOfCheckConstraint}` : ''} CHECK (${options.check})`;
+				let stringLength = `(${options.length})`;
+				columnAttributes.push(stringLength);
 			}
 
 			//Працюємо з NULL || NOT NULL
 			const isNullableString = options.nullable ? 'NULL' : 'NOT NULL';
+			columnAttributes.push(isNullableString);
+
+			// constraint check
+			if (options.check) {
+				const constraintString = `
+                	${options.nameOfCheckConstraint ? `CONSTRAINT ${options.nameOfCheckConstraint} ` : ''} CHECK (${options.check})`;
+				columnAttributes.push(constraintString);
+			}
 
 			//default
-			const formDefaultValue = options.defaultValue ? `DEFAULT ${options.defaultValue}` : '';
-
+			if (options.defaultValue) {
+				const defaultValueString = `DEFAULT ${options.defaultValue}`;
+				columnAttributes.push(defaultValueString);
+			}
 			//unique
-			const isUnique = options.unique ? 'UNIQUE' : '';
+			if (options.unique) {
+				columnAttributes.push('UNIQUE');
+			}
 
 			//NULLS NOT DISTINCT
-			const isNullsNotDistinct = options.nullsNotDistinct ? 'NULLS NOT DISTINCT' : '';
+			if (options.nullsNotDistinct) {
+				columnAttributes.push('NULLS NOT DISTINCT');
+			}
 
-			return `"${name}" ${options.dataType}${stringLength} ${isNullableString}
-             ${formConstraint} ${formDefaultValue} ${isUnique} ${isNullsNotDistinct} \t`;
+			return columnAttributes.join(' ');
 		});
-		// this.aa
-		console.log('columnStrings', columnStrings);
-		return columnStrings.join(',');
+
+		return formattedColumnStrings.join(',\n\t\t');
 	}
 
-	private _handleComputedColumnDecorator(computedColumns: ComputedColumnInterface<DataSourcePostgres>[]): string {
-		//TODO змінити назву
-		const formComputedColumns = computedColumns
+	private _handleComputedColumns(computedColumns: ComputedColumnInterface<DataSourcePostgres>[]): string {
+		const formattedComputedColumns = computedColumns
 			.map(({ name, stored, calculate, dataType }) =>
-				`${name} ${dataType} GENERATED ALWAYS AS (${calculate}) ${stored === true ? 'STORED' : ''}`);
+				`"${name}" ${dataType} GENERATED ALWAYS AS (${calculate}) ${stored === true ? 'STORED' : ''}`);
 
-		return `${formComputedColumns.length > 0 ? `, ${formComputedColumns.join(', \n\t\t')}` : ''}`;
+		return `${formattedComputedColumns.length > 0 ? `, \n\t\t${formattedComputedColumns.join(', \n\t\t')}` : ''}`;
+	}
+
+	private _handleOptionsOfTable({ unique, checkConstraint }: TableOptionsPostgresqlInterface): string {
+		const tableOptions = [];
+
+		if (checkConstraint) {
+			let formattedCheckConstraint;
+
+			if (Array.isArray(checkConstraint)) {
+				formattedCheckConstraint = checkConstraint
+					.map((constraint) =>
+						`${constraint.name ? `CONSTRAINT "${constraint.name}"` : ''} CHECK (${constraint.check})`
+					)
+					.join(', \n\t\t');
+			} else {
+				formattedCheckConstraint = `${checkConstraint.name ? `CONSTRAINT ${checkConstraint.name}` : ''} CHECK (${checkConstraint.check})\n`;
+			}
+
+			tableOptions.push(formattedCheckConstraint);
+		}
+
+
+		if (unique) {
+			let formattedUniqueColumns;
+			const isMultipleUniqueCombinations = isArrayArrayOfArrays(unique);
+
+			if (isMultipleUniqueCombinations) {
+				console.log('uniqueCombination', unique);
+				formattedUniqueColumns = (unique as string[][])
+					.map((uniqueCombination) =>
+						`UNIQUE (${uniqueCombination
+							.map(column => `"${column}"`)
+							.join(', ')})`
+					)
+					.join(', \n\t\t');
+			}
+
+			if (!isMultipleUniqueCombinations) {
+				formattedUniqueColumns = `UNIQUE (${unique.map(column => `"${column}"`).join(', ')})`;
+			}
+
+			tableOptions.push(formattedUniqueColumns);
+		}
+
+		return `${tableOptions.length > 0 ? `,\n\n\t\t${tableOptions.join(', \n\t\t')}` : ''}`;
 	}
 }

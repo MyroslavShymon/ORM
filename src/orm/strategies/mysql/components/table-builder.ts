@@ -7,17 +7,13 @@ export class TableBuilder implements TableBuilderInterface {
 		columns?: ColumnInterface<DataSourceMySql>[],
 		computedColumns?: ComputedColumnInterface<DataSourceMySql>[]
 	): string {
-		let createTableSQL;
-		console.log('POSTGRES');
-		console.log('TABLE', table);
-		console.log('COLUMN', columns);
+		let createTableQuery;
 
-		createTableSQL = `
-                CREATE TABLE IF NOT EXISTS ${table.name} (
+		createTableQuery = `\n\tCREATE TABLE IF NOT EXISTS ${table.name} (
                     id INT AUTO_INCREMENT PRIMARY KEY
                 );
             `;
 
-		return createTableSQL;
+		return createTableQuery;
 	}
 }

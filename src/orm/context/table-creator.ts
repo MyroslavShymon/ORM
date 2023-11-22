@@ -35,9 +35,9 @@ export class TableCreator implements TableCreatorInterface {
 				});
 			}
 
-			const createTableSQL = this._dataSource.createTable(table, columns, computedColumns);
-			console.log('Sql of table create', createTableSQL);
-			await this._dataSource.client.query(createTableSQL);
+			const createTableQuery = this._dataSource.createTable(table, columns, computedColumns);
+			console.log('Sql of table create', createTableQuery);
+			await this._dataSource.client.query(createTableQuery);
 		}
 	}
 }

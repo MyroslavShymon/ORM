@@ -8,7 +8,7 @@ export function Column({ name, options }: ColumnDecoratorInterface) {
 			name = propertyKey;
 		}
 
-		if (!options.nullable) {
+		if (options.nullable === undefined) {
 			options.nullable = true;
 		}
 

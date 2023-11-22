@@ -26,8 +26,10 @@ class DatabaseManager implements DatabaseManagerInterface {
 	async connection(): Promise<ConnectionClient> {
 		try {
 			await this._dataSource.connectDatabase(this._connectionData);
-			if (this._connectionData.entities)
+			if (this._connectionData.entities) {
 				await this._dataSource.tableCreator.createTables(this._connectionData.entities);
+				console.log(`Table created successfully`);
+			}
 
 			if (!this._connectionData.entities) {
 				const results = await this._dataSource.getCurrentTime();
@@ -35,9 +37,9 @@ class DatabaseManager implements DatabaseManagerInterface {
 			}
 		} catch (error) {
 			console.error('error', error);
+			throw Error(error);
 		} finally {
 			// await this._dataSource.client.release();
-			console.log(`Table created successfully`);
 		}
 
 		return {
