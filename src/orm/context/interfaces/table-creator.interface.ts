@@ -1,5 +1,5 @@
-import { EntityInterface } from '@core/interfaces';
+import { ModelInterface } from '@core/interfaces';
 
 export interface TableCreatorInterface {
-	createTables(entities: EntityInterface[]): Promise<void>;
+	createTables(models: ModelInterface[]): Promise<void>;
 }

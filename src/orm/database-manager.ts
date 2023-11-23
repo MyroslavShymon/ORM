@@ -26,12 +26,12 @@ class DatabaseManager implements DatabaseManagerInterface {
 	async connection(): Promise<ConnectionClient> {
 		try {
 			await this._dataSource.connectDatabase(this._connectionData);
-			if (this._connectionData.entities) {
-				await this._dataSource.tableCreator.createTables(this._connectionData.entities);
+			if (this._connectionData.models) {
+				await this._dataSource.tableCreator.createTables(this._connectionData.models);
 				console.log(`Table created successfully`);
 			}
 
-			if (!this._connectionData.entities) {
+			if (!this._connectionData.models) {
 				const results = await this._dataSource.getCurrentTime();
 				console.log('Database is work, current timestamp: ', results);
 			}

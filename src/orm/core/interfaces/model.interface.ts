@@ -1,4 +1,4 @@
 // Інтерфейс для класів з декораторами
-export interface EntityInterface {
+export interface ModelInterface {
 	new(): any;
 }

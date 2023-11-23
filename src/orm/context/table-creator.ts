@@ -1,5 +1,5 @@
 import { TableCreatorInterface } from '@context/interfaces';
-import { DataSourceInterface, EntityInterface, TableInterface } from '@core/interfaces';
+import { DataSourceInterface, ModelInterface, TableInterface } from '@core/interfaces';
 import { ColumnMetadataInterface, ComputedColumnMetadataInterface } from '@decorators/postgres';
 
 export class TableCreator implements TableCreatorInterface {
@@ -10,14 +10,14 @@ export class TableCreator implements TableCreatorInterface {
 	}
 
 	// Функція для виконання асинхронного створення таблиць і складання даних з декораторів
-	async createTables(entities: EntityInterface[]): Promise<void> {
-		for (const entity of entities) {
+	async createTables(models: ModelInterface[]): Promise<void> {
+		for (const model of models) {
 			const table: TableInterface<DataSourceInterface>
-				= Reflect.getMetadata('table', entity.prototype);
+				= Reflect.getMetadata('table', model.prototype);
 			const metadataColumns: ColumnMetadataInterface[]
-				= Reflect.getMetadata('columns', entity.prototype);
+				= Reflect.getMetadata('columns', model.prototype);
 			const metadataComputedColumns: ComputedColumnMetadataInterface[]
-				= Reflect.getMetadata('computed-columns', entity.prototype);
+				= Reflect.getMetadata('computed-columns', model.prototype);
 
 			let columns;
 			if (metadataColumns) {
