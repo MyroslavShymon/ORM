@@ -6,6 +6,8 @@ import { TableCreator } from '@context/table-creator';
 import { DataSourceInterface } from '@core/interfaces';
 import { ConnectionData } from '@core/types';
 import { DataSourcePostgres } from '@strategies/postgres';
+import { MigrationManagerInterface } from '@context/interfaces/migration-manager.interface';
+import { MigrationManager } from '@context/migration-manager';
 
 class DataSourceContext implements DataSourceContextInterface {
 	private _dataSource: DataSourceInterface;
@@ -37,6 +39,10 @@ class DataSourceContext implements DataSourceContextInterface {
 
 	get tableCreator(): TableCreatorInterface {
 		return new TableCreator(this._dataSource);
+	}
+
+	get migrationManager(): MigrationManagerInterface {
+		return new MigrationManager(this._dataSource);
 	}
 }
 

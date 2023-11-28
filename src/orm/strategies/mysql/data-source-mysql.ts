@@ -7,17 +7,19 @@ import {
 	TableInterface
 } from '@core/interfaces';
 import { ConnectionData } from '@core/types';
-import { TableAltererInterface, TableBuilderInterface } from '@strategies/mysql/interfaces';
-import { TableAlterer, TableBuilder } from '@strategies/mysql/components';
+import { MigrationServiceInterface, TableAltererInterface, TableBuilderInterface } from '@strategies/mysql/interfaces';
+import { MigrationService, TableAlterer, TableBuilder } from '@strategies/mysql/components';
 
 export class DataSourceMySql implements DataSourceInterface {
 	client: Connection;
 	tableBuilder: TableBuilderInterface;
 	tableAlterer: TableAltererInterface;
+	migrationService: MigrationServiceInterface;
 
 	constructor() {
 		this.tableBuilder = new TableBuilder();
 		this.tableAlterer = new TableAlterer();
+		this.migrationService = new MigrationService();
 	}
 
 	async connect(dataToConnect: ConnectionData): Promise<void> {
@@ -34,6 +36,14 @@ export class DataSourceMySql implements DataSourceInterface {
 
 	addColumn(tableName: string, parameters: AddColumnInterface<DataSourceMySql>): string {
 		return this.tableAlterer.addColumn(tableName, parameters);
+	}
+
+	checkTableExistence(tableName: string, tableSchema?: string): string {
+		return this.migrationService.checkTableExistence(tableName, tableSchema);
+	}
+
+	createMigrationTable(): string {
+		return this.migrationService.createMigrationTable();
 	}
 
 	getCurrentTimestamp(): string {

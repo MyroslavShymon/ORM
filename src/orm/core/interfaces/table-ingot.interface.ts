@@ -1,0 +1,11 @@
+import { DataSourcePostgres } from '@strategies/postgres';
+import { TableOptionsPostgresqlInterface } from '@decorators/postgres';
+import { TableOptionsMysqlInterface } from '@decorators/mysql';
+import { ColumnInterface, ComputedColumnInterface } from '@core/interfaces/decorators';
+
+export interface TableIngotInterface<DB> {
+	name: string;
+	options?: DB extends DataSourcePostgres ? TableOptionsPostgresqlInterface : TableOptionsMysqlInterface;
+	columns: ColumnInterface<DB>[];
+	computedColumns: ComputedColumnInterface<DB>[];
+}

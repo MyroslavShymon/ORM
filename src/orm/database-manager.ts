@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { DatabaseManagerInterface } from '@core/interfaces';
+import { DatabaseIngotInterface, DatabaseManagerInterface } from '@core/interfaces';
 import { ConnectionClient, ConnectionData } from '@core/types';
 import { DatabasesTypes } from '@core/enums';
 import { DataSourcePostgres } from '@strategies/postgres';
@@ -25,15 +25,31 @@ class DatabaseManager implements DatabaseManagerInterface {
 
 	async connection(): Promise<ConnectionClient> {
 		try {
+			const databaseIngot: DatabaseIngotInterface = {};
+
 			await this._dataSource.connectDatabase(this._connectionData);
 			if (this._connectionData.models) {
-				await this._dataSource.tableCreator.createTables(this._connectionData.models);
+				databaseIngot.tables = await this._dataSource.tableCreator.createTables(this._connectionData.models);
 				console.log(`Table created successfully`);
 			}
 
 			if (!this._connectionData.models) {
 				const results = await this._dataSource.getCurrentTime();
 				console.log('Database is work, current timestamp: ', results);
+			}
+
+			const isMigrationTableExist = await this._dataSource.migrationManager.checkTableExistence(
+				'migrations',
+				'public'
+			);
+			console.log('isTableExist', isMigrationTableExist);
+			// if (isTableExist) {
+			//	update ingot
+			// }
+
+			if (!isMigrationTableExist) {
+				await this._dataSource.migrationManager.createMigrationTable();
+				// add ingot to the table
 			}
 		} catch (error) {
 			console.error('error', error);

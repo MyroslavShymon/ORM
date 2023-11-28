@@ -25,5 +25,9 @@ export interface DataSourceInterface {
 
 	addColumn(tableName: string, parameters: AddColumnInterface<DataSourceInterface>): string;
 
+	createMigrationTable(): string;
+
+	checkTableExistence(tableName: string, tableSchema?: string): string;
+
 	getCurrentTimestamp(): string;
 }

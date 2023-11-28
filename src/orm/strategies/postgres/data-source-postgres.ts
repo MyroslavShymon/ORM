@@ -7,15 +7,21 @@ import {
 	TableInterface
 } from '@core/interfaces';
 import { ConnectionData } from '@core/types';
-import { TableAltererInterface, TableBuilderInterface } from '@strategies/postgres/interfaces';
-import { TableAlterer, TableBuilder } from '@strategies/postgres/components';
+import {
+	MigrationServiceInterface,
+	TableAltererInterface,
+	TableBuilderInterface
+} from '@strategies/postgres/interfaces';
+import { MigrationService, TableAlterer, TableBuilder } from '@strategies/postgres/components';
 
 export class DataSourcePostgres implements DataSourceInterface {
 	client: PoolClient;
 	tableBuilder: TableBuilderInterface;
 	tableAlterer: TableAltererInterface;
+	migrationService: MigrationServiceInterface;
 
 	constructor() {
+		this.migrationService = new MigrationService();
 		this.tableBuilder = new TableBuilder();
 		this.tableAlterer = new TableAlterer();
 	}
@@ -31,6 +37,14 @@ export class DataSourcePostgres implements DataSourceInterface {
 		computedColumns?: ComputedColumnInterface<DataSourcePostgres>[]
 	): string {
 		return this.tableBuilder.createTable(table, columns, computedColumns);
+	}
+
+	createMigrationTable(): string {
+		return this.migrationService.createMigrationTable();
+	}
+
+	checkTableExistence(tableName: string, tableSchema?: string): string {
+		return this.migrationService.checkTableExistence(tableName, tableSchema);
 	}
 
 	addColumn(tableName: string, parameters: AddColumnInterface<DataSourcePostgres>): string {
