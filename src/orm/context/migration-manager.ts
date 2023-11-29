@@ -15,9 +15,7 @@ export class MigrationManager implements MigrationManagerInterface {
 	}
 
 	async checkTableExistence(tableName: string, tableSchema?: string): Promise<boolean> {
-		const checkTableExistenceQuery = this._dataSource.checkTableExistence(tableName, tableSchema);
-		console.log('Check table existence Sql query', checkTableExistenceQuery);
-		return this._dataSource.client.query(checkTableExistenceQuery);
+		return this._dataSource.checkTableExistence(this._dataSource, tableName, tableSchema);
 	}
 
 	insertIntoMigrationTable() {

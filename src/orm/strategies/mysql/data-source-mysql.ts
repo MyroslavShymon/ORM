@@ -38,8 +38,8 @@ export class DataSourceMySql implements DataSourceInterface {
 		return this.tableAlterer.addColumn(tableName, parameters);
 	}
 
-	checkTableExistence(tableName: string, tableSchema?: string): string {
-		return this.migrationService.checkTableExistence(tableName, tableSchema);
+	checkTableExistence(dataSource: DataSourceInterface, tableName: string, tableSchema?: string): Promise<boolean> {
+		return this.migrationService.checkTableExistence(dataSource, tableName, tableSchema);
 	}
 
 	createMigrationTable(): string {

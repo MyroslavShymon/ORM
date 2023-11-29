@@ -42,7 +42,7 @@ class DatabaseManager implements DatabaseManagerInterface {
 				'migrations',
 				'public'
 			);
-			console.log('isTableExist', isMigrationTableExist);
+			
 			// if (isTableExist) {
 			//	update ingot
 			// }

@@ -11,7 +11,7 @@ import {
 } from '../../strategies/mysql';
 
 export interface DataSourceInterface {
-	client;
+	client;//TODO typing
 	tableBuilder: TableBuilderInterfacePostgres | TableBuilderInterfaceMysql;
 	tableAlterer: TableAltererInterfacePostgres | TableAltererInterfaceMysql;
 
@@ -27,7 +27,7 @@ export interface DataSourceInterface {
 
 	createMigrationTable(): string;
 
-	checkTableExistence(tableName: string, tableSchema?: string): string;
+	checkTableExistence(dataSource: DataSourceInterface, tableName: string, tableSchema?: string): Promise<boolean>;
 
 	getCurrentTimestamp(): string;
 }

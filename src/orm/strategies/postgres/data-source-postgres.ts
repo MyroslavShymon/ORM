@@ -43,8 +43,8 @@ export class DataSourcePostgres implements DataSourceInterface {
 		return this.migrationService.createMigrationTable();
 	}
 
-	checkTableExistence(tableName: string, tableSchema?: string): string {
-		return this.migrationService.checkTableExistence(tableName, tableSchema);
+	checkTableExistence(dataSource: DataSourceInterface, tableName: string, tableSchema?: string): Promise<boolean> {
+		return this.migrationService.checkTableExistence(dataSource, tableName, tableSchema);
 	}
 
 	addColumn(tableName: string, parameters: AddColumnInterface<DataSourcePostgres>): string {
