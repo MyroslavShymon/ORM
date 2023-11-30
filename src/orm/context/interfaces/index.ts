@@ -1,4 +1,4 @@
 export * from './data-source-context.interface';
 export * from './table-manipulations';
 export * from './table-creator';
-export * from './migration-manager.interface';
+export * from './migration-manager';

@@ -38,18 +38,30 @@ class DatabaseManager implements DatabaseManagerInterface {
 				console.log('Database is work, current timestamp: ', results);
 			}
 
-			const isMigrationTableExist = await this._dataSource.migrationManager.checkTableExistence(
-				'migrations',
-				'public'
-			);
-			
-			// if (isTableExist) {
-			//	update ingot
-			// }
+			const isMigrationTableExist = await this._dataSource.migrationManager.checkTableExistence({
+				tableName: this._connectionData.migrationTable,
+				tableSchema: this._connectionData.migrationTableSchema
+			});
+
+			if (isMigrationTableExist) {
+				await this._dataSource.migrationManager.syncDatabaseIngot({
+					tableName: this._connectionData.migrationTable,
+					tableSchema: this._connectionData.migrationTableSchema,
+					databaseIngot
+				});
+			}
 
 			if (!isMigrationTableExist) {
-				await this._dataSource.migrationManager.createMigrationTable();
-				// add ingot to the table
+				await this._dataSource.migrationManager.createMigrationTable({
+					tableName: this._connectionData.migrationTable,
+					tableSchema: this._connectionData.migrationTableSchema
+				});
+
+				await this._dataSource.migrationManager.initCurrentDatabaseIngot({
+					tableName: this._connectionData.migrationTable,
+					tableSchema: this._connectionData.migrationTableSchema,
+					databaseIngot
+				});
 			}
 		} catch (error) {
 			console.error('error', error);

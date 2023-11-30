@@ -9,4 +9,6 @@ export type ConnectionData = PoolConfig & ConnectionOptions & {
 	models?: ModelInterface[];
 	entities?: string[];
 	migrations?: string[];
+	migrationTable?: string;
+	migrationTableSchema?: string;
 }

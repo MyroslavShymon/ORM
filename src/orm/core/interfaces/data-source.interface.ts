@@ -9,6 +9,7 @@ import {
 	TableAltererInterface as TableAltererInterfaceMysql,
 	TableBuilderInterface as TableBuilderInterfaceMysql
 } from '../../strategies/mysql';
+import { DatabaseIngotInterface } from '@core/interfaces/database-ingot.interface';
 
 export interface DataSourceInterface {
 	client;//TODO typing
@@ -25,9 +26,23 @@ export interface DataSourceInterface {
 
 	addColumn(tableName: string, parameters: AddColumnInterface<DataSourceInterface>): string;
 
-	createMigrationTable(): string;
+	createMigrationTable(tableName: string, tableSchema: string): string;
 
-	checkTableExistence(dataSource: DataSourceInterface, tableName: string, tableSchema?: string): Promise<boolean>;
+	checkTableExistence(dataSource: DataSourceInterface, tableName: string, tableSchema: string): Promise<boolean>;
+
+	initCurrentDatabaseIngot(
+		dataSource: DataSourceInterface,
+		tableName: string,
+		tableSchema: string,
+		databaseIngot: DatabaseIngotInterface
+	): Promise<void>;
+
+	syncDatabaseIngot(
+		dataSource: DataSourceInterface,
+		tableName: string,
+		tableSchema: string,
+		databaseIngot: DatabaseIngotInterface
+	): Promise<void>;
 
 	getCurrentTimestamp(): string;
 }

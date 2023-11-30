@@ -3,6 +3,7 @@ import {
 	AddColumnInterface,
 	ColumnInterface,
 	ComputedColumnInterface,
+	DatabaseIngotInterface,
 	DataSourceInterface,
 	TableInterface
 } from '@core/interfaces';
@@ -39,14 +40,32 @@ export class DataSourcePostgres implements DataSourceInterface {
 		return this.tableBuilder.createTable(table, columns, computedColumns);
 	}
 
-	createMigrationTable(): string {
-		return this.migrationService.createMigrationTable();
+	createMigrationTable(tableName: string, tableSchema: string): string {
+		return this.migrationService.createMigrationTable(tableName, tableSchema);
 	}
 
 	checkTableExistence(dataSource: DataSourceInterface, tableName: string, tableSchema?: string): Promise<boolean> {
 		return this.migrationService.checkTableExistence(dataSource, tableName, tableSchema);
 	}
 
+	initCurrentDatabaseIngot(
+		dataSource: DataSourceInterface,
+		tableName: string,
+		tableSchema: string,
+		databaseIngot: DatabaseIngotInterface
+	): Promise<void> {
+		return this.migrationService.initCurrentDatabaseIngot(dataSource, tableName, tableSchema, databaseIngot);
+	}
+
+	syncDatabaseIngot(
+		dataSource: DataSourceInterface,
+		tableName: string,
+		tableSchema: string,
+		databaseIngot: DatabaseIngotInterface
+	): Promise<void> {
+		return this.migrationService.syncDatabaseIngot(dataSource, tableName, tableSchema, databaseIngot);
+	}
+	
 	addColumn(tableName: string, parameters: AddColumnInterface<DataSourcePostgres>): string {
 		return this.tableAlterer.addColumn(tableName, parameters);
 	}
