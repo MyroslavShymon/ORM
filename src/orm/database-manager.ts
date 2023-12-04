@@ -4,7 +4,7 @@ import { ConnectionClient, ConnectionData } from '@core/types';
 import { DatabasesTypes } from '@core/enums';
 import { DataSourcePostgres } from '@strategies/postgres';
 import { DataSourceMySql } from '@strategies/mysql';
-import { DataSourceContextInterface, TableManipulationInterface } from '@context/interfaces';
+import { DataSourceContextInterface, TableCreatorInterface, TableManipulationInterface } from '@context/interfaces';
 
 class DatabaseManager implements DatabaseManagerInterface {
 	private _connectionData: ConnectionData;
@@ -29,8 +29,8 @@ class DatabaseManager implements DatabaseManagerInterface {
 
 			await this._dataSource.connectDatabase(this._connectionData);
 			if (this._connectionData.models) {
-				databaseIngot.tables = await this._dataSource.tableCreator.createTables(this._connectionData.models);
-				console.log(`Table created successfully`);
+				databaseIngot.tables = this._dataSource.tableCreator.createIngotOfTables(this._connectionData.models);
+				console.log('Database ingot', databaseIngot);
 			}
 
 			if (!this._connectionData.models) {
@@ -88,12 +88,12 @@ class DatabaseManager implements DatabaseManagerInterface {
 		return this._connectionData;
 	}
 
-	get dataSource(): DataSourceContextInterface {
-		return this._dataSource;
-	}
-
 	get tableManipulation(): TableManipulationInterface {
 		return this._dataSource.tableManipulation;
+	}
+
+	get tableCreator(): TableCreatorInterface {
+		return this._dataSource.tableCreator;
 	}
 }
 

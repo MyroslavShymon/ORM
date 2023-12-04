@@ -15,9 +15,9 @@ export class TableManipulation implements TableManipulationInterface {
 	};
 
 	addColumn = (tableName: string) => async (parameters: AddColumnInterface<DataSourceInterface>): Promise<Object> => {
-		const addColumnSql = this._dataSource.addColumn(tableName, parameters);
-		console.log('Add column Sql ', addColumnSql);
-		return this._dataSource.client.query(addColumnSql);
+		const addColumnQuery = this._dataSource.addColumn(tableName, parameters);
+		console.log('Add column Sql ', addColumnQuery);
+		return this._dataSource.client.query(addColumnQuery);
 	};
 
 	deleteColumn(parameters: {}) {

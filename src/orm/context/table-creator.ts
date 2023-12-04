@@ -11,7 +11,7 @@ export class TableCreator implements TableCreatorInterface {
 	}
 
 	// Функція для виконання асинхронного створення таблиць і складання даних з декораторів
-	async createTables(models: ModelInterface[]): Promise<TableIngotInterface<DataSourceInterface>[]> {
+	createIngotOfTables(models: ModelInterface[]): TableIngotInterface<DataSourceInterface>[] {
 		const tablesIngot: TableIngotInterface<DataSourceInterface>[] = [];
 
 		for (const model of models) {
@@ -47,12 +47,20 @@ export class TableCreator implements TableCreatorInterface {
 
 			tablesIngot.push({ ...table, columns, computedColumns });
 
-			const createTableQuery = this._dataSource.createTable(table, columns, computedColumns);
-
-			console.log('Sql of table create', createTableQuery);
-			await this._dataSource.client.query(createTableQuery);
+			// await this._dataSource.client.query(createTableQuery);
 		}
 
 		return tablesIngot;
+	}
+
+	generateCreateTableQuery(ingotsOfTables: TableIngotInterface<DataSourceInterface>[]): string {
+		let createTablesQuery = '';
+
+		for (const { columns, computedColumns, ...table } of ingotsOfTables) {
+			createTablesQuery += this._dataSource.createTable(table, columns, computedColumns) + '\n\n';
+		}
+
+		console.log('Sql of table create', createTablesQuery);
+		return createTablesQuery;
 	}
 }
