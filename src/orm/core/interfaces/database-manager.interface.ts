@@ -3,9 +3,11 @@ import { TableCreatorInterface, TableManipulationInterface } from '@context/inte
 
 export interface DatabaseManagerInterface {
 	connectionData: ConnectionData;
-	
+
 	tableManipulation: TableManipulationInterface;
 	tableCreator: TableCreatorInterface;
+
+	query(sql: string): Promise<Object>;
 
 	connection(): Promise<ConnectionClient>;
 }

@@ -33,6 +33,10 @@ class DataSourceContext implements DataSourceContextInterface {
 		return this._dataSource.client.query(getCurrentTimestampQuery);
 	}
 
+	async query(sql: string): Promise<Object> {
+		return await this._dataSource.client.query(sql);
+	}
+
 	get client(): DataSourceInterface extends DataSourcePostgres ? PoolClient : Connection {
 		return this._client;
 	}

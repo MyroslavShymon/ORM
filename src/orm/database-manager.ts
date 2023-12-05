@@ -76,6 +76,10 @@ class DatabaseManager implements DatabaseManagerInterface {
 		};
 	}
 
+	async query(sql: string): Promise<Object> {
+		return this._dataSource.query(sql);
+	}
+
 	set connectionData(connectionData: ConnectionData) {
 		this._connectionData = connectionData;
 	}

@@ -17,5 +17,7 @@ export interface DataSourceContextInterface {
 
 	connectDatabase(connectionData: ConnectionData): Promise<void>;
 
+	query(sql: string): Promise<Object>;
+
 	getCurrentTime(): Promise<Object>;
 }
