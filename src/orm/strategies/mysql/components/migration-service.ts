@@ -7,8 +7,7 @@ export class MigrationService implements MigrationServiceInterface {
 		return `CREATE TABLE ${tableSchema}.${tableName} (
 					id SERIAL PRIMARY KEY,
 					name VARCHAR(256),
-					up BOOLEAN,
-					down BOOLEAN,
+					is_up BOOLEAN DEFAULT FALSE,
 					ingot JSON NOT NULL,
 					created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 					updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -39,9 +38,9 @@ export class MigrationService implements MigrationServiceInterface {
 		databaseIngot: DatabaseIngotInterface
 	): Promise<void> {
 		const initCurrentDatabaseIngotQuery = `
-						INSERT INTO ${tableSchema}.${tableName} (name, up, down, ingot)
+						INSERT INTO ${tableSchema}.${tableName} (name, ingot)
 					  	VALUES 
-					    	('${constants.currentDatabaseIngot}', NULL, NULL, '${JSON.stringify(databaseIngot)}');
+					    	('${constants.currentDatabaseIngot}', '${JSON.stringify(databaseIngot)}');
 						`;
 
 		await dataSource.client.query(initCurrentDatabaseIngotQuery);

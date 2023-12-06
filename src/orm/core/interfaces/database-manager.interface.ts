@@ -9,5 +9,7 @@ export interface DatabaseManagerInterface {
 
 	query(sql: string): Promise<Object>;
 
-	connection(): Promise<ConnectionClient>;
+	connectDatabase(): Promise<void>;
+
+	createOrmConnection(): Promise<ConnectionClient>;
 }

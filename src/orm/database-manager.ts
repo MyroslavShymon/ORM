@@ -23,7 +23,11 @@ class DatabaseManager implements DatabaseManagerInterface {
 		}
 	}
 
-	async connection(): Promise<ConnectionClient> {
+	async connectDatabase(): Promise<void> {
+		await this._dataSource.connectDatabase(this._connectionData);
+	}
+
+	async createOrmConnection(): Promise<ConnectionClient> {
 		try {
 			const databaseIngot: DatabaseIngotInterface = {};
 
