@@ -5,6 +5,7 @@ import {
 	ComputedColumnInterface,
 	DatabaseIngotInterface,
 	DataSourceInterface,
+	DeleteColumnInterface,
 	TableInterface
 } from '@core/interfaces';
 import { ConnectionData } from '@core/types';
@@ -63,6 +64,10 @@ export class DataSourceMySql implements DataSourceInterface {
 
 	addColumn(tableName: string, parameters: AddColumnInterface<DataSourceMySql>): string {
 		return this.tableAlterer.addColumn(tableName, parameters);
+	}
+
+	deleteColumn(tableName: string, parameters: DeleteColumnInterface): string {
+		return this.tableAlterer.deleteColumn(tableName, parameters);
 	}
 
 	getCurrentTimestamp(): string {

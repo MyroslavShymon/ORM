@@ -1,6 +1,6 @@
 import { ConnectionData } from '@core/types';
 import { ColumnInterface, ComputedColumnInterface, TableInterface } from '@core/interfaces/decorators';
-import { AddColumnInterface } from '@core/interfaces/add-column.interface';
+import { AddColumnInterface } from '@core/interfaces/table-manipuldation/add-column.interface';
 import {
 	TableAltererInterface as TableAltererInterfacePostgres,
 	TableBuilderInterface as TableBuilderInterfacePostgres
@@ -10,6 +10,7 @@ import {
 	TableBuilderInterface as TableBuilderInterfaceMysql
 } from '../../strategies/mysql';
 import { DatabaseIngotInterface } from '@core/interfaces/database-ingot.interface';
+import { DeleteColumnInterface } from '@core/interfaces/table-manipuldation';
 
 export interface DataSourceInterface {
 	client;//TODO typing
@@ -25,6 +26,8 @@ export interface DataSourceInterface {
 	): string;
 
 	addColumn(tableName: string, parameters: AddColumnInterface<DataSourceInterface>): string;
+
+	deleteColumn(tableName: string, parameters: DeleteColumnInterface): string;
 
 	createMigrationTable(tableName: string, tableSchema: string): string;
 

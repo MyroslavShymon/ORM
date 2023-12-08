@@ -5,6 +5,7 @@ import {
 	ComputedColumnInterface,
 	DatabaseIngotInterface,
 	DataSourceInterface,
+	DeleteColumnInterface,
 	TableInterface
 } from '@core/interfaces';
 import { ConnectionData } from '@core/types';
@@ -65,9 +66,13 @@ export class DataSourcePostgres implements DataSourceInterface {
 	): Promise<void> {
 		return this.migrationService.syncDatabaseIngot(dataSource, tableName, tableSchema, databaseIngot);
 	}
-	
+
 	addColumn(tableName: string, parameters: AddColumnInterface<DataSourcePostgres>): string {
 		return this.tableAlterer.addColumn(tableName, parameters);
+	}
+
+	deleteColumn(tableName: string, parameters: DeleteColumnInterface): string {
+		return this.tableAlterer.deleteColumn(tableName, parameters);
 	}
 
 	getCurrentTimestamp(): string {

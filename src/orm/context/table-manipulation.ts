@@ -1,5 +1,5 @@
 import { AlterTableResultInterface, TableManipulationInterface } from '@context/interfaces';
-import { AddColumnInterface, DataSourceInterface } from '@core/interfaces';
+import { AddColumnInterface, DataSourceInterface, DeleteColumnInterface } from '@core/interfaces';
 
 export class TableManipulation implements TableManipulationInterface {
 	private _dataSource: DataSourceInterface;
@@ -20,9 +20,11 @@ export class TableManipulation implements TableManipulationInterface {
 		return this._dataSource.client.query(addColumnQuery);
 	};
 
-	deleteColumn(parameters: {}) {
-		return 'deleteColumn';
-	}
+	deleteColumn = (tableName: string) => async (parameters: DeleteColumnInterface): Promise<Object> => {
+		const deleteColumnQuery = this._dataSource.deleteColumn(tableName, parameters);
+		console.log('Delete column Sql ', deleteColumnQuery);
+		return this._dataSource.client.query(deleteColumnQuery);
+	};
 
 	changeDefaultValue() {
 		return 'changeDefaultValue';
