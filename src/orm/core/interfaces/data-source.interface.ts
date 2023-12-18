@@ -10,7 +10,17 @@ import {
 	TableBuilderInterface as TableBuilderInterfaceMysql
 } from '../../strategies/mysql';
 import { DatabaseIngotInterface } from '@core/interfaces/database-ingot.interface';
-import { DeleteColumnInterface } from '@core/interfaces/table-manipuldation';
+import {
+	AddDefaultValueInterface,
+	AddNotNullToColumnInterface,
+	AddUniqueToColumnInterface,
+	ChangeColumnDatatypeInterface,
+	DeleteColumnInterface,
+	DropDefaultValueInterface,
+	DropNotNullFromColumnInterface,
+	RenameColumnInterface,
+	RenameTableInterface
+} from '@core/interfaces/table-manipuldation';
 
 export interface DataSourceInterface {
 	client;//TODO typing
@@ -28,6 +38,22 @@ export interface DataSourceInterface {
 	addColumn(tableName: string, parameters: AddColumnInterface<DataSourceInterface>): string;
 
 	deleteColumn(tableName: string, parameters: DeleteColumnInterface): string;
+
+	addDefaultValue(tableName: string, parameters: AddDefaultValueInterface): string;
+
+	dropDefaultValue(tableName: string, parameters: DropDefaultValueInterface): string;
+
+	changeDataTypeOfColumn(tableName: string, parameters: ChangeColumnDatatypeInterface): string;
+
+	renameColumn(tableName: string, parameters: RenameColumnInterface): string;
+
+	renameTable(tableName: string, parameters: RenameTableInterface): string;
+
+	addNotNullToColumn(tableName: string, parameters: AddNotNullToColumnInterface): string;
+
+	dropNotNullFromColumn(tableName: string, parameters: DropNotNullFromColumnInterface): string;
+
+	addUniqueToColumn(tableName: string, parameters: AddUniqueToColumnInterface): string;
 
 	createMigrationTable(tableName: string, tableSchema: string): string;
 

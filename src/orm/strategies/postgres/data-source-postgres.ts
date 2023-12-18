@@ -1,11 +1,19 @@
 import { Pool, PoolClient } from 'pg';
 import {
 	AddColumnInterface,
+	AddDefaultValueInterface,
+	AddNotNullToColumnInterface,
+	AddUniqueToColumnInterface,
+	ChangeColumnDatatypeInterface,
 	ColumnInterface,
 	ComputedColumnInterface,
 	DatabaseIngotInterface,
 	DataSourceInterface,
 	DeleteColumnInterface,
+	DropDefaultValueInterface,
+	DropNotNullFromColumnInterface,
+	RenameColumnInterface,
+	RenameTableInterface,
 	TableInterface
 } from '@core/interfaces';
 import { ConnectionData } from '@core/types';
@@ -71,6 +79,38 @@ export class DataSourcePostgres implements DataSourceInterface {
 		return this.tableAlterer.addColumn(tableName, parameters);
 	}
 
+	addDefaultValue(tableName: string, parameters: AddDefaultValueInterface): string {
+		return this.tableAlterer.addDefaultValue(tableName, parameters);
+	}
+
+	dropDefaultValue(tableName: string, parameters: DropDefaultValueInterface): string {
+		return this.tableAlterer.dropDefaultValue(tableName, parameters);
+	}
+
+	changeDataTypeOfColumn(tableName: string, parameters: ChangeColumnDatatypeInterface): string {
+		return this.tableAlterer.changeDataTypeOfColumn(tableName, parameters);
+	}
+
+	renameColumn(tableName: string, parameters: RenameColumnInterface): string {
+		return this.tableAlterer.renameColumn(tableName, parameters);
+	}
+
+	renameTable(tableName: string, parameters: RenameTableInterface): string {
+		return this.tableAlterer.renameTable(tableName, parameters);
+	}
+
+	addNotNullToColumn(tableName: string, parameters: AddNotNullToColumnInterface): string {
+		return this.tableAlterer.addNotNullToColumn(tableName, parameters);
+	}
+
+	dropNotNullFromColumn(tableName: string, parameters: DropNotNullFromColumnInterface): string {
+		return this.tableAlterer.dropNotNullFromColumn(tableName, parameters);
+	}
+
+	addUniqueToColumn(tableName: string, parameters: AddUniqueToColumnInterface): string {
+		return this.tableAlterer.addUniqueToColumn(tableName, parameters);
+	}
+	
 	deleteColumn(tableName: string, parameters: DeleteColumnInterface): string {
 		return this.tableAlterer.deleteColumn(tableName, parameters);
 	}
