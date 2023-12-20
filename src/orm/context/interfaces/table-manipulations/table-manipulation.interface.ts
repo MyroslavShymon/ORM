@@ -12,21 +12,21 @@ import {
 } from '@core/interfaces';
 
 export interface TableManipulationInterface {
-	alterTable(tableName: string): AlterTableResultInterface<DataSourceInterface>;
+	alterTable(tableName: string, getQueryString: boolean): AlterTableResultInterface<DataSourceInterface>;
 
-	addColumn(tableName: string): (parameters: AddColumnInterface<DataSourceInterface>) => Promise<Object>;
+	addColumn(tableName: string, getQueryString: boolean): (parameters: AddColumnInterface<DataSourceInterface>) => Promise<Object>;
 
-	deleteColumn(tableName: string): (parameters: DeleteColumnInterface) => Promise<Object>;
+	deleteColumn(tableName: string, getQueryString: boolean): (parameters: DeleteColumnInterface) => Promise<Object>;
 
-	addDefaultValue(tableName: string): (parameters: AddDefaultValueInterface) => Promise<Object>;
+	addDefaultValue(tableName: string, getQueryString: boolean): (parameters: AddDefaultValueInterface) => Promise<Object>;
 
-	dropDefaultValue(tableName: string): (parameters: DropDefaultValueInterface) => Promise<Object>;
+	dropDefaultValue(tableName: string, getQueryString: boolean): (parameters: DropDefaultValueInterface) => Promise<Object>;
 
-	changeDataTypeOfColumn(tableName: string): (parameters: ChangeColumnDatatypeInterface) => Promise<Object>;
+	changeDataTypeOfColumn(tableName: string, getQueryString: boolean): (parameters: ChangeColumnDatatypeInterface) => Promise<Object>;
 
-	addNotNullToColumn(tableName: string): (parameters: AddNotNullToColumnInterface) => Promise<Object>;
+	addNotNullToColumn(tableName: string, getQueryString: boolean): (parameters: AddNotNullToColumnInterface) => Promise<Object>;
 
-	dropNotNullFromColumn(tableName: string): (parameters: DropNotNullFromColumnInterface) => Promise<Object>;
+	dropNotNullFromColumn(tableName: string, getQueryString: boolean): (parameters: DropNotNullFromColumnInterface) => Promise<Object>;
 
-	addUniqueToColumn(tableName: string): (parameters: AddUniqueToColumnInterface) => Promise<Object>;
+	addUniqueToColumn(tableName: string, getQueryString: boolean): (parameters: AddUniqueToColumnInterface) => Promise<Object>;
 }

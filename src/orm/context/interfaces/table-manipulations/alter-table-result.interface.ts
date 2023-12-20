@@ -12,14 +12,14 @@ import {
 } from '@core/interfaces';
 
 export interface AlterTableResultInterface<DB> {
-	addColumn: (parameters: AddColumnInterface<DB>) => Promise<Object>;
-	deleteColumn: (parameters: DeleteColumnInterface) => Promise<Object>;
-	addDefaultValue: (parameters: AddDefaultValueInterface) => Promise<Object>;
-	dropDefaultValue: (parameters: DropDefaultValueInterface) => Promise<Object>;
-	changeDataTypeOfColumn: (parameters: ChangeColumnDatatypeInterface) => Promise<Object>;
-	addNotNullToColumn: (parameters: AddNotNullToColumnInterface) => Promise<Object>;
-	dropNotNullFromColumn: (parameters: DropNotNullFromColumnInterface) => Promise<Object>;
-	addUniqueToColumn: (parameters: AddUniqueToColumnInterface) => Promise<Object>;
-	renameColumn: (parameters: RenameColumnInterface) => Promise<Object>;
-	renameTable: (parameters: RenameTableInterface) => Promise<Object>;
+	addColumn: (parameters: AddColumnInterface<DB>) => Promise<Object | string>;
+	deleteColumn: (parameters: DeleteColumnInterface) => Promise<Object | string>;
+	addDefaultValue: (parameters: AddDefaultValueInterface) => Promise<Object | string>;
+	dropDefaultValue: (parameters: DropDefaultValueInterface) => Promise<Object | string>;
+	changeDataTypeOfColumn: (parameters: ChangeColumnDatatypeInterface) => Promise<Object | string>;
+	addNotNullToColumn: (parameters: AddNotNullToColumnInterface) => Promise<Object | string>;
+	dropNotNullFromColumn: (parameters: DropNotNullFromColumnInterface) => Promise<Object | string>;
+	addUniqueToColumn: (parameters: AddUniqueToColumnInterface) => Promise<Object | string>;
+	renameColumn: (parameters: RenameColumnInterface) => Promise<Object | string>;
+	renameTable: (parameters: RenameTableInterface) => Promise<Object | string>;
 }
