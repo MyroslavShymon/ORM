@@ -21,6 +21,7 @@ import {
 	RenameColumnInterface,
 	RenameTableInterface
 } from '@core/interfaces/table-manipuldation';
+import { ForeignKeyInterface, PrimaryGeneratedColumnInterface } from '@decorators/postgres';
 
 export interface DataSourceInterface {
 	client;//TODO typing
@@ -32,7 +33,9 @@ export interface DataSourceInterface {
 	createTable(
 		table?: TableInterface<DataSourceInterface>,
 		columns?: ColumnInterface<DataSourceInterface>[],
-		computedColumns?: ComputedColumnInterface<DataSourceInterface>[]
+		computedColumns?: ComputedColumnInterface<DataSourceInterface>[],
+		foreignKeys?: ForeignKeyInterface[],
+		primaryColumn?: PrimaryGeneratedColumnInterface
 	): string;
 
 	addColumn(tableName: string, parameters: AddColumnInterface<DataSourceInterface>): string;

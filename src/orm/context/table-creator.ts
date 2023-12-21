@@ -1,6 +1,11 @@
 import { TableCreatorInterface } from '@context/interfaces';
 import { DataSourceInterface, ModelInterface, TableInterface } from '@core/interfaces';
-import { ColumnMetadataInterface, ComputedColumnMetadataInterface } from '@decorators/postgres';
+import {
+	ColumnMetadataInterface,
+	ComputedColumnMetadataInterface,
+	ForeignKeyInterface,
+	PrimaryGeneratedColumnInterface
+} from '@decorators/postgres';
 import { TableIngotInterface } from '@core/interfaces/table-ingot.interface';
 
 export class TableCreator implements TableCreatorInterface {
@@ -21,6 +26,11 @@ export class TableCreator implements TableCreatorInterface {
 				= Reflect.getMetadata('columns', model.prototype);
 			const metadataComputedColumns: ComputedColumnMetadataInterface[]
 				= Reflect.getMetadata('computed-columns', model.prototype);
+			const foreignKeys: ForeignKeyInterface[]
+				= Reflect.getMetadata('foreign-keys', model.prototype);
+			const primaryColumn: PrimaryGeneratedColumnInterface
+				= Reflect.getMetadata('primary-column', model.prototype);
+			console.log('primaryColumn', primaryColumn);
 
 			let columns;
 			if (metadataColumns) {
@@ -45,7 +55,7 @@ export class TableCreator implements TableCreatorInterface {
 			// 	computedColumns: undefined
 			// }
 
-			tablesIngot.push({ ...table, columns, computedColumns });
+			tablesIngot.push({ ...table, columns, computedColumns, foreignKeys, primaryColumn });
 
 			// await this._dataSource.client.query(createTableQuery);
 		}
@@ -56,8 +66,8 @@ export class TableCreator implements TableCreatorInterface {
 	generateCreateTableQuery(ingotsOfTables: TableIngotInterface<DataSourceInterface>[]): string {
 		let createTablesQuery = '';
 
-		for (const { columns, computedColumns, ...table } of ingotsOfTables) {
-			createTablesQuery += this._dataSource.createTable(table, columns, computedColumns) + '\n\n';
+		for (const { columns, computedColumns, foreignKeys, primaryColumn, ...table } of ingotsOfTables) {
+			createTablesQuery += this._dataSource.createTable(table, columns, computedColumns, foreignKeys, primaryColumn) + '\n\n';
 		}
 
 		console.log('Sql of table create', createTablesQuery);

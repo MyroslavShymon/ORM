@@ -23,6 +23,7 @@ import {
 	TableBuilderInterface
 } from '@strategies/postgres/interfaces';
 import { MigrationService, TableAlterer, TableBuilder } from '@strategies/postgres/components';
+import { ForeignKeyInterface, PrimaryGeneratedColumnInterface } from '@decorators/postgres';
 
 export class DataSourcePostgres implements DataSourceInterface {
 	client: PoolClient;
@@ -44,9 +45,11 @@ export class DataSourcePostgres implements DataSourceInterface {
 	createTable(
 		table?: TableInterface<DataSourcePostgres>,
 		columns?: ColumnInterface<DataSourcePostgres>[],
-		computedColumns?: ComputedColumnInterface<DataSourcePostgres>[]
+		computedColumns?: ComputedColumnInterface<DataSourcePostgres>[],
+		foreignKeys?: ForeignKeyInterface[],
+		primaryColumn?: PrimaryGeneratedColumnInterface
 	): string {
-		return this.tableBuilder.createTable(table, columns, computedColumns);
+		return this.tableBuilder.createTable(table, columns, computedColumns, foreignKeys, primaryColumn);
 	}
 
 	createMigrationTable(tableName: string, tableSchema: string): string {
@@ -110,7 +113,7 @@ export class DataSourcePostgres implements DataSourceInterface {
 	addUniqueToColumn(tableName: string, parameters: AddUniqueToColumnInterface): string {
 		return this.tableAlterer.addUniqueToColumn(tableName, parameters);
 	}
-	
+
 	deleteColumn(tableName: string, parameters: DeleteColumnInterface): string {
 		return this.tableAlterer.deleteColumn(tableName, parameters);
 	}

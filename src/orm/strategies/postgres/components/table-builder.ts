@@ -1,18 +1,27 @@
 import { DataSourcePostgres, TableBuilderInterface } from '@strategies/postgres';
 import { ColumnInterface, ComputedColumnInterface, TableInterface } from '@core/interfaces';
-import { TableOptionsPostgresqlInterface } from '@decorators/postgres';
+import {
+	ForeignKeyInterface,
+	PrimaryGeneratedColumnInterface,
+	TableOptionsPostgresqlInterface
+} from '@decorators/postgres';
 import { isArrayArrayOfArrays } from '@utils/index';
 import { PostgresqlDataTypes } from '@core/enums';
 
 export class TableBuilder implements TableBuilderInterface {
 	createTable(
-		table: TableInterface<DataSourcePostgres>,
-		columns: ColumnInterface<DataSourcePostgres>[],
-		computedColumns: ComputedColumnInterface<DataSourcePostgres>[]
+		table?: TableInterface<DataSourcePostgres>,
+		columns?: ColumnInterface<DataSourcePostgres>[],
+		computedColumns?: ComputedColumnInterface<DataSourcePostgres>[],
+		foreignKeys?: ForeignKeyInterface[],
+		primaryColumn?: PrimaryGeneratedColumnInterface
 	): string {
 		let createTableQuery;
-		createTableQuery = `\n\tCREATE TABLE IF NOT EXISTS "${table.name}" (
-                  id SERIAL PRIMARY KEY,\n\t\t`;
+		createTableQuery = `\n\tCREATE TABLE IF NOT EXISTS "${table.name}" (\n`;
+
+		if (primaryColumn) {
+			createTableQuery += this._handlePrimaryGeneratedColumns(primaryColumn);
+		}
 
 		if (columns) {
 			createTableQuery += this._handleColumns(columns);
@@ -22,7 +31,12 @@ export class TableBuilder implements TableBuilderInterface {
 			createTableQuery += this._handleComputedColumns(computedColumns);
 		}
 
+		if (foreignKeys) {
+			createTableQuery += this._handleForeignKeys(foreignKeys);
+		}
+
 		if (table.options) {
+			console.log('table options', table.options.primaryKeys);
 			createTableQuery += this._handleOptionsOfTable(table.options);
 		}
 
@@ -93,7 +107,26 @@ export class TableBuilder implements TableBuilderInterface {
 		return `${formattedComputedColumns.length > 0 ? `, \n\t\t${formattedComputedColumns.join(', \n\t\t')}` : ''}`;
 	}
 
-	private _handleOptionsOfTable({ unique, checkConstraint }: TableOptionsPostgresqlInterface): string {
+	private _handleForeignKeys(foreignKeys: ForeignKeyInterface[]): string {
+		let formattedForeignKeys = [];
+
+		for (const foreignKey of foreignKeys) {
+			const { key, table, columnName } = foreignKey;
+
+			formattedForeignKeys.push(`
+		"${columnName}" INT,
+		FOREIGN KEY (${columnName}) REFERENCES ${table}(${key})`);
+
+		}
+
+		return `${formattedForeignKeys.length > 0 ? `, \n${formattedForeignKeys.join(',')}` : ''}`.trim();
+	}
+
+	private _handlePrimaryGeneratedColumns(primaryColumn: PrimaryGeneratedColumnInterface) {
+		return `\t\t${primaryColumn.columnName || 'id'} ${primaryColumn.isBigSerial ? 'BIGSERIAL' : 'SERIAL'} PRIMARY KEY,\n\t\t`;
+	}
+
+	private _handleOptionsOfTable({ unique, checkConstraint, primaryKeys }: TableOptionsPostgresqlInterface): string {
 		const tableOptions = [];
 
 		if (checkConstraint) {
@@ -111,7 +144,6 @@ export class TableBuilder implements TableBuilderInterface {
 
 			tableOptions.push(formattedCheckConstraint);
 		}
-
 
 		if (unique) {
 			let formattedUniqueColumns;
@@ -133,6 +165,10 @@ export class TableBuilder implements TableBuilderInterface {
 			}
 
 			tableOptions.push(formattedUniqueColumns);
+		}
+
+		if (primaryKeys) {
+			tableOptions.push(`PRIMARY KEY (${primaryKeys.join(', ')})`);
 		}
 
 		return `${tableOptions.length > 0 ? `,\n\n\t\t${tableOptions.join(', \n\t\t')}` : ''}`;
