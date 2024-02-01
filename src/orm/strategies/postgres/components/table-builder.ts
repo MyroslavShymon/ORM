@@ -68,7 +68,7 @@ export class TableBuilder implements TableBuilderInterface {
 			}
 
 			//Працюємо з NULL || NOT NULL
-			const isNullableString = options.nullable ? 'NULL' : 'NOT NULL';
+			const isNullableString = options.nullable ? '' : 'NOT NULL';
 			columnAttributes.push(isNullableString);
 
 			// constraint check
@@ -114,8 +114,7 @@ export class TableBuilder implements TableBuilderInterface {
 			const { key, table, columnName } = foreignKey;
 
 			formattedForeignKeys.push(`
-		"${columnName}" INT,
-		FOREIGN KEY (${columnName}) REFERENCES ${table}(${key})`);
+		FOREIGN KEY ("${columnName}") REFERENCES ${table}(${key})`);
 
 		}
 

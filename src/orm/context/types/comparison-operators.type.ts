@@ -1,0 +1,1 @@
+export type ComparisonOperators = 'gt' | 'lt' | 'gte' | 'lte' | 'eq' | 'neq' | 'in' | 'exists';

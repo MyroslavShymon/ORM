@@ -4,7 +4,12 @@ import { ConnectionClient, ConnectionData } from '@core/types';
 import { DatabasesTypes } from '@core/enums';
 import { DataSourcePostgres } from '@strategies/postgres';
 import { DataSourceMySql } from '@strategies/mysql';
-import { DataSourceContextInterface, TableCreatorInterface, TableManipulationInterface } from '@context/interfaces';
+import {
+	DataSourceContextInterface,
+	QueryBuilderInterface,
+	TableCreatorInterface,
+	TableManipulationInterface
+} from '@context/interfaces';
 
 class DatabaseManager implements DatabaseManagerInterface {
 	private _connectionData: ConnectionData;
@@ -102,6 +107,10 @@ class DatabaseManager implements DatabaseManagerInterface {
 
 	get tableCreator(): TableCreatorInterface {
 		return this._dataSource.tableCreator;
+	}
+
+	queryBuilder<T>(): QueryBuilderInterface<T> {
+		return this._dataSource.queryBuilder<T>();
 	}
 }
 

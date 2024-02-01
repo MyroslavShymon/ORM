@@ -6,12 +6,15 @@ import { TableManipulationInterface } from '@context/interfaces/table-manipulati
 import { TableCreatorInterface } from '@context/interfaces/table-creator/table-creator.interface';
 import { ConnectionData } from '@core/types';
 import { MigrationManagerInterface } from '@context/interfaces/migration-manager';
+import { QueryBuilderInterface } from '@context/interfaces/query-builder';
 
 export interface DataSourceContextInterface {
 	client: DataSourceInterface extends DataSourcePostgres ? PoolClient : Connection;
 	tableManipulation: TableManipulationInterface;
 	tableCreator: TableCreatorInterface;
 	migrationManager: MigrationManagerInterface;
+
+	queryBuilder<T>(): QueryBuilderInterface<T>;
 
 	setDatabase(dataSource: DataSourceInterface): void;
 

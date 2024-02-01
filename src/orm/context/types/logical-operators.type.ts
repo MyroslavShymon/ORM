@@ -1,0 +1,1 @@
+export type LogicalOperators = 'and' | 'or';

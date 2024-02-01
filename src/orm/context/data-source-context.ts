@@ -3,6 +3,7 @@ import { Connection } from 'mysql2/promise';
 import {
 	DataSourceContextInterface,
 	MigrationManagerInterface,
+	QueryBuilderInterface,
 	TableCreatorInterface,
 	TableManipulationInterface
 } from '@context/interfaces';
@@ -12,6 +13,7 @@ import { DataSourceInterface } from '@core/interfaces';
 import { ConnectionData } from '@core/types';
 import { DataSourcePostgres } from '@strategies/postgres';
 import { MigrationManager } from '@context/migration-manager';
+import { QueryBuilder } from '@context/query-builder';
 
 class DataSourceContext implements DataSourceContextInterface {
 	private _dataSource: DataSourceInterface;
@@ -35,6 +37,10 @@ class DataSourceContext implements DataSourceContextInterface {
 
 	async query(sql: string): Promise<Object> {
 		return await this._dataSource.client.query(sql);
+	}
+
+	queryBuilder<T>(): QueryBuilderInterface<T> {
+		return new QueryBuilder<T>(this.query);
 	}
 
 	get client(): DataSourceInterface extends DataSourcePostgres ? PoolClient : Connection {
