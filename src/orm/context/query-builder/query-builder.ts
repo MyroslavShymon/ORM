@@ -1,11 +1,18 @@
-import { QueryBuilderInterface } from '@context/interfaces';
+import { InsertQueryBuilderInterface, QueryBuilderInterface } from '@context/interfaces';
 import { Condition, LogicalOperators } from '@context/types';
+import { SelectQueryBuilderInterface } from '@context/interfaces/query-builder/select-query-builder.interface';
+import { SelectQueryBuilder } from '@context/query-builder/select-query-builder';
+import { InsertQueryBuilder } from '@context/query-builder/insert-query-builder';
 
 export class QueryBuilder<T> implements QueryBuilderInterface<T> {
-	private query: string;
+	query: string;
+
 	private readonly queryMethod: (sql: string) => Promise<Object>;
 
-	constructor(methodForQuery: (sql: string) => Promise<Object>) {
+	private selectQueryBuilder: SelectQueryBuilderInterface;
+	private insertQueryBuilder: InsertQueryBuilderInterface;
+
+	constructor(methodForQuery?: (sql: string) => Promise<Object>) {
 		this.queryMethod = methodForQuery;
 		this.query = '';
 	}
@@ -16,17 +23,17 @@ export class QueryBuilder<T> implements QueryBuilderInterface<T> {
 	}
 
 	select(columns: string[] = ['*']): QueryBuilderInterface<T> {
-		this.query += `SELECT ${columns.join(', ')} ${columns.length > 2 ? '\n' : ''}`;
-		return this;
-	}
-
-	into(name: string): QueryBuilderInterface<T> {
-		this.query += ` INTO ${name} \n`;
+		this.selectQueryBuilder = new SelectQueryBuilder<T>(this, columns);
 		return this;
 	}
 
 	sum(column: string): QueryBuilderInterface<T> {
-		this.query += `SUM(${column})`;
+		this.selectQueryBuilder.summing(column);
+		return this;
+	}
+
+	into(name: string): QueryBuilderInterface<T> {
+		this.insertQueryBuilder.setInto(name);
 		return this;
 	}
 
@@ -158,11 +165,7 @@ export class QueryBuilder<T> implements QueryBuilderInterface<T> {
 	}
 
 	insert(values: Partial<T>, tableName: string): QueryBuilderInterface<T> {
-		const columns = Object.keys(values);
-		const columnNames = columns.join(', ');
-		const columnValues = columns.map(column => `'${values[column]}'`).join(', ');
-
-		this.query += `INSERT INTO ${tableName} (${columnNames}) VALUES (${columnValues}) \n`;
+		this.insertQueryBuilder = new InsertQueryBuilder<T>(this, values, tableName);
 		return this;
 	}
 

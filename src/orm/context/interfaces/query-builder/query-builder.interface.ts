@@ -1,6 +1,8 @@
 import { Condition, LogicalOperators } from '@context/types';
 
 export interface QueryBuilderInterface<T> {
+	query: string;
+
 	createView(name: string): QueryBuilderInterface<T>;
 
 	select(columns?: string[]): QueryBuilderInterface<T>;

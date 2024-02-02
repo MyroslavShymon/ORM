@@ -39,12 +39,12 @@ class DataSourceContext implements DataSourceContextInterface {
 		return await this._dataSource.client.query(sql);
 	}
 
-	queryBuilder<T>(): QueryBuilderInterface<T> {
-		return new QueryBuilder<T>(this.query);
-	}
-
 	get client(): DataSourceInterface extends DataSourcePostgres ? PoolClient : Connection {
 		return this._client;
+	}
+
+	queryBuilder<T>(): QueryBuilderInterface<T> {
+		return new QueryBuilder<T>(this.query);
 	}
 
 	get tableManipulation(): TableManipulationInterface {
