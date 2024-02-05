@@ -1,34 +1,86 @@
-import { InsertQueryBuilderInterface, QueryBuilderInterface } from '@context/interfaces';
-import { Condition, LogicalOperators } from '@context/types';
+import {
+	InsertQueryBuilderInterface,
+	QueryBuilderInterface,
+	QueryStructureBuilderInterface
+} from '@context/interfaces';
+import { Condition, LogicalOperators, OrderOperators } from '@context/types';
 import { SelectQueryBuilderInterface } from '@context/interfaces/query-builder/select-query-builder.interface';
 import { SelectQueryBuilder } from '@context/query-builder/select-query-builder';
 import { InsertQueryBuilder } from '@context/query-builder/insert-query-builder';
+import { AggregateQueryBuilderInterface } from '@context/interfaces/query-builder/aggregate-query-builder.interface';
+import { AggregateQueryBuilder } from '@context/query-builder/aggregate-query-builder';
+import { DeleteQueryBuilder } from '@context/query-builder/delete-query-builder';
+import { DeleteQueryBuilderInterface } from '@context/interfaces/query-builder/delete-query-builder.interface';
+import { UpdateQueryBuilderInterface } from '@context/interfaces/query-builder/update-query-builder.interface';
+import { UpdateQueryBuilder } from '@context/query-builder/update-query-builder';
+import { QueryStructureBuilder } from '@context/query-builder/query-structure-builder';
 
 export class QueryBuilder<T> implements QueryBuilderInterface<T> {
 	query: string;
 
 	private readonly queryMethod: (sql: string) => Promise<Object>;
 
-	private selectQueryBuilder: SelectQueryBuilderInterface;
-	private insertQueryBuilder: InsertQueryBuilderInterface;
+	private selectQueryBuilder: SelectQueryBuilderInterface<T> = new SelectQueryBuilder<T>(this);
+	private insertQueryBuilder: InsertQueryBuilderInterface<T> = new InsertQueryBuilder<T>(this);
+	private updateQueryBuilder: UpdateQueryBuilderInterface<T> = new UpdateQueryBuilder<T>(this);
+	private deleteQueryBuilder: DeleteQueryBuilderInterface = new DeleteQueryBuilder<T>(this);
+	private aggregateQueryBuilder: AggregateQueryBuilderInterface = new AggregateQueryBuilder<T>(this);
+	private queryStructureBuilder: QueryStructureBuilderInterface<T> = new QueryStructureBuilder<T>(this);
 
 	constructor(methodForQuery?: (sql: string) => Promise<Object>) {
 		this.queryMethod = methodForQuery;
 		this.query = '';
 	}
 
-	createView(name: string): QueryBuilderInterface<T> {
-		this.query = `CREATE VIEW ${name} AS \n` + this.query;
-		return this;
-	}
-
+	//Select query
 	select(columns: string[] = ['*']): QueryBuilderInterface<T> {
-		this.selectQueryBuilder = new SelectQueryBuilder<T>(this, columns);
+		this.selectQueryBuilder.select(columns);
 		return this;
 	}
 
-	sum(column: string): QueryBuilderInterface<T> {
-		this.selectQueryBuilder.summing(column);
+	orderBy(column: string, order: OrderOperators = 'ASC'): QueryBuilderInterface<T> {
+		this.selectQueryBuilder.orderBy(column, order);
+		return this;
+	}
+
+	as(alias: string): QueryBuilderInterface<T> {
+		this.selectQueryBuilder.as(alias);
+		return this;
+	}
+
+	limit(count: number): QueryBuilderInterface<T> {
+		this.selectQueryBuilder.limit(count);
+		return this;
+	}
+
+	innerJoin(table: string, condition: string): QueryBuilderInterface<T> {
+		this.selectQueryBuilder.innerJoin(table, condition);
+		return this;
+	}
+
+	leftJoin(table: string, condition: string): QueryBuilderInterface<T> {
+		this.selectQueryBuilder.leftJoin(table, condition);
+		return this;
+	}
+
+	rightJoin(table: string, condition: string): QueryBuilderInterface<T> {
+		this.selectQueryBuilder.rightJoin(table, condition);
+		return this;
+	}
+
+	where(params: { conditions?: Condition<T>, logicalOperator?: LogicalOperators, exists?: string } | string): QueryBuilderInterface<T> {
+		this.selectQueryBuilder.where(params);
+		return this;
+	}
+
+	//Insert query
+	insert(values: Partial<T>, tableName: string): QueryBuilderInterface<T> {
+		this.insertQueryBuilder.insert(values, tableName);
+		return this;
+	}
+
+	insertMany(values: Partial<T>[], tableName: string): QueryBuilderInterface<T> {
+		this.insertQueryBuilder.insertMany(values, tableName);
 		return this;
 	}
 
@@ -37,169 +89,61 @@ export class QueryBuilder<T> implements QueryBuilderInterface<T> {
 		return this;
 	}
 
+	//Update query
+	update(values: Partial<T>, tableName: string): QueryBuilderInterface<T> {
+		this.updateQueryBuilder.update(values, tableName);
+		return this;
+	}
+
+	//Delete query
+	delete(tableName: string): QueryBuilderInterface<T> {
+		this.deleteQueryBuilder.deleting(tableName);
+		return this;
+	}
+
+	//Aggregate functions
+	sum(column: string): QueryBuilderInterface<T> {
+		this.aggregateQueryBuilder.summing(column);
+		return this;
+	}
+
 	count(column: string): QueryBuilderInterface<T> {
-		this.query += `COUNT(${column})`;
+		this.aggregateQueryBuilder.counting(column);
 		return this;
 	}
 
 	having(condition: string): QueryBuilderInterface<T> {
-		this.query += `HAVING ${condition} \n`;
-		return this;
-	}
-
-	as(alias: string): QueryBuilderInterface<T> {
-		this.query += ` AS ${alias}`;
+		this.aggregateQueryBuilder.having(condition);
 		return this;
 	}
 
 	groupBy(columns: string[]): QueryBuilderInterface<T> {
-		this.query += `GROUP BY ${columns.join(', ')} \n`;
+		this.aggregateQueryBuilder.groupBy(columns);
 		return this;
 	}
 
-	limit(count: number): QueryBuilderInterface<T> {
-		this.query += `LIMIT ${count} \n`;
-		return this;
-	}
-
-
+	//Query structure builder
 	from(table: string): QueryBuilderInterface<T> {
-		this.query += `FROM ${table} \n`;
-		return this;
-	}
-
-	where(params: { conditions?: Condition<T>, logicalOperator?: LogicalOperators, exists?: string } | string): QueryBuilderInterface<T> {
-		if (typeof params === 'string') {
-			this.query += `WHERE ${params} \n`;
-			return this;
-		}
-
-		if (params.exists) {
-			this.query += `WHERE EXISTS (${params.exists}) \n`;
-			return this;
-		}
-
-		const conditionsArray: string[] = [];
-
-		if (params.conditions) {
-			const columns = Object.keys(params.conditions);
-
-			for (const column of columns) {
-				const operators = params.conditions[column];
-
-				for (const operator in operators) {
-					const value = operators[operator];
-
-					switch (operator) {
-						case 'in':
-							conditionsArray.push(`${column} IN (${typeof value === 'string' ? value : value.join(', ')})`);
-							break;
-						case 'eq':
-							conditionsArray.push(`${column} = ${this._handleValue(value, operators.isString)}`);
-							break;
-						case 'neq':
-							conditionsArray.push(`${column} != ${this._handleValue(value, operators.isString)}`);
-							break;
-						case 'gt':
-							conditionsArray.push(`${column} > ${this._handleValue(value, operators.isString)}`);
-							break;
-						case 'gte':
-							conditionsArray.push(`${column} >= ${this._handleValue(value, operators.isString)}`);
-							break;
-						case 'lt':
-							conditionsArray.push(`${column} < ${this._handleValue(value, operators.isString)}`);
-							break;
-						case 'lte':
-							conditionsArray.push(`${column} <= ${this._handleValue(value, operators.isString)}`);
-							break;
-						case 'isString':
-							break;
-						default:
-							conditionsArray.push(`${column} ${operator} ${this._handleValue(value, operators.isString)}`);
-							break;
-					}
-				}
-			}
-		}
-
-		const logicalOperatorString = params.logicalOperator === 'or' ? ' OR ' : ' AND ';
-		this.query += conditionsArray.length > 0 ? `WHERE ${conditionsArray.join(logicalOperatorString)} \n` : '';
-		return this;
-	}
-
-	private _handleValue(value: string, isString: boolean = true) {
-		if (isString === false) {
-			return value;
-		}
-		return value === 'NULL' || value === 'null' ? 'NULL' : `'${value}'`;
-	}
-
-	leftJoin(table: string, condition: string): QueryBuilderInterface<T> {
-		this.query += `LEFT JOIN ${table} ON ${condition} \n`;
-		return this;
-	}
-
-	rightJoin(table: string, condition: string): QueryBuilderInterface<T> {
-		this.query += `RIGHT JOIN ${table} ON ${condition} \n`;
-		return this;
-	}
-
-	innerJoin(table: string, condition: string): QueryBuilderInterface<T> {
-		this.query += `INNER JOIN ${table} ON ${condition} \n`;
+		this.queryStructureBuilder.from(table);
 		return this;
 	}
 
 	union(queryBuilder: QueryBuilderInterface<T>): QueryBuilderInterface<T> {
-		this.query += `UNION \n ${queryBuilder.build()} \n`;
+		this.queryStructureBuilder.union(queryBuilder);
 		return this;
 	}
 
 	unionAll(queryBuilder: QueryBuilderInterface<T>): QueryBuilderInterface<T> {
-		this.query += `UNION ALL \n ${queryBuilder.build()} \n`;
+		this.queryStructureBuilder.unionAll(queryBuilder);
 		return this;
 	}
 
-	orderBy(column: string, order: 'ASC' | 'DESC' = 'ASC'): QueryBuilderInterface<T> {
-		this.query += `ORDER BY ${column} ${order} \n`;
+	createView(name: string): QueryBuilderInterface<T> {
+		this.queryStructureBuilder.createView(name);
 		return this;
 	}
 
-	insert(values: Partial<T>, tableName: string): QueryBuilderInterface<T> {
-		this.insertQueryBuilder = new InsertQueryBuilder<T>(this, values, tableName);
-		return this;
-	}
-
-	insertMany(values: Partial<T>[], tableName: string): QueryBuilderInterface<T> {
-		if (!values || values.length === 0) {
-			throw new Error('Масив значень для вставки порожній або неправильний.');
-		}
-
-		const columns = Object.keys(values[0]);
-		const columnNames = columns.join(', ');
-
-		const rows = values.map((row) => {
-			const columnValues = columns.map(column => `'${row[column]}'`).join(', ');
-			return `(${columnValues})`;
-		});
-
-		this.query += `INSERT INTO ${tableName} (${columnNames}) VALUES ${rows.join(', ')} \n`;
-		return this;
-	}
-
-	update(values: Partial<T>, tableName: string): QueryBuilderInterface<T> {
-		const setClause = Object.entries(values)
-			.map(([column, value]) => `${column} = '${value}'`)
-			.join(', ');
-
-		this.query += `UPDATE ${tableName} SET ${setClause} \n`;
-		return this;
-	}
-
-	delete(tableName: string): QueryBuilderInterface<T> {
-		this.query += `DELETE FROM ${tableName} \n`;
-		return this;
-	}
-
+	//Building
 	build(): string {
 		return this.query.trim() + ';';
 	}
@@ -211,6 +155,7 @@ export class QueryBuilder<T> implements QueryBuilderInterface<T> {
 	execute(): any {
 		return this.queryMethod(this.build());
 	}
+
 }
 
 
