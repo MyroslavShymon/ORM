@@ -44,7 +44,7 @@ class DataSourceContext implements DataSourceContextInterface {
 	}
 
 	queryBuilder<T>(): QueryBuilderInterface<T> {
-		return new QueryBuilder<T>(this.query);
+		return new QueryBuilder<T>(this._dataSource, this.query);
 	}
 
 	get tableManipulation(): TableManipulationInterface {

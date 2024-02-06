@@ -8,7 +8,7 @@ import { ComparisonOperators } from '@context/types/comparison-operators.type';
 // 	[key in LogicalOperators]?: Condition<T> | Array<Condition<T>>;
 // };
 // };
-export type Condition<T> = {
+export type Condition<T = unknown> = {
 	[K in keyof T]?: {
 		[key in ComparisonOperators]?: string | number;
 	}

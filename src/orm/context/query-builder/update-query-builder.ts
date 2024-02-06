@@ -1,11 +1,14 @@
 import { UpdateQueryBuilderInterface } from '@context/interfaces/query-builder/update-query-builder.interface';
 import { QueryBuilderInterface } from '@context/interfaces';
+import { DataSourceInterface } from '@core/interfaces';
 
 export class UpdateQueryBuilder<T> implements UpdateQueryBuilderInterface<T> {
-	private queryBuilder: QueryBuilderInterface<T>;
+	private _queryBuilder: QueryBuilderInterface<T>;
+	private _dataSource: DataSourceInterface;
 
-	constructor(queryBuilder: QueryBuilderInterface<T>) {
-		this.queryBuilder = queryBuilder;
+	constructor(queryBuilder: QueryBuilderInterface<T>, dataSource: DataSourceInterface) {
+		this._queryBuilder = queryBuilder;
+		this._dataSource = dataSource;
 	}
 
 	update(values: Partial<T>, tableName: string): void {
@@ -13,6 +16,6 @@ export class UpdateQueryBuilder<T> implements UpdateQueryBuilderInterface<T> {
 			.map(([column, value]) => `${column} = '${value}'`)
 			.join(', ');
 
-		this.queryBuilder.query += `UPDATE ${tableName} SET ${setClause} \n`;
+		this._queryBuilder.query += `UPDATE ${tableName} SET ${setClause} \n`;
 	}
 }

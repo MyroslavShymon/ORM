@@ -1,27 +1,30 @@
 import { AggregateQueryBuilderInterface } from '@context/interfaces/query-builder/aggregate-query-builder.interface';
 import { QueryBuilderInterface } from '@context/interfaces';
+import { DataSourceInterface } from '@core/interfaces';
 
 export class AggregateQueryBuilder<T> implements AggregateQueryBuilderInterface {
-	private queryBuilder: QueryBuilderInterface<T>;
+	private _queryBuilder: QueryBuilderInterface<T>;
+	private _dataSource: DataSourceInterface;
 
-	constructor(queryBuilder: QueryBuilderInterface<T>) {
-		this.queryBuilder = queryBuilder;
+	constructor(queryBuilder: QueryBuilderInterface<T>, dataSource: DataSourceInterface) {
+		this._queryBuilder = queryBuilder;
+		this._dataSource = dataSource;
 	}
 
 	summing(column: string): void {
-		this.queryBuilder.query += `SUM(${column})`;
+		this._queryBuilder.query += this._dataSource.summing(column);
 	}
 
 	counting(column: string): void {
-		this.queryBuilder.query += `COUNT(${column})`;
+		this._queryBuilder.query += this._dataSource.counting(column);
 	}
 
 	having(condition: string): void {
-		this.queryBuilder.query += `HAVING ${condition} \n`;
+		this._queryBuilder.query += this._dataSource.having(condition);
 	}
 
 	groupBy(columns: string[]): void {
-		this.queryBuilder.query += `GROUP BY ${columns.join(', ')} \n`;
+		this._queryBuilder.query += this._dataSource.groupBy(columns);
 	}
 
 }

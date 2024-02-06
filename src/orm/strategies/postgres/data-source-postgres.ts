@@ -18,23 +18,38 @@ import {
 } from '@core/interfaces';
 import { ConnectionData } from '@core/types';
 import {
+	InsertQueriesInterface,
 	MigrationServiceInterface,
+	SelectQueriesInterface,
 	TableAltererInterface,
 	TableBuilderInterface
 } from '@strategies/postgres/interfaces';
-import { MigrationService, TableAlterer, TableBuilder } from '@strategies/postgres/components';
+import {
+	InsertQueries,
+	MigrationService,
+	SelectQueries,
+	TableAlterer,
+	TableBuilder
+} from '@strategies/postgres/components';
 import { ForeignKeyInterface, PrimaryGeneratedColumnInterface } from '@decorators/postgres';
+import { BaseQueries } from '@strategies/base-queries';
+import { Condition, LogicalOperators } from '@context/types';
 
-export class DataSourcePostgres implements DataSourceInterface {
+export class DataSourcePostgres extends BaseQueries implements DataSourceInterface {
 	client: PoolClient;
 	tableBuilder: TableBuilderInterface;
 	tableAlterer: TableAltererInterface;
 	migrationService: MigrationServiceInterface;
+	selectQueries: SelectQueriesInterface;
+	insertQueries: InsertQueriesInterface;
 
 	constructor() {
+		super();
 		this.migrationService = new MigrationService();
 		this.tableBuilder = new TableBuilder();
 		this.tableAlterer = new TableAlterer();
+		this.selectQueries = new SelectQueries();
+		this.insertQueries = new InsertQueries();
 	}
 
 	async connect(dataToConnect: ConnectionData): Promise<void> {
@@ -120,5 +135,23 @@ export class DataSourcePostgres implements DataSourceInterface {
 
 	getCurrentTimestamp(): string {
 		return 'SELECT current_timestamp;';
+	}
+
+	//Select queries
+	where(params: {
+		conditions?: Condition;
+		logicalOperator?: LogicalOperators;
+		exists?: string
+	} | string): string {
+		return this.selectQueries.where(params);
+	}
+
+	//Insert queries
+	insert(values: Partial<unknown>, tableName: string): string {
+		return this.insertQueries.insert(values, tableName);
+	}
+
+	insertMany(values: Partial<unknown>[], tableName: string): string {
+		return this.insertQueries.insertMany(values, tableName);
 	}
 }

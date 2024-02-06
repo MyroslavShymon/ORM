@@ -14,22 +14,32 @@ import { DeleteQueryBuilderInterface } from '@context/interfaces/query-builder/d
 import { UpdateQueryBuilderInterface } from '@context/interfaces/query-builder/update-query-builder.interface';
 import { UpdateQueryBuilder } from '@context/query-builder/update-query-builder';
 import { QueryStructureBuilder } from '@context/query-builder/query-structure-builder';
+import { DataSourceInterface } from '@core/interfaces';
 
 export class QueryBuilder<T> implements QueryBuilderInterface<T> {
 	query: string;
 
+	private readonly _dataSource: DataSourceInterface;
 	private readonly queryMethod: (sql: string) => Promise<Object>;
 
-	private selectQueryBuilder: SelectQueryBuilderInterface<T> = new SelectQueryBuilder<T>(this);
-	private insertQueryBuilder: InsertQueryBuilderInterface<T> = new InsertQueryBuilder<T>(this);
-	private updateQueryBuilder: UpdateQueryBuilderInterface<T> = new UpdateQueryBuilder<T>(this);
-	private deleteQueryBuilder: DeleteQueryBuilderInterface = new DeleteQueryBuilder<T>(this);
-	private aggregateQueryBuilder: AggregateQueryBuilderInterface = new AggregateQueryBuilder<T>(this);
-	private queryStructureBuilder: QueryStructureBuilderInterface<T> = new QueryStructureBuilder<T>(this);
+	private selectQueryBuilder: SelectQueryBuilderInterface<T>;
+	private insertQueryBuilder: InsertQueryBuilderInterface<T>;
+	private updateQueryBuilder: UpdateQueryBuilderInterface<T>;
+	private deleteQueryBuilder: DeleteQueryBuilderInterface;
+	private aggregateQueryBuilder: AggregateQueryBuilderInterface;
+	private queryStructureBuilder: QueryStructureBuilderInterface<T>;
 
-	constructor(methodForQuery?: (sql: string) => Promise<Object>) {
-		this.queryMethod = methodForQuery;
+	constructor(dataSource: DataSourceInterface, methodForQuery?: (sql: string) => Promise<Object>) {
 		this.query = '';
+		this._dataSource = dataSource;
+		this.queryMethod = methodForQuery;
+
+		this.selectQueryBuilder = new SelectQueryBuilder<T>(this, this._dataSource);
+		this.insertQueryBuilder = new InsertQueryBuilder<T>(this, this._dataSource);
+		this.updateQueryBuilder = new UpdateQueryBuilder<T>(this, this._dataSource);
+		this.deleteQueryBuilder = new DeleteQueryBuilder<T>(this, this._dataSource);
+		this.aggregateQueryBuilder = new AggregateQueryBuilder<T>(this, this._dataSource);
+		this.queryStructureBuilder = new QueryStructureBuilder<T>(this, this._dataSource);
 	}
 
 	//Select query
@@ -155,7 +165,6 @@ export class QueryBuilder<T> implements QueryBuilderInterface<T> {
 	execute(): any {
 		return this.queryMethod(this.build());
 	}
-
 }
 
 

@@ -19,14 +19,17 @@ import {
 import { ConnectionData } from '@core/types';
 import { MigrationServiceInterface, TableAltererInterface, TableBuilderInterface } from '@strategies/mysql/interfaces';
 import { MigrationService, TableAlterer, TableBuilder } from '@strategies/mysql/components';
+import { BaseQueries } from '@strategies/base-queries';
+import { Condition, LogicalOperators } from '@context/types';
 
-export class DataSourceMySql implements DataSourceInterface {
+export class DataSourceMySql extends BaseQueries implements DataSourceInterface {
 	client: Connection;
 	tableBuilder: TableBuilderInterface;
 	tableAlterer: TableAltererInterface;
 	migrationService: MigrationServiceInterface;
 
 	constructor() {
+		super();
 		this.tableBuilder = new TableBuilder();
 		this.tableAlterer = new TableAlterer();
 		this.migrationService = new MigrationService();
@@ -110,8 +113,26 @@ export class DataSourceMySql implements DataSourceInterface {
 		return this.tableAlterer.addUniqueToColumn(tableName, parameters);
 	}
 
-
 	getCurrentTimestamp(): string {
 		return 'SELECT NOW();';
+	}
+
+	//TODO query
+	//Select queries
+	where(params: {
+		conditions?: Condition;
+		logicalOperator?: LogicalOperators;
+		exists?: string
+	} | string): string {
+		return '';
+	}
+
+	//Insert queries
+	insert(values: Partial<unknown>, tableName: string): string {
+		return '';
+	}
+
+	insertMany(values: Partial<unknown>[], tableName: string): string {
+		return '';
 	}
 }

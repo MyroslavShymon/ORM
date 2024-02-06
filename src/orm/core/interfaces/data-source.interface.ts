@@ -22,6 +22,7 @@ import {
 	RenameTableInterface
 } from '@core/interfaces/table-manipuldation';
 import { ForeignKeyInterface, PrimaryGeneratedColumnInterface } from '@decorators/postgres';
+import { Condition, LogicalOperators, OrderOperators } from '@context/types';
 
 export interface DataSourceInterface {
 	client;//TODO typing
@@ -77,4 +78,41 @@ export interface DataSourceInterface {
 	): Promise<void>;
 
 	getCurrentTimestamp(): string;
+
+	//Select querying
+	select(columns: string[]): string;
+
+	orderBy(column: string, order: OrderOperators): string;
+
+	as(alias: string): string;
+
+	limit(count: number): string;
+
+	innerJoin(table: string, condition: string): string;
+
+	leftJoin(table: string, condition: string): string;
+
+	rightJoin(table: string, condition: string): string;
+
+	where(params: {
+		conditions?: Condition;
+		logicalOperator?: LogicalOperators;
+		exists?: string
+	} | string): string;
+
+	//Insert querying
+	setInto(name: string): string;
+
+	insert(values: Partial<unknown>, tableName: string): string;
+
+	insertMany(values: Partial<unknown>[], tableName: string): string;
+
+	//Aggregate querying
+	summing(column: string): string;
+
+	counting(column: string): string;
+
+	having(condition: string): string;
+
+	groupBy(columns: string[]): string;
 }
