@@ -262,12 +262,12 @@ export class QueryBuilder<T> implements QueryBuilderInterface<T> {
 // 				const indexOfOrAnd = this._resultWhere.findIndex(element => element === 'or' || element === 'and');
 // 				const beforeOrAnd = JSON.parse(JSON.stringify(this._resultWhere)).slice(0, indexOfOrAnd + 1).join(' ');
 // 				const afterOrAnd = JSON.parse(JSON.stringify(this._resultWhere)).slice(indexOfOrAnd + 1).join(' and ');
-// 				const a = beforeOrAnd + afterOrAnd;
+// 				const base-querie = beforeOrAnd + afterOrAnd;
 // 				console.log('beforeOrAnd', beforeOrAnd);
 // 				console.log('afterOrAnd', afterOrAnd);
-// 				console.log('aaaaaa', a);
+// 				console.log('aaaaaa', base-querie);
 //
-// 				this._resultWhere = [a];
+// 				this._resultWhere = [base-querie];
 // 			}
 // 			console.log('conditions array', this._resultWhere);
 // 		}

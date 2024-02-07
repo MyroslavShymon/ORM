@@ -1,68 +1,84 @@
 import { OrderOperators } from '@context/types';
-import { BaseQueriesInterface } from '@strategies/common';
+import {
+	BaseAggregateQueries,
+	BaseAggregateQueriesInterface,
+	BaseInsertQueries,
+	BaseInsertQueriesInterface,
+	BaseQueriesInterface,
+	BaseSelectQueries,
+	BaseSelectQueriesInterface,
+	BaseStructureQueries,
+	BaseStructureQueriesInterface
+} from '@strategies/common';
 import { QueryBuilderInterface } from '@context/interfaces';
 
+
 export class BaseQueries implements BaseQueriesInterface {
+	private readonly _baseAggregateQueries: BaseAggregateQueriesInterface = new BaseAggregateQueries();
+	private readonly _baseInsertQueries: BaseInsertQueriesInterface = new BaseInsertQueries();
+	private readonly _baseStructureQueries: BaseStructureQueriesInterface = new BaseStructureQueries();
+	private readonly _baseSelectQueries: BaseSelectQueriesInterface = new BaseSelectQueries();
+
 	select(columns: string[]): string {
-		return `SELECT ${columns.join(', ')} ${columns.length > 2 ? '\n' : ''}`;
+		return this._baseSelectQueries.select(columns);
 	}
 
 	orderBy(column: string, order: OrderOperators): string {
-		return `ORDER BY ${column} ${order} \n`;
+		return this._baseSelectQueries.orderBy(column, order);
 	}
 
 	as(alias: string): string {
-		return ` AS ${alias}`;
+		return this._baseSelectQueries.as(alias);
 	}
 
 	limit(count: number): string {
-		return `LIMIT ${count} \n`;
+		return this._baseSelectQueries.limit(count);
 	}
 
 	innerJoin(table: string, condition: string): string {
-		return `INNER JOIN ${table} ON ${condition} \n`;
+		return this._baseSelectQueries.innerJoin(table, condition);
 	}
 
 	leftJoin(table: string, condition: string): string {
-		return `LEFT JOIN ${table} ON ${condition} \n`;
+		return this._baseSelectQueries.leftJoin(table, condition);
 	}
 
 	rightJoin(table: string, condition: string): string {
-		return `RIGHT JOIN ${table} ON ${condition} \n`;
+		return this._baseSelectQueries.rightJoin(table, condition);
 	}
 
 	//insert
 	setInto(name: string): string {
-		return ` INTO ${name} \n`;
+		return this._baseInsertQueries.setInto(name);
 	}
 
 	//query structure builder
 	from(table: string): string {
-		return `FROM ${table} \n`;
+		return this._baseStructureQueries.from(table);
 	}
 
 	union(queryBuilder: QueryBuilderInterface<Object>): string {
-		return `UNION \n ${queryBuilder.build()} \n`;
+		return this._baseStructureQueries.union(queryBuilder);
 	}
 
 	unionAll(queryBuilder: QueryBuilderInterface<Object>): string {
-		return `UNION ALL \n ${queryBuilder.build()} \n`;
+		return this._baseStructureQueries.unionAll(queryBuilder);
 	}
 
 	//aggregate
 	summing(column: string): string {
-		return `SUM(${column})`;
+		return this._baseAggregateQueries.summing(column);
 	}
 
 	counting(column: string): string {
-		return `COUNT(${column})`;
+		return this._baseAggregateQueries.counting(column);
 	}
 
 	having(condition: string): string {
-		return `HAVING ${condition} \n`;
+		return this._baseAggregateQueries.having(condition);
 	}
 
 	groupBy(columns: string[]): string {
-		return `GROUP BY ${columns.join(', ')} \n`;
+		return this._baseAggregateQueries.groupBy(columns);
 	}
 }
