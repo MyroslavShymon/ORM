@@ -18,18 +18,24 @@ import {
 } from '@core/interfaces';
 import { ConnectionData } from '@core/types';
 import {
+	DeleteQueriesInterface,
 	InsertQueriesInterface,
 	MigrationServiceInterface,
 	SelectQueriesInterface,
 	TableAltererInterface,
-	TableBuilderInterface
+	TableBuilderInterface,
+	UpdateQueriesInterface,
+	ViewQueriesInterface
 } from '@strategies/postgres/interfaces';
 import {
+	DeleteQueries,
 	InsertQueries,
 	MigrationService,
 	SelectQueries,
 	TableAlterer,
-	TableBuilder
+	TableBuilder,
+	UpdateQueries,
+	ViewQueries
 } from '@strategies/postgres/components';
 import { ForeignKeyInterface, PrimaryGeneratedColumnInterface } from '@decorators/postgres';
 import { BaseQueries } from '@strategies/base-queries';
@@ -42,6 +48,9 @@ export class DataSourcePostgres extends BaseQueries implements DataSourceInterfa
 	migrationService: MigrationServiceInterface;
 	selectQueries: SelectQueriesInterface;
 	insertQueries: InsertQueriesInterface;
+	updateQueries: UpdateQueriesInterface;
+	deleteQueries: DeleteQueriesInterface;
+	viewQueries: ViewQueriesInterface;
 
 	constructor() {
 		super();
@@ -50,6 +59,9 @@ export class DataSourcePostgres extends BaseQueries implements DataSourceInterfa
 		this.tableAlterer = new TableAlterer();
 		this.selectQueries = new SelectQueries();
 		this.insertQueries = new InsertQueries();
+		this.updateQueries = new UpdateQueries();
+		this.deleteQueries = new DeleteQueries();
+		this.viewQueries = new ViewQueries();
 	}
 
 	async connect(dataToConnect: ConnectionData): Promise<void> {
@@ -153,5 +165,20 @@ export class DataSourcePostgres extends BaseQueries implements DataSourceInterfa
 
 	insertMany(values: Partial<unknown>[], tableName: string): string {
 		return this.insertQueries.insertMany(values, tableName);
+	}
+
+	//Update queries
+	update(values: Partial<Object>, tableName: string): string {
+		return this.updateQueries.update(values, tableName);
+	}
+
+	//Delete queries
+	deleting(tableName: string): string {
+		return this.deleteQueries.deleting(tableName);
+	}
+
+	//Base queries
+	createView(name: string): string {
+		return this.viewQueries.createView(name);
 	}
 }

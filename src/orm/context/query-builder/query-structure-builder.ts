@@ -11,18 +11,18 @@ export class QueryStructureBuilder<T> implements QueryStructureBuilderInterface<
 	}
 
 	createView(name: string): void {
-		this._queryBuilder.query = `CREATE VIEW ${name} AS \n` + this._queryBuilder.query;
+		this._queryBuilder.query = this._dataSource.createView(name) + this._queryBuilder.query;
 	}
 
 	from(table: string): void {
-		this._queryBuilder.query += `FROM ${table} \n`;
+		this._queryBuilder.query += this._dataSource.from(table);
 	}
 
 	union(queryBuilder: QueryBuilderInterface<T>): void {
-		this._queryBuilder.query += `UNION \n ${queryBuilder.build()} \n`;
+		this._queryBuilder.query += this._dataSource.union(queryBuilder);
 	}
 
 	unionAll(queryBuilder: QueryBuilderInterface<T>): void {
-		this._queryBuilder.query += `UNION ALL \n ${queryBuilder.build()} \n`;
+		this._queryBuilder.query += this._dataSource.unionAll(queryBuilder);
 	}
 }

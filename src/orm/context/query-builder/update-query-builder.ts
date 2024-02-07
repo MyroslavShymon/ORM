@@ -12,10 +12,6 @@ export class UpdateQueryBuilder<T> implements UpdateQueryBuilderInterface<T> {
 	}
 
 	update(values: Partial<T>, tableName: string): void {
-		const setClause = Object.entries(values)
-			.map(([column, value]) => `${column} = '${value}'`)
-			.join(', ');
-
-		this._queryBuilder.query += `UPDATE ${tableName} SET ${setClause} \n`;
+		this._queryBuilder.query += this._dataSource.update(values, tableName);
 	}
 }

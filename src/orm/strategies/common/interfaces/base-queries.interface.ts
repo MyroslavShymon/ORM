@@ -1,4 +1,5 @@
 import { OrderOperators } from '@context/types';
+import { QueryBuilderInterface } from '@context/interfaces';
 
 export interface BaseQueriesInterface {
 	//select
@@ -18,6 +19,13 @@ export interface BaseQueriesInterface {
 
 	//insert
 	setInto(name: string): string;
+
+	//query structure builder
+	from(table: string): string;
+
+	union(queryBuilder: QueryBuilderInterface<Object>): string;
+
+	unionAll(queryBuilder: QueryBuilderInterface<Object>): string;
 
 	//aggregate
 	summing(column: string): string;

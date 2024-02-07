@@ -1,5 +1,6 @@
 import { OrderOperators } from '@context/types';
 import { BaseQueriesInterface } from '@strategies/common';
+import { QueryBuilderInterface } from '@context/interfaces';
 
 export class BaseQueries implements BaseQueriesInterface {
 	select(columns: string[]): string {
@@ -34,7 +35,20 @@ export class BaseQueries implements BaseQueriesInterface {
 	setInto(name: string): string {
 		return ` INTO ${name} \n`;
 	}
-	
+
+	//query structure builder
+	from(table: string): string {
+		return `FROM ${table} \n`;
+	}
+
+	union(queryBuilder: QueryBuilderInterface<Object>): string {
+		return `UNION \n ${queryBuilder.build()} \n`;
+	}
+
+	unionAll(queryBuilder: QueryBuilderInterface<Object>): string {
+		return `UNION ALL \n ${queryBuilder.build()} \n`;
+	}
+
 	//aggregate
 	summing(column: string): string {
 		return `SUM(${column})`;

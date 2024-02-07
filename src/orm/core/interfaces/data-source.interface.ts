@@ -23,6 +23,7 @@ import {
 } from '@core/interfaces/table-manipuldation';
 import { ForeignKeyInterface, PrimaryGeneratedColumnInterface } from '@decorators/postgres';
 import { Condition, LogicalOperators, OrderOperators } from '@context/types';
+import { QueryBuilderInterface } from '@context/interfaces';
 
 export interface DataSourceInterface {
 	client;//TODO typing
@@ -107,6 +108,21 @@ export interface DataSourceInterface {
 
 	insertMany(values: Partial<unknown>[], tableName: string): string;
 
+	//Update querying
+	update(values: Partial<Object>, tableName: string): string;
+
+	//Delete querying
+	deleting(tableName: string): string;
+
+	//Base querying
+	from(table: string): string;
+
+	union(queryBuilder: QueryBuilderInterface<Object>): string;
+
+	unionAll(queryBuilder: QueryBuilderInterface<Object>): string;
+
+	createView(name: string): string;
+	
 	//Aggregate querying
 	summing(column: string): string;
 

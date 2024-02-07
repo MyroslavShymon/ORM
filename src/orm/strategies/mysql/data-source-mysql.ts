@@ -135,4 +135,19 @@ export class DataSourceMySql extends BaseQueries implements DataSourceInterface 
 	insertMany(values: Partial<unknown>[], tableName: string): string {
 		return '';
 	}
+
+	//Update queries
+	update(values: Partial<Object>, tableName: string): string {
+		return '';
+	}
+
+	//Delete queries
+	deleting(tableName: string): string {
+		return '';
+	}
+
+	//Base queries
+	createView(name: string): string {
+		return '';
+	}
 }

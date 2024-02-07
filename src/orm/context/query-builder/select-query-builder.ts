@@ -45,6 +45,6 @@ export class SelectQueryBuilder<T> implements SelectQueryBuilderInterface<T> {
 		logicalOperator?: LogicalOperators;
 		exists?: string
 	} | string): void {
-		this._queryBuilder.query += this._queryBuilder.where(params);
+		this._queryBuilder.query += this._dataSource.where(params);
 	}
 }

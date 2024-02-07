@@ -12,6 +12,6 @@ export class DeleteQueryBuilder<T> implements DeleteQueryBuilderInterface {
 	}
 
 	deleting(tableName: string): void {
-		this._queryBuilder.query += `DELETE FROM ${tableName} \n`;
+		this._queryBuilder.query += this._dataSource.deleting(tableName);
 	}
 }
