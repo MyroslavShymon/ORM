@@ -6,7 +6,7 @@ export interface ColumnOptionsInterfacePostgres {
 	length?: number;
 	check?: string;
 	nameOfCheckConstraint?: string;
-	defaultValue?: string | number;
+	defaultValue?: string | number | boolean;
 	unique?: boolean;
 	nullsNotDistinct?: boolean;
 }

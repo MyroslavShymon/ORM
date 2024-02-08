@@ -22,7 +22,7 @@ export class TableAlterer implements TableAltererInterface {
 	}
 
 	addDefaultValue(tableName: string, parameters: AddDefaultValueInterface): string {
-		return `ALTER TABLE public.${tableName} ALTER COLUMN ${parameters.columnName} SET DEFAULT ${parameters.value};`;
+		return `ALTER TABLE public.${tableName} ALTER COLUMN ${parameters.columnName} SET DEFAULT '${parameters.value}';`;
 	}
 
 	dropDefaultValue(tableName: string, parameters: DropDefaultValueInterface): string {

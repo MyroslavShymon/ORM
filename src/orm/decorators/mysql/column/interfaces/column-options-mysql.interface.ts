@@ -5,6 +5,6 @@ export interface ColumnOptionsInterfaceMysql {
 	nullable?: boolean;
 	length?: number;
 	check?: string;
-	defaultValue?: string | number;
+	defaultValue?: string | number | boolean;
 	unique?: boolean;
 }
