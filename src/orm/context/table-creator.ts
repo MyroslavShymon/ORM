@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from 'uuid';
 import { TableCreatorInterface } from '@context/interfaces';
 import { DataSourceInterface, ModelInterface, TableInterface } from '@core/interfaces';
 import {
@@ -38,6 +39,8 @@ export class TableCreator implements TableCreatorInterface {
 					const { propertyKey, ...column } = metadataColumn;
 					return column;
 				});
+
+				columns = columns.map(column => ({ id: uuidv4(), ...column }));
 			}
 
 			let computedColumns;
@@ -46,6 +49,8 @@ export class TableCreator implements TableCreatorInterface {
 					const { propertyKey, ...column } = metadataColumn;
 					return column;
 				});
+
+				computedColumns = computedColumns.map(computedColumn => ({ id: uuidv4(), ...computedColumn }));
 			}
 
 			// {TODO тут лишається undefined тому не ясно як з цим далі треба буде працювати
@@ -55,7 +60,7 @@ export class TableCreator implements TableCreatorInterface {
 			// 	computedColumns: undefined
 			// }
 
-			tablesIngot.push({ ...table, columns, computedColumns, foreignKeys, primaryColumn });
+			tablesIngot.push({ id: uuidv4(), ...table, columns, computedColumns, foreignKeys, primaryColumn });
 
 			// await this._dataSource.client.query(createTableQuery);
 		}
