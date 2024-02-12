@@ -8,3 +8,4 @@ export * from './rename-table.interface';
 export * from './drop-not-null-from-column.interface';
 export * from './add-not-null-to-column.interface';
 export * from './add-unique-to-column.interface';
+export * from './drop-table.interface';

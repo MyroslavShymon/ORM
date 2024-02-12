@@ -18,6 +18,7 @@ import {
 	DeleteColumnInterface,
 	DropDefaultValueInterface,
 	DropNotNullFromColumnInterface,
+	DropTableInterface,
 	RenameColumnInterface,
 	RenameTableInterface
 } from '@core/interfaces/table-manipuldation';
@@ -59,6 +60,8 @@ export interface DataSourceInterface {
 	dropNotNullFromColumn(tableName: string, parameters: DropNotNullFromColumnInterface): string;
 
 	addUniqueToColumn(tableName: string, parameters: AddUniqueToColumnInterface): string;
+
+	dropTable(tableName: string, parameters: DropTableInterface): string;
 
 	createMigrationTable(tableName: string, tableSchema: string): string;
 
@@ -122,7 +125,7 @@ export interface DataSourceInterface {
 	unionAll(queryBuilder: QueryBuilderInterface<Object>): string;
 
 	createView(name: string): string;
-	
+
 	//Aggregate querying
 	summing(column: string): string;
 

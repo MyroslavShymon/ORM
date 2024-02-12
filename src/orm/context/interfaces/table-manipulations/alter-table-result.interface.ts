@@ -7,6 +7,7 @@ import {
 	DeleteColumnInterface,
 	DropDefaultValueInterface,
 	DropNotNullFromColumnInterface,
+	DropTableInterface,
 	RenameColumnInterface,
 	RenameTableInterface
 } from '@core/interfaces';
@@ -22,4 +23,6 @@ export interface AlterTableResultInterface<DB> {
 	addUniqueToColumn: (parameters: AddUniqueToColumnInterface) => Promise<Object | string>;
 	renameColumn: (parameters: RenameColumnInterface) => Promise<Object | string>;
 	renameTable: (parameters: RenameTableInterface) => Promise<Object | string>;
+	//TODO зробити так, щоб якшо mysql, то показувало б без поля Type в DropTableInterface
+	dropTable: (parameters: DropTableInterface) => Promise<Object | string>;
 }

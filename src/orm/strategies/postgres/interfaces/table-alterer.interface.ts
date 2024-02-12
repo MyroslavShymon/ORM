@@ -7,6 +7,7 @@ import {
 	DeleteColumnInterface,
 	DropDefaultValueInterface,
 	DropNotNullFromColumnInterface,
+	DropTableInterface,
 	RenameColumnInterface,
 	RenameTableInterface
 } from '@core/interfaces';
@@ -32,4 +33,6 @@ export interface TableAltererInterface {
 	dropNotNullFromColumn(tableName: string, parameters: DropNotNullFromColumnInterface): string;
 
 	addUniqueToColumn(tableName: string, parameters: AddUniqueToColumnInterface): string;
+
+	dropTable(tableName: string, parameters: DropTableInterface): string;
 }

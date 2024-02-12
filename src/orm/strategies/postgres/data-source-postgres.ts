@@ -12,6 +12,7 @@ import {
 	DeleteColumnInterface,
 	DropDefaultValueInterface,
 	DropNotNullFromColumnInterface,
+	DropTableInterface,
 	RenameColumnInterface,
 	RenameTableInterface,
 	TableInterface
@@ -143,6 +144,10 @@ export class DataSourcePostgres extends BaseQueries implements DataSourceInterfa
 
 	deleteColumn(tableName: string, parameters: DeleteColumnInterface): string {
 		return this.tableAlterer.deleteColumn(tableName, parameters);
+	}
+
+	dropTable(tableName: string, parameters: DropTableInterface): string {
+		return this.tableAlterer.dropTable(tableName, parameters);
 	}
 
 	getCurrentTimestamp(): string {

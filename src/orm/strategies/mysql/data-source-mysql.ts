@@ -12,6 +12,7 @@ import {
 	DeleteColumnInterface,
 	DropDefaultValueInterface,
 	DropNotNullFromColumnInterface,
+	DropTableInterface,
 	RenameColumnInterface,
 	RenameTableInterface,
 	TableInterface
@@ -111,6 +112,10 @@ export class DataSourceMySql extends BaseQueries implements DataSourceInterface 
 
 	addUniqueToColumn(tableName: string, parameters: AddUniqueToColumnInterface): string {
 		return this.tableAlterer.addUniqueToColumn(tableName, parameters);
+	}
+
+	dropTable(tableName: string, parameters: DropTableInterface): string {
+		return this.tableAlterer.dropTable(tableName, parameters);
 	}
 
 	getCurrentTimestamp(): string {

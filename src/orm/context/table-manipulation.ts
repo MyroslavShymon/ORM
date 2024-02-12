@@ -9,6 +9,7 @@ import {
 	DeleteColumnInterface,
 	DropDefaultValueInterface,
 	DropNotNullFromColumnInterface,
+	DropTableInterface,
 	RenameColumnInterface,
 	RenameTableInterface
 } from '@core/interfaces';
@@ -31,7 +32,8 @@ export class TableManipulation implements TableManipulationInterface {
 			renameTable: this._renameTable(tableName, getQueryString),
 			addNotNullToColumn: this._addNotNullToColumn(tableName, getQueryString),
 			dropNotNullFromColumn: this._dropNotNullFromColumn(tableName, getQueryString),
-			addUniqueToColumn: this._addUniqueToColumn(tableName, getQueryString)
+			addUniqueToColumn: this._addUniqueToColumn(tableName, getQueryString),
+			dropTable: this._dropTable(tableName, getQueryString)
 		};
 	};
 
@@ -123,5 +125,14 @@ export class TableManipulation implements TableManipulationInterface {
 		}
 		console.log('Add unique to column Sql ', addUniqueToColumnQuery);
 		return this._dataSource.client.query(addUniqueToColumnQuery);
+	};
+
+	private _dropTable = (tableName: string, getQueryString: boolean = false) => async (parameters: DropTableInterface): Promise<Object | string> => {
+		const dropTableQuery = this._dataSource.dropTable(tableName, parameters);
+		if (getQueryString) {
+			return dropTableQuery;
+		}
+		console.log('Drop table Sql ', dropTableQuery);
+		return this._dataSource.client.query(dropTableQuery);
 	};
 }
