@@ -54,8 +54,8 @@ export class TableAlterer implements TableAltererInterface {
 	renameTable(tableName: string, parameters: RenameTableInterface): string {
 		return `ALTER TABLE '${tableName}' RENAME TO '${parameters.tableName}';`;
 	}
-	
+
 	dropTable(tableName: string, parameters: DropTableInterface): string {
-		return `DROP TABLE ${parameters.ifExist ? 'IF EXISTS' : ''} '${tableName}'`;
+		return `DROP TABLE ${parameters.ifExist ? 'IF EXISTS' : ''} '${tableName}';`;
 	}
 }
