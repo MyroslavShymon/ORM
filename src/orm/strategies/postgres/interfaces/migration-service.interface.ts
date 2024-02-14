@@ -18,4 +18,10 @@ export interface MigrationServiceInterface {
 		tableSchema: string,
 		databaseIngot: DatabaseIngotInterface
 	): Promise<void>;
+
+	getCurrentDatabaseIngot(
+		dataSource: DataSourceInterface,
+		tableName: string,
+		tableSchema: string
+	): Promise<DatabaseIngotInterface>;
 }

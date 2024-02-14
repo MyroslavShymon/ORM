@@ -55,6 +55,6 @@ export class TableAlterer implements TableAltererInterface {
 	}
 
 	dropTable(tableName: string, parameters: DropTableInterface): string {
-		return `DROP TABLE ${parameters.ifExist ? 'IF EXISTS' : ''} '${tableName}' ${parameters.type ? parameters.type : ''};`;
+		return `DROP TABLE ${parameters.ifExist ? 'IF EXISTS ' : ''}'${tableName}' ${parameters.type ? parameters.type : ''};`;
 	}
 }

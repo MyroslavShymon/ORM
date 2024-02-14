@@ -3,7 +3,7 @@ import { ColumnOptionsInterfacePostgres } from '@decorators/postgres';
 import { ColumnOptionsInterfaceMysql } from '@decorators/mysql';
 
 export interface ColumnInterface<DB> {
-	id: string;
+	id?: string;
 	name: string;
 	options?: DB extends DataSourcePostgres ? ColumnOptionsInterfacePostgres : ColumnOptionsInterfaceMysql;
 }

@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { TableCreatorInterface } from '@context/interfaces';
-import { DataSourceInterface, ModelInterface, TableInterface } from '@core/interfaces';
+import { DataSourceInterface, TableInterface } from '@core/interfaces';
 import {
 	ColumnMetadataInterface,
 	ComputedColumnMetadataInterface,
@@ -8,17 +8,32 @@ import {
 	PrimaryGeneratedColumnInterface
 } from '@decorators/postgres';
 import { TableIngotInterface } from '@core/interfaces/table-ingot.interface';
+import { constants } from '@core/constants';
+import { ConnectionData } from '@core/types';
 
 export class TableCreator implements TableCreatorInterface {
-	private _dataSource: DataSourceInterface;
+	private readonly _dataSource: DataSourceInterface;
 
 	constructor(dataSource: DataSourceInterface) {
 		this._dataSource = dataSource;
 	}
 
-	// Функція для виконання асинхронного створення таблиць і складання даних з декораторів
-	createIngotOfTables(models: ModelInterface[]): TableIngotInterface<DataSourceInterface>[] {
-		const tablesIngot: TableIngotInterface<DataSourceInterface>[] = [];
+	async createIngotOfTables({
+								  models,
+								  migrationTable = constants.migrationsTableName,
+								  migrationTableSchema = constants.migrationsTableSchemaName
+							  }: ConnectionData): Promise<TableIngotInterface<DataSourceInterface>[]> {
+		let tablesIngot: TableIngotInterface<DataSourceInterface>[] = [];
+
+		const currentDatabaseIngot = await this._dataSource.migrationService.getCurrentDatabaseIngot(
+			this._dataSource,
+			migrationTable,
+			migrationTableSchema
+		);
+
+		if (currentDatabaseIngot.tables) {
+			tablesIngot = currentDatabaseIngot.tables;
+		}
 
 		for (const model of models) {
 			const table: TableInterface<DataSourceInterface>
@@ -40,7 +55,7 @@ export class TableCreator implements TableCreatorInterface {
 					return column;
 				});
 
-				columns = columns.map(column => ({ id: uuidv4(), ...column }));
+				columns = columns.map(column => ({ ...column }));
 			}
 
 			let computedColumns;
@@ -50,7 +65,7 @@ export class TableCreator implements TableCreatorInterface {
 					return column;
 				});
 
-				computedColumns = computedColumns.map(computedColumn => ({ id: uuidv4(), ...computedColumn }));
+				computedColumns = computedColumns.map(computedColumn => ({ ...computedColumn }));
 			}
 
 			// {TODO тут лишається undefined тому не ясно як з цим далі треба буде працювати
@@ -60,9 +75,29 @@ export class TableCreator implements TableCreatorInterface {
 			// 	computedColumns: undefined
 			// }
 
-			tablesIngot.push({ id: uuidv4(), ...table, columns, computedColumns, foreignKeys, primaryColumn });
+			//TODO check and fix
+			if (tablesIngot.length === 0) {
+				tablesIngot.push({ id: uuidv4(), ...table, columns, computedColumns, foreignKeys, primaryColumn });
+			}
 
-			// await this._dataSource.client.query(createTableQuery);
+			if (tablesIngot.length !== 0) {
+				const existingTableIndex = tablesIngot.findIndex(currentTable => currentTable.name === table.name);
+
+				if (existingTableIndex === -1) {
+					tablesIngot.push({
+						id: uuidv4(),
+						...table,
+						columns,
+						computedColumns,
+						foreignKeys,
+						primaryColumn
+					});
+				}
+			}
+
+			tablesIngot = tablesIngot.filter(tableIngot =>
+				models.some(model => Reflect.getMetadata('table', model.prototype).name === tableIngot.name)
+			);
 		}
 
 		return tablesIngot;

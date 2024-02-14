@@ -2,6 +2,7 @@ import { ConnectionData } from '@core/types';
 import { ColumnInterface, ComputedColumnInterface, TableInterface } from '@core/interfaces/decorators';
 import { AddColumnInterface } from '@core/interfaces/table-manipuldation/add-column.interface';
 import {
+	MigrationServiceInterface,
 	TableAltererInterface as TableAltererInterfacePostgres,
 	TableBuilderInterface as TableBuilderInterfacePostgres
 } from '../../strategies/postgres';
@@ -30,6 +31,7 @@ export interface DataSourceInterface {
 	client;//TODO typing
 	tableBuilder: TableBuilderInterfacePostgres | TableBuilderInterfaceMysql;
 	tableAlterer: TableAltererInterfacePostgres | TableAltererInterfaceMysql;
+	migrationService: MigrationServiceInterface;
 
 	connect(dataToConnect: ConnectionData);
 

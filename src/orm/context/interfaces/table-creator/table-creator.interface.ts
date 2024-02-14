@@ -1,8 +1,9 @@
-import { DataSourceInterface, ModelInterface } from '@core/interfaces';
+import { DataSourceInterface } from '@core/interfaces';
 import { TableIngotInterface } from '@core/interfaces/table-ingot.interface';
+import { ConnectionData } from '@core/types';
 
 export interface TableCreatorInterface {
-	createIngotOfTables(models: ModelInterface[]): TableIngotInterface<DataSourceInterface>[];
+	createIngotOfTables(connectionData: ConnectionData): Promise<TableIngotInterface<DataSourceInterface>[]>;
 
 	generateCreateTableQuery(ingotsOfTables: TableIngotInterface<DataSourceInterface>[]): string;
 }

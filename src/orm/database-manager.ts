@@ -34,31 +34,14 @@ class DatabaseManager implements DatabaseManagerInterface {
 
 	async createOrmConnection(): Promise<ConnectionClient> {
 		try {
-			const databaseIngot: DatabaseIngotInterface = {};
+			const databaseIngot: DatabaseIngotInterface = { tables: [] };
 
 			await this._dataSource.connectDatabase(this._connectionData);
-			if (this._connectionData.models) {
-				databaseIngot.tables = this._dataSource.tableCreator.createIngotOfTables(this._connectionData.models);
-				console.log('Database ingot', databaseIngot);
-			}
-
-			if (!this._connectionData.models) {
-				const results = await this._dataSource.getCurrentTime();
-				console.log('Database is work, current timestamp: ', results);
-			}
 
 			const isMigrationTableExist = await this._dataSource.migrationManager.checkTableExistence({
 				tableName: this._connectionData.migrationTable,
 				tableSchema: this._connectionData.migrationTableSchema
 			});
-
-			if (isMigrationTableExist) {
-				await this._dataSource.migrationManager.syncDatabaseIngot({
-					tableName: this._connectionData.migrationTable,
-					tableSchema: this._connectionData.migrationTableSchema,
-					databaseIngot
-				});
-			}
 
 			if (!isMigrationTableExist) {
 				await this._dataSource.migrationManager.createMigrationTable({
@@ -72,6 +55,22 @@ class DatabaseManager implements DatabaseManagerInterface {
 					databaseIngot
 				});
 			}
+
+			if (this._connectionData.models.length > 0) {
+				databaseIngot.tables = await this._dataSource.tableCreator.createIngotOfTables(this._connectionData);
+				console.log('Database ingot', databaseIngot);
+			}
+
+			if (!this._connectionData.models) {
+				const results = await this._dataSource.getCurrentTime();
+				console.log('Database is work, current timestamp: ', results);
+			}
+
+			await this._dataSource.migrationManager.syncDatabaseIngot({
+				tableName: this._connectionData.migrationTable,
+				tableSchema: this._connectionData.migrationTableSchema,
+				databaseIngot
+			});
 		} catch (error) {
 			console.error('error', error);
 			throw Error(error);

@@ -3,6 +3,16 @@ import { DatabaseIngotInterface, DataSourceInterface } from '@core/interfaces';
 import { constants } from '@core/constants';
 
 export class MigrationService implements MigrationServiceInterface {
+	async getCurrentDatabaseIngot(
+		dataSource: DataSourceInterface,
+		tableName: string,
+		tableSchema: string
+	): Promise<DatabaseIngotInterface> {
+		const getCurrentDatabaseIngotQuery = `SELECT ingot FROM ${tableSchema}.${tableName} WHERE name = 'current_database_ingot'`;
+		const ingot = await dataSource.client.query(getCurrentDatabaseIngotQuery);
+		return ingot.rows[0].ingot;
+	}
+
 	createMigrationTable(tableName: string, tableSchema: string): string {
 		return `CREATE TABLE ${tableSchema}.${tableName} (
 				id SERIAL PRIMARY KEY,
