@@ -1,5 +1,6 @@
+import { v4 as uuidv4 } from 'uuid';
 import { TableCreatorInterface } from '@context/interfaces';
-import { DataSourceInterface, TableInterface } from '@core/interfaces';
+import { ColumnInterface, ComputedColumnInterface, DataSourceInterface, TableInterface } from '@core/interfaces';
 import {
 	ComputedColumnMetadataInterface,
 	ForeignKeyInterface,
@@ -97,7 +98,7 @@ export class TableCreator implements TableCreatorInterface {
 				computedColumns = computedColumns.map(computedColumn => ({ ...computedColumn }));
 			}
 
-			const potentialModel = {
+			const potentialModel: TableIngotInterface<DataSourceInterface> = {
 				...table,
 				columns,
 				computedColumns,
@@ -154,7 +155,16 @@ export class TableCreator implements TableCreatorInterface {
 			// );
 		}
 
-		const databaseState = {
+		const databaseState: {
+			tablesWithOriginalNames: {
+				table: TableIngotInterface<DataSourceInterface>
+				model: TableIngotInterface<DataSourceInterface>
+			}[],
+			tablesWithModifiedState: {
+				deletedTables: TableIngotInterface<DataSourceInterface>[],
+				newTables: TableIngotInterface<DataSourceInterface>[]
+			}
+		} = {
 			tablesWithOriginalNames: [],
 			tablesWithModifiedState: {
 				deletedTables: [],
@@ -164,7 +174,6 @@ export class TableCreator implements TableCreatorInterface {
 
 
 		//get tables with original names
-
 		for (const model of potentialModels) {
 			for (const table of currentTablesIngot) {
 				if (table.name === model.name) {
@@ -189,10 +198,66 @@ export class TableCreator implements TableCreatorInterface {
 				)
 			);
 
-		console.log('databaseState.tablesWithModifiedState', databaseState.tablesWithModifiedState);
-		console.log('databaseState.tablesWithOriginalNames', databaseState.tablesWithOriginalNames);
+		const tablesIngot: TableIngotInterface<DataSourceInterface>[] = [];
 
-		return potentialModels;
+		//processing tables with original names
+		for (const tableWithOriginalName of databaseState.tablesWithOriginalNames) {
+			tablesIngot.push({
+				id: tableWithOriginalName.table.id ? tableWithOriginalName.table.id : uuidv4(),
+				name: tableWithOriginalName.table.name,
+				options: tableWithOriginalName.model.options, //TODO можливо потім будемо рефакторити options в table(якісь цікаві нові штуки туда добавим)
+				columns: this.handleColumns<ColumnInterface<DataSourceInterface>[]>(
+					tableWithOriginalName.table.columns,
+					tableWithOriginalName.model.columns
+				),
+				computedColumns: this.handleColumns<ComputedColumnInterface<DataSourceInterface>[]>(
+					tableWithOriginalName.table.computedColumns,
+					tableWithOriginalName.model.computedColumns
+				),
+				foreignKeys: tableWithOriginalName.model.foreignKeys, //TODO подумати над тим чи foreignKeys мають бути з Id чи ні
+				primaryColumn: tableWithOriginalName.model.primaryColumn
+			});
+
+			////dataDeleted
+		}
+
+		return tablesIngot;
+	}
+
+	handleColumns<T extends ColumnInterface<DataSourceInterface>[] | ComputedColumnInterface<DataSourceInterface>[]>
+	(tableColumns: T, modelColumns: T) {
+		let columns: any[] = [];
+		if (modelColumns == undefined || modelColumns.length === 0) {
+			return columns;
+		}
+
+		if (tableColumns == undefined || tableColumns.length === 0) {
+			return modelColumns.map(modelColumn => ({ id: uuidv4(), ...modelColumn }));
+		}
+
+		//add columns with same names
+		for (const modelColumn of modelColumns) {
+			for (const tableColumn of tableColumns) {
+				if (tableColumn.name === modelColumn.name) {
+					columns.push({
+						id: tableColumn.id ? tableColumn.id : uuidv4(),
+						...modelColumn
+					});
+				}
+			}
+		}
+
+		//add columns which new
+		const resultModelColumns = modelColumns
+			.filter(
+				modelColumn => !columns.some(column =>
+					column.name === modelColumn.name
+				))
+			.map(
+				column => ({ id: uuidv4(), ...column })
+			);
+
+		return [...columns, ...resultModelColumns];
 	}
 
 	// Кількість стовпців:
@@ -200,11 +265,11 @@ export class TableCreator implements TableCreatorInterface {
 	//
 	// Назва таблиці і стовпців:
 	// 	Відрізняння за назвою таблиці: Якщо таблиці мають різні назви, це, очевидно, вказує на нову таблицю.
-	// Відрізняння за назвами стовпців: Якщо імена стовпців відрізняються, це також може бути чітким показником нової таблиці.
+	// 	Відрізняння за назвами стовпців: Якщо імена стовпців відрізняються, це також може бути чітким показником нової таблиці.
 	//
 	// Типи даних і обмеження:
 	// 	Відрізняння за типами даних: Якщо типи даних відрізняються для стовпців, це може бути важливим критерієм для визначення нової таблиці.
-	// Відрізняння за обмеженнями і ключами: Різниця в обмеженнях (наприклад, PRIMARY KEY, FOREIGN KEY) може також вказувати на нову таблицю.
+	// 	Відрізняння за обмеженнями і ключами: Різниця в обмеженнях (наприклад, PRIMARY KEY, FOREIGN KEY) може також вказувати на нову таблицю.
 	//
 	// Додаткові параметри:
 	// 	Врахування додаткових параметрів: Якщо є додаткові властивості, такі як тригери, коментарі, то їх врахування може бути важливим.
