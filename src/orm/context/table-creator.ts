@@ -78,7 +78,7 @@ export class TableCreator implements TableCreatorInterface {
 				= Reflect.getMetadata('primary-column', model.prototype);
 			console.log('primaryColumn', primaryColumn);
 
-			let columns;
+			let columns = [];
 			if (metadataColumns) {
 				columns = metadataColumns.map(metadataColumn => {
 					const { propertyKey, ...column } = metadataColumn;
@@ -88,7 +88,7 @@ export class TableCreator implements TableCreatorInterface {
 				columns = columns.map(column => ({ ...column }));
 			}
 
-			let computedColumns;
+			let computedColumns = [];
 			if (metadataComputedColumns) {
 				computedColumns = metadataComputedColumns.map(metadataColumn => {
 					const { propertyKey, ...column } = metadataColumn;
@@ -172,7 +172,6 @@ export class TableCreator implements TableCreatorInterface {
 			}
 		};
 
-
 		//get tables with original names
 		for (const model of potentialModels) {
 			for (const table of currentTablesIngot) {
@@ -180,6 +179,11 @@ export class TableCreator implements TableCreatorInterface {
 					databaseState.tablesWithOriginalNames.push({ table, model });
 				}
 			}
+		}
+
+		//якщо нема жодних збігів потенційної структури таблиць і теперішньої то просто робимо нову
+		if (databaseState.tablesWithOriginalNames.length === 0) {
+			return this.processingNewTables(potentialModels);
 		}
 
 		//get new tables
@@ -198,30 +202,66 @@ export class TableCreator implements TableCreatorInterface {
 				)
 			);
 
-		const tablesIngot: TableIngotInterface<DataSourceInterface>[] = [];
+		let tablesIngot: TableIngotInterface<DataSourceInterface>[] = [];
 
-		//processing tables with original names
-		for (const tableWithOriginalName of databaseState.tablesWithOriginalNames) {
-			tablesIngot.push({
-				id: tableWithOriginalName.table.id ? tableWithOriginalName.table.id : uuidv4(),
-				name: tableWithOriginalName.table.name,
-				options: tableWithOriginalName.model.options, //TODO можливо потім будемо рефакторити options в table(якісь цікаві нові штуки туда добавим)
-				columns: this.handleColumns<ColumnInterface<DataSourceInterface>[]>(
-					tableWithOriginalName.table.columns,
-					tableWithOriginalName.model.columns
-				),
-				computedColumns: this.handleColumns<ComputedColumnInterface<DataSourceInterface>[]>(
-					tableWithOriginalName.table.computedColumns,
-					tableWithOriginalName.model.computedColumns
-				),
-				foreignKeys: tableWithOriginalName.model.foreignKeys, //TODO подумати над тим чи foreignKeys мають бути з Id чи ні
-				primaryColumn: tableWithOriginalName.model.primaryColumn
-			});
-
-			////dataDeleted
+		if (
+			databaseState.tablesWithModifiedState.deletedTables.length === 0 &&
+			databaseState.tablesWithModifiedState.newTables.length > 0
+		) {
+			tablesIngot = this.processingNewTables(databaseState.tablesWithModifiedState.newTables);
 		}
 
+		if (
+			databaseState.tablesWithModifiedState.deletedTables.length > 0 &&
+			databaseState.tablesWithModifiedState.newTables.length > 0
+		) {
+			console.log('algorithm');
+		}
+
+		tablesIngot = [...tablesIngot, ...this.processingOriginalTables(databaseState.tablesWithOriginalNames)];
+
 		return tablesIngot;
+	}
+
+	processingNewTables(newTables: TableIngotInterface<DataSourceInterface>[]) {
+		return newTables.map(newTable => {
+			const { columns, computedColumns, ...otherTableParams } = newTable;
+			const modifiedColumns = columns.map(column => ({ id: uuidv4(), ...column }));
+			const modifiedComputedColumns = computedColumns.map(computedColumn => ({ id: uuidv4(), ...computedColumn }));
+			return {
+				id: uuidv4(),
+				columns: modifiedColumns,
+				computedColumns: modifiedComputedColumns,
+				...otherTableParams
+			};
+		});
+	}
+
+	processingOriginalTables(potentialTables: {
+		table: TableIngotInterface<DataSourceInterface>
+		model: TableIngotInterface<DataSourceInterface>
+	}[]) {
+		const tablesForIngot = [];
+		//processing tables with original names
+		for (const potentialTable of potentialTables) {
+			tablesForIngot.push({
+				id: potentialTable.table.id ? potentialTable.table.id : uuidv4(),
+				name: potentialTable.table.name,
+				options: potentialTable.model.options, //TODO можливо потім будемо рефакторити options в table(якісь цікаві нові штуки туда добавим)
+				columns: this.handleColumns<ColumnInterface<DataSourceInterface>[]>(
+					potentialTable.table.columns,
+					potentialTable.model.columns
+				),
+				computedColumns: this.handleColumns<ComputedColumnInterface<DataSourceInterface>[]>(
+					potentialTable.table.computedColumns,
+					potentialTable.model.computedColumns
+				),
+				foreignKeys: potentialTable.model.foreignKeys, //TODO подумати над тим чи foreignKeys мають бути з Id чи ні
+				primaryColumn: potentialTable.model.primaryColumn
+			});
+		}
+
+		return tablesForIngot;
 	}
 
 	handleColumns<T extends ColumnInterface<DataSourceInterface>[] | ComputedColumnInterface<DataSourceInterface>[]>
