@@ -217,21 +217,37 @@ export class TableCreator implements TableCreatorInterface {
 			databaseState.tablesWithModifiedState.newTables.length > 0
 		) {
 			const tablesWithPercentageOfColumnsThatMatch = this.processingTablesWithModifiedState(databaseState.tablesWithModifiedState.newTables, databaseState.tablesWithModifiedState.deletedTables);
-			for (const tableWithPercentageOfColumnsThatMatch of tablesWithPercentageOfColumnsThatMatch) {
-				let percentage = 0;
-				percentage += tableWithPercentageOfColumnsThatMatch.columnsPercentage;
-				const percentageOfCondition = (percentage - tableWithPercentageOfColumnsThatMatch.columnsPercentage) / constants.tableComparerAlgorithm.countOfConditions;
-
-				//testing foreignKeys percentage += foreignKeys
-				//testing conditions percentage += conditions
-				//testing options percentage += options
-			}
-			// console.log('percentage', percentage);
+			console.log('tablesWithPercentageOfColumnsThatMatch', tablesWithPercentageOfColumnsThatMatch);
+			// for (const tableWithPercentageOfColumnsThatMatch of tablesWithPercentageOfColumnsThatMatch) {
+			// 	let percentage = 0;
+			// 	percentage += tableWithPercentageOfColumnsThatMatch.columnsPercentage;
+			// 	const percentageOfCondition = (percentage - tableWithPercentageOfColumnsThatMatch.columnsPercentage) / constants.tableComparerAlgorithm.countOfConditions;
+			// }
 		}
 
 		tablesIngot = [...tablesIngot, ...this.processingOriginalTables(databaseState.tablesWithOriginalNames)];
 
 		return tablesIngot;
+	}
+
+	calculateOptionsPercentage(newTable: TableIngotInterface<DataSourceInterface>, deletedTable: TableIngotInterface<DataSourceInterface>): number {
+		const flatten = (arr: string[] | string[][]): string[] => {
+			if (Array.isArray(arr[0])) {
+				return (arr as string[][]).reduce<string[]>((acc, val) => acc.concat(val), []);
+			} else {
+				return arr as string[];
+			}
+		};
+
+		const flatUnique1 = flatten(newTable.options.unique);
+		const flatUnique2 = flatten(deletedTable.options.unique);
+
+		const uniqueIntersection = flatUnique1.filter(column => flatUnique2.includes(column));
+		const uniqueUnion = Array.from(new Set([...flatUnique1, ...flatUnique2]));
+
+		const overlapPercentage = (uniqueIntersection.length / uniqueUnion.length) * 100;
+
+		return overlapPercentage;
 	}
 
 	calculateColumnPercentage(newTable: TableIngotInterface<DataSourceInterface>, deletedTable: TableIngotInterface<DataSourceInterface>): number {
@@ -258,12 +274,23 @@ export class TableCreator implements TableCreatorInterface {
 
 		for (const newTable of newTables) {
 			for (const deletedTable of deletedTables) {
-				const columnsPercentage = this.calculateColumnPercentage(newTable, deletedTable);
-				tablesPercentage.push({
+				const tablePercentage: {
+					newTableName: string,
+					deletedTableName: string,
+					columnsPercentage?: number
+					optionsPercentage?: number
+				} = {
 					newTableName: newTable.name,
-					deletedTableName: deletedTable.name,
-					columnsPercentage
-				});
+					deletedTableName: deletedTable.name
+				};
+				if (newTable.columns && deletedTable.columns)
+					tablePercentage.columnsPercentage = this.calculateColumnPercentage(newTable, deletedTable);
+
+				if (newTable.options.unique && deletedTable.options.unique)
+					tablePercentage.optionsPercentage = this.calculateOptionsPercentage(newTable, deletedTable);
+
+				tablesPercentage.push(tablePercentage);
+
 			}
 		}
 
