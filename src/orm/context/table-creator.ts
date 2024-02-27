@@ -3,12 +3,14 @@ import { TableCreatorInterface } from '@context/interfaces';
 import { ColumnInterface, ComputedColumnInterface, DataSourceInterface, TableInterface } from '@core/interfaces';
 import {
 	ComputedColumnMetadataInterface,
+	ConstraintInterface,
 	ForeignKeyInterface,
 	PrimaryGeneratedColumnInterface
 } from '@decorators/postgres';
 import { TableIngotInterface } from '@core/interfaces/table-ingot.interface';
 import { constants } from '@core/constants';
 import { ConnectionData } from '@core/types';
+import { DataSourcePostgres } from '@strategies/postgres';
 
 // type gdf = 'postgres' | 'mysql' | 'sqlserver'
 // const c: { c: gdf } = { c: 'mysql' };
@@ -230,7 +232,10 @@ export class TableCreator implements TableCreatorInterface {
 		return tablesIngot;
 	}
 
-	calculateOptionsPercentage(newTable: TableIngotInterface<DataSourceInterface>, deletedTable: TableIngotInterface<DataSourceInterface>): number {
+	calculateOptionsPercentage(
+		newTable: TableIngotInterface<DataSourceInterface>,
+		deletedTable: TableIngotInterface<DataSourceInterface>
+	): number {
 		const flatten = (arr: string[] | string[][]): string[] => {
 			if (Array.isArray(arr[0])) {
 				return (arr as string[][]).reduce<string[]>((acc, val) => acc.concat(val), []);
@@ -250,7 +255,10 @@ export class TableCreator implements TableCreatorInterface {
 		return overlapPercentage;
 	}
 
-	calculateColumnPercentage(newTable: TableIngotInterface<DataSourceInterface>, deletedTable: TableIngotInterface<DataSourceInterface>): number {
+	calculateColumnPercentage(
+		newTable: TableIngotInterface<DataSourceInterface>,
+		deletedTable: TableIngotInterface<DataSourceInterface>
+	): number {
 		const newTableColumns = newTable.columns.map(column => column.name);
 		newTableColumns.push(newTable.primaryColumn.columnName);
 		const deletedTableColumns = deletedTable.columns.map(column => column.name);
@@ -262,9 +270,36 @@ export class TableCreator implements TableCreatorInterface {
 		return percentage;
 	}
 
+	//TODO тут вказано чітко postgres, треба буде погратися з типами
+	calculateConstraintsPercentage(
+		newTable: TableIngotInterface<DataSourcePostgres>,
+		deletedTable: TableIngotInterface<DataSourcePostgres>
+	): number {
+		const getConstraintNames = (constraints: ConstraintInterface[] | ConstraintInterface): string[] => {
+			if (Array.isArray(constraints)) {
+				return constraints.map(constraint => constraint.name);
+			} else if (constraints) {
+				return [constraints.name];
+			} else {
+				return [];
+			}
+		};
+
+		const newTableConstraintsNames = getConstraintNames(newTable.options.checkConstraint);
+		const deletedTableConstraintsNames = getConstraintNames(deletedTable.options.checkConstraint);
+
+		const commonConstraints = newTableConstraintsNames.filter(constraintName =>
+			deletedTableConstraintsNames.some(names => names.includes(constraintName))
+		);
+
+		const percentage = (commonConstraints.length / deletedTableConstraintsNames.length) * 100;
+		return percentage;
+	}
+
+	//TODO тут вказано чітко postgres, треба буде погратися з типами
 	processingTablesWithModifiedState(
-		newTables: TableIngotInterface<DataSourceInterface>[],
-		deletedTables: TableIngotInterface<DataSourceInterface>[]
+		newTables: TableIngotInterface<DataSourcePostgres>[],
+		deletedTables: TableIngotInterface<DataSourcePostgres>[]
 	): {
 		newTableName: string,
 		deletedTableName: string,
@@ -279,6 +314,7 @@ export class TableCreator implements TableCreatorInterface {
 					deletedTableName: string,
 					columnsPercentage?: number
 					optionsPercentage?: number
+					constraintsPercentage?: number
 				} = {
 					newTableName: newTable.name,
 					deletedTableName: deletedTable.name
@@ -289,6 +325,8 @@ export class TableCreator implements TableCreatorInterface {
 				if (newTable.options.unique && deletedTable.options.unique)
 					tablePercentage.optionsPercentage = this.calculateOptionsPercentage(newTable, deletedTable);
 
+				if (newTable.options.checkConstraint && deletedTable.options.checkConstraint)
+					tablePercentage.constraintsPercentage = this.calculateConstraintsPercentage(newTable, deletedTable);
 				tablesPercentage.push(tablePercentage);
 
 			}
