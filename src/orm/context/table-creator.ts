@@ -296,6 +296,16 @@ export class TableCreator implements TableCreatorInterface {
 		return percentage;
 	}
 
+	calculatePrimaryKeyPercentages(
+		newTable: TableIngotInterface<DataSourcePostgres>,
+		deletedTable: TableIngotInterface<DataSourcePostgres>
+	): number {
+		const commonPrimaryKeys = newTable.options.primaryKeys.filter(primaryKey => deletedTable.options.primaryKeys.includes(primaryKey));
+
+		const percentage = (commonPrimaryKeys.length / deletedTable.options.primaryKeys.length) * 100;
+		return percentage;
+	}
+
 	calculateForeignKeysPercentage(
 		newTable: TableIngotInterface<DataSourcePostgres>,
 		deletedTable: TableIngotInterface<DataSourcePostgres>
@@ -330,6 +340,7 @@ export class TableCreator implements TableCreatorInterface {
 			optionsPercentage?: number
 			constraintsPercentage?: number
 			foreignKeyPercentage?: number
+			primaryKeyPercentage?: number
 		}
 	}[] {
 		const tablesPercentage = [];
@@ -344,6 +355,7 @@ export class TableCreator implements TableCreatorInterface {
 						optionsPercentage?: number
 						constraintsPercentage?: number
 						foreignKeyPercentage?: number
+						primaryKeyPercentage?: number
 					}
 				} = {
 					newTableName: newTable.name,
@@ -362,8 +374,10 @@ export class TableCreator implements TableCreatorInterface {
 				if (newTable.foreignKeys && deletedTable.foreignKeys)
 					tablePercentage.percentages.foreignKeyPercentage = this.calculateForeignKeysPercentage(newTable, deletedTable);
 
-				tablesPercentage.push(tablePercentage);
+				if (newTable.options.primaryKeys && newTable.options.primaryKeys)
+					tablePercentage.percentages.primaryKeyPercentage = this.calculatePrimaryKeyPercentages(newTable, deletedTable);
 
+				tablesPercentage.push(tablePercentage);
 			}
 		}
 
