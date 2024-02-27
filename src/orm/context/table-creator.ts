@@ -218,8 +218,8 @@ export class TableCreator implements TableCreatorInterface {
 			databaseState.tablesWithModifiedState.deletedTables.length > 0 &&
 			databaseState.tablesWithModifiedState.newTables.length > 0
 		) {
-			const tablesWithPercentageOfColumnsThatMatch = this.processingTablesWithModifiedState(databaseState.tablesWithModifiedState.newTables, databaseState.tablesWithModifiedState.deletedTables);
-			console.log('tablesWithPercentageOfColumnsThatMatch', tablesWithPercentageOfColumnsThatMatch);
+			const tablesWithPercentage = this.processingTablesWithModifiedState(databaseState.tablesWithModifiedState.newTables, databaseState.tablesWithModifiedState.deletedTables);
+			console.log('tablesWithPercentage', tablesWithPercentage);
 			// for (const tableWithPercentageOfColumnsThatMatch of tablesWithPercentageOfColumnsThatMatch) {
 			// 	let percentage = 0;
 			// 	percentage += tableWithPercentageOfColumnsThatMatch.columnsPercentage;
@@ -296,6 +296,28 @@ export class TableCreator implements TableCreatorInterface {
 		return percentage;
 	}
 
+	calculateForeignKeysPercentage(
+		newTable: TableIngotInterface<DataSourcePostgres>,
+		deletedTable: TableIngotInterface<DataSourcePostgres>
+	): number {
+		const areForeignKeysEqual = (
+			fk1: ForeignKeyInterface,
+			fk2: ForeignKeyInterface
+		): boolean => fk1.key === fk2.key && fk1.table === fk2.table && fk1.columnName === fk2.columnName;
+
+		const hasForeignKey = (
+			foreignKeys: ForeignKeyInterface[],
+			targetKey: ForeignKeyInterface
+		): boolean => foreignKeys.some(fk => areForeignKeysEqual(fk, targetKey));
+
+		const commonForeignKeys = newTable.foreignKeys.filter(fk =>
+			hasForeignKey(deletedTable.foreignKeys, fk)
+		);
+
+		const percentage = (commonForeignKeys.length / deletedTable.foreignKeys.length) * 100;
+		return percentage;
+	}
+
 	//TODO тут вказано чітко postgres, треба буде погратися з типами
 	processingTablesWithModifiedState(
 		newTables: TableIngotInterface<DataSourcePostgres>[],
@@ -303,7 +325,12 @@ export class TableCreator implements TableCreatorInterface {
 	): {
 		newTableName: string,
 		deletedTableName: string,
-		columnsPercentage: number
+		percentages: {
+			columnsPercentage?: number
+			optionsPercentage?: number
+			constraintsPercentage?: number
+			foreignKeyPercentage?: number
+		}
 	}[] {
 		const tablesPercentage = [];
 
@@ -312,21 +339,29 @@ export class TableCreator implements TableCreatorInterface {
 				const tablePercentage: {
 					newTableName: string,
 					deletedTableName: string,
-					columnsPercentage?: number
-					optionsPercentage?: number
-					constraintsPercentage?: number
+					percentages: {
+						columnsPercentage?: number
+						optionsPercentage?: number
+						constraintsPercentage?: number
+						foreignKeyPercentage?: number
+					}
 				} = {
 					newTableName: newTable.name,
-					deletedTableName: deletedTable.name
+					deletedTableName: deletedTable.name,
+					percentages: {}
 				};
 				if (newTable.columns && deletedTable.columns)
-					tablePercentage.columnsPercentage = this.calculateColumnPercentage(newTable, deletedTable);
+					tablePercentage.percentages.columnsPercentage = this.calculateColumnPercentage(newTable, deletedTable);
 
 				if (newTable.options.unique && deletedTable.options.unique)
-					tablePercentage.optionsPercentage = this.calculateOptionsPercentage(newTable, deletedTable);
+					tablePercentage.percentages.optionsPercentage = this.calculateOptionsPercentage(newTable, deletedTable);
 
 				if (newTable.options.checkConstraint && deletedTable.options.checkConstraint)
-					tablePercentage.constraintsPercentage = this.calculateConstraintsPercentage(newTable, deletedTable);
+					tablePercentage.percentages.constraintsPercentage = this.calculateConstraintsPercentage(newTable, deletedTable);
+
+				if (newTable.foreignKeys && deletedTable.foreignKeys)
+					tablePercentage.percentages.foreignKeyPercentage = this.calculateForeignKeysPercentage(newTable, deletedTable);
+
 				tablesPercentage.push(tablePercentage);
 
 			}
