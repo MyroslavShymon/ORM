@@ -194,6 +194,7 @@ export class TableCreator implements TableCreatorInterface {
 				)
 			);
 
+		console.log('currentTablesIngot', currentTablesIngot);
 		//get deleted tables
 		databaseState.tablesWithModifiedState.deletedTables = currentTablesIngot
 			.filter(table => !databaseState.tablesWithOriginalNames
@@ -215,13 +216,60 @@ export class TableCreator implements TableCreatorInterface {
 			databaseState.tablesWithModifiedState.deletedTables.length > 0 &&
 			databaseState.tablesWithModifiedState.newTables.length > 0
 		) {
-			console.log('algorithm');
+			const tablesWithPercentageOfColumnsThatMatch = this.processingTablesWithModifiedState(databaseState.tablesWithModifiedState.newTables, databaseState.tablesWithModifiedState.deletedTables);
+			for (const tableWithPercentageOfColumnsThatMatch of tablesWithPercentageOfColumnsThatMatch) {
+				let percentage = 0;
+				percentage += tableWithPercentageOfColumnsThatMatch.columnsPercentage;
+				const percentageOfCondition = (percentage - tableWithPercentageOfColumnsThatMatch.columnsPercentage) / constants.tableComparerAlgorithm.countOfConditions;
+
+				//testing foreignKeys percentage += foreignKeys
+				//testing conditions percentage += conditions
+				//testing options percentage += options
+			}
+			// console.log('percentage', percentage);
 		}
 
 		tablesIngot = [...tablesIngot, ...this.processingOriginalTables(databaseState.tablesWithOriginalNames)];
 
 		return tablesIngot;
 	}
+
+	calculateColumnPercentage(newTable: TableIngotInterface<DataSourceInterface>, deletedTable: TableIngotInterface<DataSourceInterface>): number {
+		const newTableColumns = newTable.columns.map(column => column.name);
+		newTableColumns.push(newTable.primaryColumn.columnName);
+		const deletedTableColumns = deletedTable.columns.map(column => column.name);
+		deletedTableColumns.push(newTable.primaryColumn.columnName);
+
+		const commonColumns = newTableColumns.filter(columnName => deletedTableColumns.includes(columnName));
+
+		const percentage = (commonColumns.length / deletedTableColumns.length) * 100;
+		return percentage;
+	}
+
+	processingTablesWithModifiedState(
+		newTables: TableIngotInterface<DataSourceInterface>[],
+		deletedTables: TableIngotInterface<DataSourceInterface>[]
+	): {
+		newTableName: string,
+		deletedTableName: string,
+		columnsPercentage: number
+	}[] {
+		const tablesPercentage = [];
+
+		for (const newTable of newTables) {
+			for (const deletedTable of deletedTables) {
+				const columnsPercentage = this.calculateColumnPercentage(newTable, deletedTable);
+				tablesPercentage.push({
+					newTableName: newTable.name,
+					deletedTableName: deletedTable.name,
+					columnsPercentage
+				});
+			}
+		}
+
+		return tablesPercentage;
+	}
+
 
 	processingNewTables(newTables: TableIngotInterface<DataSourceInterface>[]) {
 		return newTables.map(newTable => {
