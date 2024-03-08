@@ -56,14 +56,15 @@ class DatabaseManager implements DatabaseManagerInterface {
 				});
 			}
 
-			if (this._connectionData.models.length > 0) {
-				databaseIngot.tables = await this._dataSource.tableCreator.createIngotOfTables(this._connectionData);
-				console.log('Database ingot', databaseIngot);
-			}
-
 			if (!this._connectionData.models) {
 				const results = await this._dataSource.getCurrentTime();
 				console.log('Database is work, current timestamp: ', results);
+				return;
+			}
+
+			if (this._connectionData.models.length > 0) {
+				databaseIngot.tables = await this._dataSource.tableCreator.createIngotOfTables(this._connectionData);
+				console.log('Database ingot', databaseIngot);
 			}
 
 			await this._dataSource.migrationManager.syncDatabaseIngot({

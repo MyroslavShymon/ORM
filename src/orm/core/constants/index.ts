@@ -5,6 +5,6 @@ export const constants = {
 
 	tableComparerAlgorithm: {
 		maximumConvergenceOfTable: 100,
-		countOfConditions: 4 //options, constraints, foreign keys TODO додати triggers indexes
+		minimumUniquesPercentage: 70
 	}
 };

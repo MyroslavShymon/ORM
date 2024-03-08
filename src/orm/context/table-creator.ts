@@ -5,12 +5,14 @@ import {
 	ComputedColumnMetadataInterface,
 	ConstraintInterface,
 	ForeignKeyInterface,
-	PrimaryGeneratedColumnInterface
+	PrimaryGeneratedColumnInterface,
+	TableOptionsPostgresqlInterface
 } from '@decorators/postgres';
 import { TableIngotInterface } from '@core/interfaces/table-ingot.interface';
 import { constants } from '@core/constants';
 import { ConnectionData } from '@core/types';
 import { DataSourcePostgres } from '@strategies/postgres';
+import { TableOptionsMysqlInterface } from '@decorators/mysql';
 
 // type gdf = 'postgres' | 'mysql' | 'sqlserver'
 // const c: { c: gdf } = { c: 'mysql' };
@@ -163,14 +165,14 @@ export class TableCreator implements TableCreatorInterface {
 				model: TableIngotInterface<DataSourceInterface>
 			}[],
 			tablesWithModifiedState: {
-				deletedTables: TableIngotInterface<DataSourceInterface>[],
-				newTables: TableIngotInterface<DataSourceInterface>[]
+				potentiallyDeletedTables: TableIngotInterface<DataSourceInterface>[],
+				potentiallyNewTables: TableIngotInterface<DataSourceInterface>[]
 			}
 		} = {
 			tablesWithOriginalNames: [],
 			tablesWithModifiedState: {
-				deletedTables: [],
-				newTables: []
+				potentiallyDeletedTables: [],
+				potentiallyNewTables: []
 			}
 		};
 
@@ -185,11 +187,11 @@ export class TableCreator implements TableCreatorInterface {
 
 		//якщо нема жодних збігів потенційної структури таблиць і теперішньої то просто робимо нову
 		if (databaseState.tablesWithOriginalNames.length === 0) {
-			return this.processingNewTables(potentialModels);
+			return this.processingTablesWithModifiedState(potentialModels, currentTablesIngot);
 		}
 
 		//get new tables
-		databaseState.tablesWithModifiedState.newTables = potentialModels
+		databaseState.tablesWithModifiedState.potentiallyNewTables = potentialModels
 			.filter(model => !databaseState.tablesWithOriginalNames
 				.some(tableWithOriginalName =>
 					tableWithOriginalName.table.name === model.name
@@ -198,7 +200,7 @@ export class TableCreator implements TableCreatorInterface {
 
 		console.log('currentTablesIngot', currentTablesIngot);
 		//get deleted tables
-		databaseState.tablesWithModifiedState.deletedTables = currentTablesIngot
+		databaseState.tablesWithModifiedState.potentiallyDeletedTables = currentTablesIngot
 			.filter(table => !databaseState.tablesWithOriginalNames
 				.some(tableWithOriginalName =>
 					tableWithOriginalName.table.name === table.name
@@ -208,23 +210,24 @@ export class TableCreator implements TableCreatorInterface {
 		let tablesIngot: TableIngotInterface<DataSourceInterface>[] = [];
 
 		if (
-			databaseState.tablesWithModifiedState.deletedTables.length === 0 &&
-			databaseState.tablesWithModifiedState.newTables.length > 0
+			databaseState.tablesWithModifiedState.potentiallyDeletedTables.length === 0 &&
+			databaseState.tablesWithModifiedState.potentiallyNewTables.length > 0
 		) {
-			tablesIngot = this.processingNewTables(databaseState.tablesWithModifiedState.newTables);
+			tablesIngot = this.processingNewTables(databaseState.tablesWithModifiedState.potentiallyNewTables);
 		}
 
+		console.log('databaseState.tablesWithModifiedState', databaseState.tablesWithModifiedState);
 		if (
-			databaseState.tablesWithModifiedState.deletedTables.length > 0 &&
-			databaseState.tablesWithModifiedState.newTables.length > 0
+			databaseState.tablesWithModifiedState.potentiallyDeletedTables.length > 0 &&
+			databaseState.tablesWithModifiedState.potentiallyNewTables.length > 0
 		) {
-			const tablesWithPercentage = this.processingTablesWithModifiedState(databaseState.tablesWithModifiedState.newTables, databaseState.tablesWithModifiedState.deletedTables);
-			console.log('tablesWithPercentage', tablesWithPercentage);
-			// for (const tableWithPercentageOfColumnsThatMatch of tablesWithPercentageOfColumnsThatMatch) {
-			// 	let percentage = 0;
-			// 	percentage += tableWithPercentageOfColumnsThatMatch.columnsPercentage;
-			// 	const percentageOfCondition = (percentage - tableWithPercentageOfColumnsThatMatch.columnsPercentage) / constants.tableComparerAlgorithm.countOfConditions;
-			// }
+			tablesIngot = [
+				...tablesIngot,
+				...this.processingTablesWithModifiedState(
+					databaseState.tablesWithModifiedState.potentiallyNewTables,
+					databaseState.tablesWithModifiedState.potentiallyDeletedTables
+				)
+			];
 		}
 
 		tablesIngot = [...tablesIngot, ...this.processingOriginalTables(databaseState.tablesWithOriginalNames)];
@@ -232,9 +235,90 @@ export class TableCreator implements TableCreatorInterface {
 		return tablesIngot;
 	}
 
+	processingTablesWithModifiedState(
+		potentiallyNewTables: TableIngotInterface<DataSourceInterface>[],
+		potentiallyDeletedTables: TableIngotInterface<DataSourceInterface>[]
+	) {
+		const renamedTables: {
+			table: TableIngotInterface<DataSourceInterface>
+			model: TableIngotInterface<DataSourceInterface>
+		}[] = [];
+		const tablesWithPercentage = this.calculatePercentagesOfTablesWithModifiedState(potentiallyNewTables, potentiallyDeletedTables);
+
+		for (const tableWithPercentage of tablesWithPercentage) {
+			console.log('tableWithPercentage.percentages', tableWithPercentage.percentages);
+			if (!tableWithPercentage.percentages.columnsPercentage) {
+				break;
+			}
+
+			let percentage = tableWithPercentage.percentages.columnsPercentage;
+			console.log('percentage', percentage);
+			const percentagesWithoutFilter = Object.entries(tableWithPercentage.percentages).filter(entry => entry[0] != 'columnsPercentage');
+
+			const countOfConditions = percentagesWithoutFilter.length;
+			console.log('countOfConditions', countOfConditions);
+
+			if (percentage === 100) {
+				console.log('aaaaaaaaaaaaaaa');
+				percentage = percentage - 100;
+				const percentageForOneCondition = constants.tableComparerAlgorithm.maximumConvergenceOfTable / countOfConditions;
+				for (const percentageForCondition of percentagesWithoutFilter) {
+					percentage += (percentageForOneCondition * percentageForCondition[1]) / 100;
+					console.log('percentage', percentage);
+				}
+
+				if (percentage > constants.tableComparerAlgorithm.minimumUniquesPercentage) {
+					let { newTable, deletedTable } = tableWithPercentage;
+					renamedTables.push({ table: deletedTable, model: newTable });
+				}
+				break;
+			}
+
+			if (percentage > constants.tableComparerAlgorithm.minimumUniquesPercentage) {
+				console.log('percentage > constants.tableComparerAlgorithm.minimumUniquesPercentage');
+				renamedTables.push({
+					table: tableWithPercentage.deletedTable,
+					model: tableWithPercentage.newTable
+				});
+				break;
+			}
+
+			if (countOfConditions === 0) {
+				break;
+			}
+
+			const percentageForOneCondition = (constants.tableComparerAlgorithm.maximumConvergenceOfTable - percentage) / countOfConditions;
+			console.log('percentageForOneCondition', percentageForOneCondition);
+
+			for (const percentageForCondition of percentagesWithoutFilter) {
+				percentage += (percentageForOneCondition * percentageForCondition[1]) / 100;
+				console.log('percentage', percentage);
+			}
+
+			console.log('percentage', percentage);
+
+			if (percentage > constants.tableComparerAlgorithm.minimumUniquesPercentage) {
+				let { newTable, deletedTable } = tableWithPercentage;
+				renamedTables.push({ table: deletedTable, model: newTable });
+			}
+		}
+
+		const newTables = potentiallyNewTables
+			.filter(potentialNewTable => !renamedTables
+				.some(renamedTable =>
+					renamedTable.model.name === potentialNewTable.name
+				)
+			);
+
+		return [
+			...this.processingOriginalTables(renamedTables),
+			...this.processingNewTables(newTables)
+		];
+	}
+
 	calculateOptionsPercentage(
-		newTable: TableIngotInterface<DataSourceInterface>,
-		deletedTable: TableIngotInterface<DataSourceInterface>
+		newTableOptions: DataSourceInterface extends DataSourcePostgres ? TableOptionsPostgresqlInterface : TableOptionsMysqlInterface,
+		deletedTableOptions: DataSourceInterface extends DataSourcePostgres ? TableOptionsPostgresqlInterface : TableOptionsMysqlInterface
 	): number {
 		const flatten = (arr: string[] | string[][]): string[] => {
 			if (Array.isArray(arr[0])) {
@@ -244,8 +328,8 @@ export class TableCreator implements TableCreatorInterface {
 			}
 		};
 
-		const flatUnique1 = flatten(newTable.options.unique);
-		const flatUnique2 = flatten(deletedTable.options.unique);
+		const flatUnique1 = flatten(newTableOptions.unique);
+		const flatUnique2 = flatten(deletedTableOptions.unique);
 
 		const uniqueIntersection = flatUnique1.filter(column => flatUnique2.includes(column));
 		const uniqueUnion = Array.from(new Set([...flatUnique1, ...flatUnique2]));
@@ -256,24 +340,29 @@ export class TableCreator implements TableCreatorInterface {
 	}
 
 	calculateColumnPercentage(
-		newTable: TableIngotInterface<DataSourceInterface>,
-		deletedTable: TableIngotInterface<DataSourceInterface>
+		newTableColumns: ColumnInterface<DataSourceInterface>[] | ComputedColumnInterface<DataSourceInterface>[],
+		deletedTableColumns: ColumnInterface<DataSourceInterface>[] | ComputedColumnInterface<DataSourceInterface>[],
+		newTablePrimaryColumnName?: string,
+		deletedTablePrimaryColumnName?: string
 	): number {
-		const newTableColumns = newTable.columns.map(column => column.name);
-		newTableColumns.push(newTable.primaryColumn.columnName);
-		const deletedTableColumns = deletedTable.columns.map(column => column.name);
-		deletedTableColumns.push(newTable.primaryColumn.columnName);
+		const newTableColumnsNames = newTableColumns.map(column => column.name);
+		if (newTablePrimaryColumnName)
+			newTableColumnsNames.push(newTablePrimaryColumnName);
 
-		const commonColumns = newTableColumns.filter(columnName => deletedTableColumns.includes(columnName));
+		const deletedTableColumnsNames = deletedTableColumns.map(column => column.name);
+		if (deletedTablePrimaryColumnName)
+			deletedTableColumnsNames.push(deletedTablePrimaryColumnName);
 
-		const percentage = (commonColumns.length / deletedTableColumns.length) * 100;
+		const commonColumns = newTableColumnsNames.filter(columnName => deletedTableColumnsNames.includes(columnName));
+
+		const percentage = (commonColumns.length / deletedTableColumnsNames.length) * 100;
 		return percentage;
 	}
 
 	//TODO тут вказано чітко postgres, треба буде погратися з типами
 	calculateConstraintsPercentage(
-		newTable: TableIngotInterface<DataSourcePostgres>,
-		deletedTable: TableIngotInterface<DataSourcePostgres>
+		newTableConstraints: ConstraintInterface | ConstraintInterface[],
+		deletedTableConstraints: ConstraintInterface | ConstraintInterface[]
 	): number {
 		const getConstraintNames = (constraints: ConstraintInterface[] | ConstraintInterface): string[] => {
 			if (Array.isArray(constraints)) {
@@ -285,8 +374,8 @@ export class TableCreator implements TableCreatorInterface {
 			}
 		};
 
-		const newTableConstraintsNames = getConstraintNames(newTable.options.checkConstraint);
-		const deletedTableConstraintsNames = getConstraintNames(deletedTable.options.checkConstraint);
+		const newTableConstraintsNames = getConstraintNames(newTableConstraints);
+		const deletedTableConstraintsNames = getConstraintNames(deletedTableConstraints);
 
 		const commonConstraints = newTableConstraintsNames.filter(constraintName =>
 			deletedTableConstraintsNames.some(names => names.includes(constraintName))
@@ -297,18 +386,18 @@ export class TableCreator implements TableCreatorInterface {
 	}
 
 	calculatePrimaryKeyPercentages(
-		newTable: TableIngotInterface<DataSourcePostgres>,
-		deletedTable: TableIngotInterface<DataSourcePostgres>
+		newTablePrimaryKeys: string[],
+		deletedTablePrimaryKeys: string[]
 	): number {
-		const commonPrimaryKeys = newTable.options.primaryKeys.filter(primaryKey => deletedTable.options.primaryKeys.includes(primaryKey));
+		const commonPrimaryKeys = newTablePrimaryKeys.filter(primaryKey => deletedTablePrimaryKeys.includes(primaryKey));
 
-		const percentage = (commonPrimaryKeys.length / deletedTable.options.primaryKeys.length) * 100;
+		const percentage = (commonPrimaryKeys.length / deletedTablePrimaryKeys.length) * 100;
 		return percentage;
 	}
 
 	calculateForeignKeysPercentage(
-		newTable: TableIngotInterface<DataSourcePostgres>,
-		deletedTable: TableIngotInterface<DataSourcePostgres>
+		newTableForeignKeys: ForeignKeyInterface[],
+		deletedTableForeignKeys: ForeignKeyInterface[]
 	): number {
 		const areForeignKeysEqual = (
 			fk1: ForeignKeyInterface,
@@ -320,21 +409,21 @@ export class TableCreator implements TableCreatorInterface {
 			targetKey: ForeignKeyInterface
 		): boolean => foreignKeys.some(fk => areForeignKeysEqual(fk, targetKey));
 
-		const commonForeignKeys = newTable.foreignKeys.filter(fk =>
-			hasForeignKey(deletedTable.foreignKeys, fk)
+		const commonForeignKeys = newTableForeignKeys.filter(fk =>
+			hasForeignKey(deletedTableForeignKeys, fk)
 		);
 
-		const percentage = (commonForeignKeys.length / deletedTable.foreignKeys.length) * 100;
+		const percentage = (commonForeignKeys.length / deletedTableForeignKeys.length) * 100;
 		return percentage;
 	}
 
 	//TODO тут вказано чітко postgres, треба буде погратися з типами
-	processingTablesWithModifiedState(
+	calculatePercentagesOfTablesWithModifiedState(
 		newTables: TableIngotInterface<DataSourcePostgres>[],
 		deletedTables: TableIngotInterface<DataSourcePostgres>[]
 	): {
-		newTableName: string,
-		deletedTableName: string,
+		newTable: TableIngotInterface<DataSourcePostgres>,
+		deletedTable: TableIngotInterface<DataSourcePostgres>,
 		percentages: {
 			columnsPercentage?: number
 			optionsPercentage?: number
@@ -348,34 +437,72 @@ export class TableCreator implements TableCreatorInterface {
 		for (const newTable of newTables) {
 			for (const deletedTable of deletedTables) {
 				const tablePercentage: {
-					newTableName: string,
-					deletedTableName: string,
+					newTable: TableIngotInterface<DataSourcePostgres>,
+					deletedTable: TableIngotInterface<DataSourcePostgres>,
 					percentages: {
 						columnsPercentage?: number
+						computedColumnPercentage?: number
 						optionsPercentage?: number
 						constraintsPercentage?: number
 						foreignKeyPercentage?: number
 						primaryKeyPercentage?: number
 					}
 				} = {
-					newTableName: newTable.name,
-					deletedTableName: deletedTable.name,
+					newTable,
+					deletedTable,
 					percentages: {}
 				};
-				if (newTable.columns && deletedTable.columns)
-					tablePercentage.percentages.columnsPercentage = this.calculateColumnPercentage(newTable, deletedTable);
 
-				if (newTable.options.unique && deletedTable.options.unique)
-					tablePercentage.percentages.optionsPercentage = this.calculateOptionsPercentage(newTable, deletedTable);
+				if (newTable?.columns?.length > 0 && deletedTable?.columns?.length === 0) {
+					tablePercentage.percentages.columnsPercentage = 100;
+				}
 
-				if (newTable.options.checkConstraint && deletedTable.options.checkConstraint)
-					tablePercentage.percentages.constraintsPercentage = this.calculateConstraintsPercentage(newTable, deletedTable);
+				if (deletedTable?.columns?.length > 0 && newTable?.columns?.length === 0) {
+					tablePercentage.percentages.columnsPercentage = 100;
+				}
 
-				if (newTable.foreignKeys && deletedTable.foreignKeys)
-					tablePercentage.percentages.foreignKeyPercentage = this.calculateForeignKeysPercentage(newTable, deletedTable);
+				if (newTable?.columns?.length && deletedTable?.columns?.length) {
+					tablePercentage.percentages.columnsPercentage = this.calculateColumnPercentage(
+						newTable.columns,
+						deletedTable.columns,
+						newTable?.primaryColumn?.columnName ? newTable.primaryColumn.columnName : null,
+						deletedTable?.primaryColumn?.columnName ? deletedTable.primaryColumn.columnName : null
+					);
+				}
 
-				if (newTable.options.primaryKeys && newTable.options.primaryKeys)
-					tablePercentage.percentages.primaryKeyPercentage = this.calculatePrimaryKeyPercentages(newTable, deletedTable);
+				if (newTable?.computedColumns?.length && deletedTable?.computedColumns?.length) {
+					tablePercentage.percentages.computedColumnPercentage = this.calculateColumnPercentage(
+						newTable?.computedColumns,
+						deletedTable?.computedColumns
+					);
+				}
+
+				if (newTable?.options?.unique?.length && deletedTable?.options?.unique?.length) {
+					tablePercentage.percentages.optionsPercentage = this.calculateOptionsPercentage(
+						newTable.options,
+						deletedTable.options
+					);
+				}
+
+				if (newTable?.options?.checkConstraint && deletedTable?.options?.checkConstraint) {
+					tablePercentage.percentages.constraintsPercentage = this.calculateConstraintsPercentage(
+						newTable.options.checkConstraint,
+						deletedTable.options.checkConstraint
+					);
+				}
+
+				if (newTable?.foreignKeys?.length && deletedTable?.foreignKeys?.length)
+					tablePercentage.percentages.foreignKeyPercentage = this.calculateForeignKeysPercentage(
+						newTable.foreignKeys,
+						deletedTable.foreignKeys
+					);
+
+				if (newTable?.options?.primaryKeys?.length && deletedTable?.options?.primaryKeys?.length) {
+					tablePercentage.percentages.primaryKeyPercentage = this.calculatePrimaryKeyPercentages(
+						newTable.options.primaryKeys,
+						deletedTable.options.primaryKeys
+					);
+				}
 
 				tablesPercentage.push(tablePercentage);
 			}
@@ -408,7 +535,7 @@ export class TableCreator implements TableCreatorInterface {
 		for (const potentialTable of potentialTables) {
 			tablesForIngot.push({
 				id: potentialTable.table.id ? potentialTable.table.id : uuidv4(),
-				name: potentialTable.table.name,
+				name: potentialTable.model.name,
 				options: potentialTable.model.options, //TODO можливо потім будемо рефакторити options в table(якісь цікаві нові штуки туда добавим)
 				columns: this.handleColumns<ColumnInterface<DataSourceInterface>[]>(
 					potentialTable.table.columns,
