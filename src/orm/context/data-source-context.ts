@@ -8,7 +8,7 @@ import {
 	TableManipulationInterface
 } from '@context/interfaces';
 import { TableManipulation } from '@context/table-manipulation';
-import { TableCreator } from '@context/table-creator';
+import { TableCreator } from '@context/table-creator/table-creator';
 import { DataSourceInterface } from '@core/interfaces';
 import { ConnectionData } from '@core/types';
 import { DataSourcePostgres } from '@strategies/postgres';

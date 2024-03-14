@@ -56,16 +56,12 @@ class DatabaseManager implements DatabaseManagerInterface {
 				});
 			}
 
-			if (!this._connectionData.models) {
+			const tablesIngot = await this._dataSource.tableCreator.createIngotOfTables(this._connectionData);
+			if (!tablesIngot.length) {
 				const results = await this._dataSource.getCurrentTime();
 				console.log('Database is work, current timestamp: ', results);
-				return;
 			}
-
-			if (this._connectionData.models.length > 0) {
-				databaseIngot.tables = await this._dataSource.tableCreator.createIngotOfTables(this._connectionData);
-				console.log('Database ingot', databaseIngot);
-			}
+			databaseIngot.tables = tablesIngot || [];
 
 			await this._dataSource.migrationManager.syncDatabaseIngot({
 				tableName: this._connectionData.migrationTable,
@@ -74,7 +70,6 @@ class DatabaseManager implements DatabaseManagerInterface {
 			});
 		} catch (error) {
 			console.error('error', error);
-			throw Error(error);
 		} finally {
 			// await this._dataSource.client.release();
 		}
