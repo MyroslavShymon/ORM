@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { ColumnInterface, ComputedColumnInterface, DataSourceInterface, TableIngotInterface } from '@core/interfaces';
 import { constants } from '@core/constants';
 import { TableComparator } from '@context/table-creator/table-comparator';
-import { TableCreationProcessorInterface } from '@context/interfaces';
+import { TableCreationProcessorInterface } from '@context/common';
 
 export class TableCreationProcessor implements TableCreationProcessorInterface {
 	private readonly tableComparator = new TableComparator();

@@ -1,4 +1,4 @@
-import { InsertQueryBuilderInterface, QueryBuilderInterface } from '@context/interfaces';
+import { InsertQueryBuilderInterface, QueryBuilderInterface } from '@context/common';
 import { DataSourceInterface } from '@core/interfaces';
 
 export class InsertQueryBuilder<T> implements InsertQueryBuilderInterface<T> {

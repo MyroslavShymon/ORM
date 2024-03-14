@@ -1,5 +1,5 @@
 import { ConnectionClient, ConnectionData } from '@core/types';
-import { QueryBuilderInterface, TableCreatorInterface, TableManipulationInterface } from '@context/interfaces';
+import { QueryBuilderInterface, TableCreatorInterface, TableManipulationInterface } from '@context/common';
 
 export interface DatabaseManagerInterface {
 	connectionData: ConnectionData;

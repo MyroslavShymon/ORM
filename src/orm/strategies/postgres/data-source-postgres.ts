@@ -40,7 +40,7 @@ import {
 } from '@strategies/postgres/components';
 import { ForeignKeyInterface, PrimaryGeneratedColumnInterface } from '@decorators/postgres';
 import { BaseQueries } from '@strategies/base-queries';
-import { Condition, LogicalOperators } from '@context/types';
+import { Condition, LogicalOperators } from '@context/common';
 
 export class DataSourcePostgres extends BaseQueries implements DataSourceInterface {
 	client: PoolClient;

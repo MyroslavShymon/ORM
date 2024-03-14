@@ -1,4 +1,4 @@
-import { QueryBuilderInterface } from '@context/interfaces';
+import { QueryBuilderInterface } from '@context/common';
 
 export interface BaseStructureQueriesInterface {
 	from(table: string): string;

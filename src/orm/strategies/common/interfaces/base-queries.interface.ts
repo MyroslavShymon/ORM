@@ -1,5 +1,4 @@
-import { OrderOperators } from '@context/types';
-import { QueryBuilderInterface } from '@context/interfaces';
+import { OrderOperators, QueryBuilderInterface } from '@context/common';
 
 export interface BaseQueriesInterface {
 	//select

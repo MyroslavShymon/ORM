@@ -2,7 +2,7 @@ import { ColumnInterface, ComputedColumnInterface, DataSourceInterface, TableIng
 import { DataSourcePostgres } from '@strategies/postgres';
 import { ConstraintInterface, ForeignKeyInterface, TableOptionsPostgresqlInterface } from '@decorators/postgres';
 import { TableOptionsMysqlInterface } from '@decorators/mysql';
-import { TableComparatorInterface, TablePercentageInterface } from '@context/interfaces';
+import { TableComparatorInterface, TablePercentageInterface } from '@context/common';
 
 export class TableComparator implements TableComparatorInterface {
 	constructor() {

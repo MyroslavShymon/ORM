@@ -1,4 +1,4 @@
-import { QueryBuilderInterface, QueryStructureBuilderInterface } from '@context/interfaces';
+import { QueryBuilderInterface, QueryStructureBuilderInterface } from '@context/common';
 import { DataSourceInterface } from '@core/interfaces';
 
 export class QueryStructureBuilder<T> implements QueryStructureBuilderInterface<T> {

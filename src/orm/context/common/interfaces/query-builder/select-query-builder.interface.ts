@@ -1,4 +1,4 @@
-import { Condition, LogicalOperators, OrderOperators } from '@context/types';
+import { Condition, LogicalOperators, OrderOperators } from '@context/common';
 
 export interface SelectQueryBuilderInterface<T> {
 	select(columns: string[]): void;

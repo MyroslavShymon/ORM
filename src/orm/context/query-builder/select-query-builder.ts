@@ -1,7 +1,11 @@
-import { SelectQueryBuilderInterface } from '@context/interfaces/query-builder/select-query-builder.interface';
-import { QueryBuilderInterface } from '@context/interfaces';
-import { Condition, LogicalOperators, OrderOperators } from '@context/types';
 import { DataSourceInterface } from '@core/interfaces';
+import {
+	Condition,
+	LogicalOperators,
+	OrderOperators,
+	QueryBuilderInterface,
+	SelectQueryBuilderInterface
+} from '@context/common';
 
 export class SelectQueryBuilder<T> implements SelectQueryBuilderInterface<T> {
 	private _queryBuilder: QueryBuilderInterface<T>;

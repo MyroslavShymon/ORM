@@ -1,4 +1,4 @@
-import { AlterTableResultInterface } from '@context/interfaces';
+import { AlterTableResultInterface } from '@context/common';
 import { DataSourceInterface } from '@core/interfaces';
 
 export interface TableManipulationInterface {

@@ -1,4 +1,3 @@
-import { OrderOperators } from '@context/types';
 import {
 	BaseAggregateQueries,
 	BaseAggregateQueriesInterface,
@@ -10,7 +9,7 @@ import {
 	BaseStructureQueries,
 	BaseStructureQueriesInterface
 } from '@strategies/common';
-import { QueryBuilderInterface } from '@context/interfaces';
+import { OrderOperators, QueryBuilderInterface } from '@context/common';
 
 
 export class BaseQueries implements BaseQueriesInterface {

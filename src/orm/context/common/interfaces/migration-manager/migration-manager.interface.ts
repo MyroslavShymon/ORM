@@ -3,7 +3,7 @@ import {
 	CreateMigrationTableOptionsInterface,
 	InitIngotOptionsInterface,
 	SyncDatabaseIngotInterface
-} from '@context/interfaces';
+} from '@context/common';
 
 export interface MigrationManagerInterface {
 	createMigrationTable(options?: CreateMigrationTableOptionsInterface): Promise<void>;

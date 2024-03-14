@@ -4,7 +4,7 @@ import {
 	ForeignKeyInterface,
 	PrimaryGeneratedColumnInterface
 } from '@decorators/postgres';
-import { DatabaseStateBuilderInterface, DatabaseStateInterface } from '@context/interfaces';
+import { DatabaseStateBuilderInterface, DatabaseStateInterface } from '@context/common';
 
 export class DatabaseStateBuilder implements DatabaseStateBuilderInterface {
 	constructor() {

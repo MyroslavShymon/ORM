@@ -1,5 +1,4 @@
-import { AggregateQueryBuilderInterface } from '@context/interfaces/query-builder/aggregate-query-builder.interface';
-import { QueryBuilderInterface } from '@context/interfaces';
+import { AggregateQueryBuilderInterface, QueryBuilderInterface } from '@context/common/interfaces';
 import { DataSourceInterface } from '@core/interfaces';
 
 export class AggregateQueryBuilder<T> implements AggregateQueryBuilderInterface {

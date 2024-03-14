@@ -1,12 +1,12 @@
 import { DataSourceInterface } from '@core/interfaces';
-import { MigrationManagerInterface } from '@context/interfaces/migration-manager/migration-manager.interface';
 import { constants } from '@core/constants';
 import {
 	CheckTableExistenceOptionsInterface,
 	CreateMigrationTableOptionsInterface,
 	InitIngotOptionsInterface,
+	MigrationManagerInterface,
 	SyncDatabaseIngotInterface
-} from '@context/interfaces';
+} from '@context/common';
 
 export class MigrationManager implements MigrationManagerInterface {
 	private readonly _dataSource: DataSourceInterface;

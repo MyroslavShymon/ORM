@@ -1,5 +1,5 @@
 import { BaseStructureQueriesInterface } from '@strategies/common';
-import { QueryBuilderInterface } from '@context/interfaces';
+import { QueryBuilderInterface } from '@context/common';
 
 export class BaseStructureQueries implements BaseStructureQueriesInterface {
 	from(table: string): string {

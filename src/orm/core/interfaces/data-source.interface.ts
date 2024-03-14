@@ -24,8 +24,7 @@ import {
 	RenameTableInterface
 } from '@core/interfaces/table-manipuldation';
 import { ForeignKeyInterface, PrimaryGeneratedColumnInterface } from '@decorators/postgres';
-import { Condition, LogicalOperators, OrderOperators } from '@context/types';
-import { QueryBuilderInterface } from '@context/interfaces';
+import { Condition, LogicalOperators, OrderOperators, QueryBuilderInterface } from '@context/common';
 
 export interface DataSourceInterface {
 	client;//TODO typing

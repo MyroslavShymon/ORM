@@ -1,4 +1,4 @@
-import { AlterTableResultInterface, TableManipulationInterface } from '@context/interfaces';
+import { AlterTableResultInterface, TableManipulationInterface } from '@context/common';
 import {
 	AddColumnInterface,
 	AddDefaultValueInterface,

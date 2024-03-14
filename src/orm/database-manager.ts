@@ -9,7 +9,7 @@ import {
 	QueryBuilderInterface,
 	TableCreatorInterface,
 	TableManipulationInterface
-} from '@context/interfaces';
+} from '@context/common';
 
 class DatabaseManager implements DatabaseManagerInterface {
 	private _connectionData: ConnectionData;

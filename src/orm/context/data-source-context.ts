@@ -1,12 +1,5 @@
 import { PoolClient } from 'pg';
 import { Connection } from 'mysql2/promise';
-import {
-	DataSourceContextInterface,
-	MigrationManagerInterface,
-	QueryBuilderInterface,
-	TableCreatorInterface,
-	TableManipulationInterface
-} from '@context/interfaces';
 import { TableManipulation } from '@context/table-manipulation';
 import { TableCreator } from '@context/table-creator/table-creator';
 import { DataSourceInterface } from '@core/interfaces';
@@ -14,6 +7,13 @@ import { ConnectionData } from '@core/types';
 import { DataSourcePostgres } from '@strategies/postgres';
 import { MigrationManager } from '@context/migration-manager';
 import { QueryBuilder } from '@context/query-builder';
+import {
+	DataSourceContextInterface,
+	MigrationManagerInterface,
+	QueryBuilderInterface,
+	TableCreatorInterface,
+	TableManipulationInterface
+} from '@context/common';
 
 class DataSourceContext implements DataSourceContextInterface {
 	private _dataSource: DataSourceInterface;

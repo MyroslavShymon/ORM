@@ -1,4 +1,4 @@
-import { Condition, LogicalOperators } from '@context/types';
+import { Condition, LogicalOperators } from '@context/common';
 
 export interface QueryBuilderInterface<T> {
 	query: string;

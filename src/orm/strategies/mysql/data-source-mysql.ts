@@ -21,7 +21,7 @@ import { ConnectionData } from '@core/types';
 import { MigrationServiceInterface, TableAltererInterface, TableBuilderInterface } from '@strategies/mysql/interfaces';
 import { MigrationService, TableAlterer, TableBuilder } from '@strategies/mysql/components';
 import { BaseQueries } from '@strategies/base-queries';
-import { Condition, LogicalOperators } from '@context/types';
+import { Condition, LogicalOperators } from '@context/common';
 
 export class DataSourceMySql extends BaseQueries implements DataSourceInterface {
 	client: Connection;

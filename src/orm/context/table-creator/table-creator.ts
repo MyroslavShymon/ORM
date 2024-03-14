@@ -3,7 +3,7 @@ import {
 	DatabaseStateInterface,
 	TableCreationProcessorInterface,
 	TableCreatorInterface
-} from '@context/interfaces';
+} from '@context/common';
 import { DatabaseIngotInterface, DataSourceInterface } from '@core/interfaces';
 import { TableIngotInterface } from '@core/interfaces/table-ingot.interface';
 import { constants } from '@core/constants';

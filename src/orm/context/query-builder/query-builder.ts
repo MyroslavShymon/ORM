@@ -1,20 +1,22 @@
-import {
-	InsertQueryBuilderInterface,
-	QueryBuilderInterface,
-	QueryStructureBuilderInterface
-} from '@context/interfaces';
-import { Condition, LogicalOperators, OrderOperators } from '@context/types';
-import { SelectQueryBuilderInterface } from '@context/interfaces/query-builder/select-query-builder.interface';
 import { SelectQueryBuilder } from '@context/query-builder/select-query-builder';
 import { InsertQueryBuilder } from '@context/query-builder/insert-query-builder';
-import { AggregateQueryBuilderInterface } from '@context/interfaces/query-builder/aggregate-query-builder.interface';
 import { AggregateQueryBuilder } from '@context/query-builder/aggregate-query-builder';
 import { DeleteQueryBuilder } from '@context/query-builder/delete-query-builder';
-import { DeleteQueryBuilderInterface } from '@context/interfaces/query-builder/delete-query-builder.interface';
-import { UpdateQueryBuilderInterface } from '@context/interfaces/query-builder/update-query-builder.interface';
 import { UpdateQueryBuilder } from '@context/query-builder/update-query-builder';
 import { QueryStructureBuilder } from '@context/query-builder/query-structure-builder';
 import { DataSourceInterface } from '@core/interfaces';
+import {
+	AggregateQueryBuilderInterface,
+	Condition,
+	DeleteQueryBuilderInterface,
+	InsertQueryBuilderInterface,
+	LogicalOperators,
+	OrderOperators,
+	QueryBuilderInterface,
+	QueryStructureBuilderInterface,
+	SelectQueryBuilderInterface,
+	UpdateQueryBuilderInterface
+} from '@context/common';
 
 export class QueryBuilder<T> implements QueryBuilderInterface<T> {
 	query: string;

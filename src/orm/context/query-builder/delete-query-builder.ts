@@ -1,6 +1,5 @@
-import { DeleteQueryBuilderInterface } from '@context/interfaces/query-builder/delete-query-builder.interface';
-import { QueryBuilderInterface } from '@context/interfaces';
 import { DataSourceInterface } from '@core/interfaces';
+import { DeleteQueryBuilderInterface, QueryBuilderInterface } from '@context/common';
 
 export class DeleteQueryBuilder<T> implements DeleteQueryBuilderInterface {
 	private _queryBuilder: QueryBuilderInterface<T>;

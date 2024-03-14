@@ -1,6 +1,5 @@
-import { UpdateQueryBuilderInterface } from '@context/interfaces/query-builder/update-query-builder.interface';
-import { QueryBuilderInterface } from '@context/interfaces';
 import { DataSourceInterface } from '@core/interfaces';
+import { QueryBuilderInterface, UpdateQueryBuilderInterface } from '@context/common';
 
 export class UpdateQueryBuilder<T> implements UpdateQueryBuilderInterface<T> {
 	private _queryBuilder: QueryBuilderInterface<T>;
