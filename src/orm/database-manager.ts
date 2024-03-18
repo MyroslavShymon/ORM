@@ -29,7 +29,11 @@ class DatabaseManager implements DatabaseManagerInterface {
 	}
 
 	async connectDatabase(): Promise<void> {
-		await this._dataSource.connectDatabase(this._connectionData);
+		try {
+			await this._dataSource.connectDatabase(this._connectionData);
+		} catch (error) {
+			console.error('Error while connecting database', error);
+		}
 	}
 
 	async createOrmConnection(): Promise<ConnectionClient> {
@@ -69,7 +73,7 @@ class DatabaseManager implements DatabaseManagerInterface {
 				databaseIngot
 			});
 		} catch (error) {
-			console.error('error', error);
+			console.error('Error while creating orm connection', error);
 		} finally {
 			// await this._dataSource.client.release();
 		}
@@ -81,7 +85,11 @@ class DatabaseManager implements DatabaseManagerInterface {
 	}
 
 	async query(sql: string): Promise<Object> {
-		return this._dataSource.query(sql);
+		try {
+			return this._dataSource.query(sql);
+		} catch (error) {
+			console.error('Error while querying', error);
+		}
 	}
 
 	set connectionData(connectionData: ConnectionData) {
