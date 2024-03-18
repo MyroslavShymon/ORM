@@ -1,6 +1,25 @@
 import { OrderOperators, QueryBuilderInterface } from '@context/common';
+import {
+	AddDefaultValueInterface,
+	DropDefaultValueInterface,
+	DropTableInterface,
+	RenameColumnInterface,
+	RenameTableInterface
+} from '@core/interfaces';
 
 export interface BaseQueriesInterface {
+	//base database structure modifier
+	renameTable(tableName: string, parameters: RenameTableInterface): string;
+
+	dropTable(tableName: string, parameters: DropTableInterface): string;
+
+	//base table structure modifier
+	addDefaultValue(tableName: string, parameters: AddDefaultValueInterface): string;
+
+	dropDefaultValue(tableName: string, parameters: DropDefaultValueInterface): string;
+
+	renameColumn(tableName: string, parameters: RenameColumnInterface): string;
+
 	//select
 	select(columns: string[]): string;
 

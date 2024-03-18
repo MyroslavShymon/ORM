@@ -11,6 +11,8 @@ import {
 	TableBuilderInterface as TableBuilderInterfaceMysql
 } from '../../strategies/mysql';
 import { DatabaseIngotInterface } from '@core/interfaces/database-ingot.interface';
+import { ForeignKeyInterface, PrimaryGeneratedColumnInterface } from '@decorators/postgres';
+import { Condition, LogicalOperators, OrderOperators, QueryBuilderInterface } from '@context/common';
 import {
 	AddDefaultValueInterface,
 	AddNotNullToColumnInterface,
@@ -23,8 +25,6 @@ import {
 	RenameColumnInterface,
 	RenameTableInterface
 } from '@core/interfaces/table-manipuldation';
-import { ForeignKeyInterface, PrimaryGeneratedColumnInterface } from '@decorators/postgres';
-import { Condition, LogicalOperators, OrderOperators, QueryBuilderInterface } from '@context/common';
 
 export interface DataSourceInterface {
 	client;//TODO typing
@@ -44,26 +44,27 @@ export interface DataSourceInterface {
 
 	addColumn(tableName: string, parameters: AddColumnInterface<DataSourceInterface>): string;
 
-	deleteColumn(tableName: string, parameters: DeleteColumnInterface): string;
+	deleteColumn(tableName: string, parameters: DeleteColumnInterface<DataSourceInterface>): string;
+
+	addNotNullToColumn(tableName: string, parameters: AddNotNullToColumnInterface<DataSourceInterface>): string;
+
+	dropNotNullFromColumn(tableName: string, parameters: DropNotNullFromColumnInterface<DataSourceInterface>): string;
+
+	addUniqueToColumn(tableName: string, parameters: AddUniqueToColumnInterface<DataSourceInterface>): string;
+
+	changeDataTypeOfColumn(tableName: string, parameters: ChangeColumnDatatypeInterface): string;
 
 	addDefaultValue(tableName: string, parameters: AddDefaultValueInterface): string;
 
 	dropDefaultValue(tableName: string, parameters: DropDefaultValueInterface): string;
 
-	changeDataTypeOfColumn(tableName: string, parameters: ChangeColumnDatatypeInterface): string;
-
 	renameColumn(tableName: string, parameters: RenameColumnInterface): string;
 
 	renameTable(tableName: string, parameters: RenameTableInterface): string;
 
-	addNotNullToColumn(tableName: string, parameters: AddNotNullToColumnInterface): string;
-
-	dropNotNullFromColumn(tableName: string, parameters: DropNotNullFromColumnInterface): string;
-
-	addUniqueToColumn(tableName: string, parameters: AddUniqueToColumnInterface): string;
-
 	dropTable(tableName: string, parameters: DropTableInterface): string;
 
+	///
 	createMigrationTable(tableName: string, tableSchema: string): string;
 
 	checkTableExistence(dataSource: DataSourceInterface, tableName: string, tableSchema: string): Promise<boolean>;
@@ -82,6 +83,7 @@ export interface DataSourceInterface {
 		databaseIngot: DatabaseIngotInterface
 	): Promise<void>;
 
+	//get time
 	getCurrentTimestamp(): string;
 
 	//Select querying

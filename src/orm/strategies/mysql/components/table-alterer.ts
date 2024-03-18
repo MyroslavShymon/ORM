@@ -1,61 +1,41 @@
 import { DataSourceMySql, TableAltererInterface } from '@strategies/mysql';
 import {
 	AddColumnInterface,
-	AddDefaultValueInterface,
 	AddNotNullToColumnInterface,
 	AddUniqueToColumnInterface,
 	ChangeColumnDatatypeInterface,
 	DeleteColumnInterface,
-	DropDefaultValueInterface,
-	DropNotNullFromColumnInterface,
-	DropTableInterface,
-	RenameColumnInterface,
-	RenameTableInterface
+	DropNotNullFromColumnInterface
 } from '@core/interfaces';
 
-//TODO переробити під mysql
 export class TableAlterer implements TableAltererInterface {
 	addColumn(tableName: string, parameters: AddColumnInterface<DataSourceMySql>): string {
-		return `ALTER TABLE '${tableName}' ADD COLUMN '${parameters.columnName}' ${parameters.options.dataType};`;
+		return `ALTER TABLE '${tableName}' ADD '${parameters.columnName}' ${parameters.options.dataType};`;
 	}
 
-	deleteColumn(tableName: string, parameters: DeleteColumnInterface): string {
-		return `ALTER TABLE '${tableName}' DROP COLUMN '${parameters.columnName}' ${parameters.isCascade ? 'CASCADE' : ''};`;
+	deleteColumn(tableName: string, parameters: DeleteColumnInterface<DataSourceMySql>): string {
+		return `ALTER TABLE '${tableName}' DROP COLUMN '${parameters}';`;
 	}
 
-	addDefaultValue(tableName: string, parameters: AddDefaultValueInterface): string {
-		return `ALTER TABLE '${tableName}' ALTER COLUMN '${parameters.columnName}' SET DEFAULT ${parameters.value};`;
+	addNotNullToColumn(tableName: string, parameters: AddNotNullToColumnInterface<DataSourceMySql>): string {
+		if (!parameters.columnType) {
+			throw new Error(`There is no datatype of column`);
+		}
+		return `ALTER TABLE ${tableName} MODIFY COLUMN ${parameters.columnName} ${parameters.columnType}${parameters.typeLength ? `(${parameters.typeLength})` : ''} NOT NULL;`;
 	}
 
-	dropDefaultValue(tableName: string, parameters: DropDefaultValueInterface): string {
-		return `ALTER TABLE '${tableName}' ALTER COLUMN '${parameters.columnName}' DROP DEFAULT;`;
+	dropNotNullFromColumn(tableName: string, parameters: DropNotNullFromColumnInterface<DataSourceMySql>): string {
+		if (!parameters.columnType) {
+			throw new Error(`There is no datatype of column`);
+		}
+		return `ALTER TABLE ${tableName} MODIFY COLUMN ${parameters.columnName} ${parameters.columnType}${parameters.typeLength ? `(${parameters.typeLength})` : ''} NULL;`;
 	}
 
-	addNotNullToColumn(tableName: string, parameters: AddNotNullToColumnInterface): string {
-		return `ALTER TABLE '${tableName}' ALTER COLUMN '${parameters.columnName}' SET NOT NULL;`;
-	}
-
-	dropNotNullFromColumn(tableName: string, parameters: DropNotNullFromColumnInterface): string {
-		return `ALTER TABLE '${tableName}' ALTER COLUMN '${parameters.columnName}' DROP NOT NULL;`;
-	}
-
-	addUniqueToColumn(tableName: string, parameters: AddUniqueToColumnInterface): string {
-		return `ALTER TABLE '${tableName}' ADD CONSTRAINT '${parameters.constraintName}' UNIQUE (${parameters.columnName});`;
+	addUniqueToColumn(tableName: string, parameters: AddUniqueToColumnInterface<DataSourceMySql>): string {
+		return `ALTER TABLE ${tableName} ADD UNIQUE (${parameters.columnName});`;
 	}
 
 	changeDataTypeOfColumn(tableName: string, parameters: ChangeColumnDatatypeInterface): string {
-		return `ALTER TABLE '${tableName}' ALTER COLUMN ${parameters.columnName} TYPE ${parameters.datatype}(${parameters.typeParams});`;
-	}
-
-	renameColumn(tableName: string, parameters: RenameColumnInterface): string {
-		return `ALTER TABLE '${tableName}' RENAME COLUMN '${parameters.columnName}' TO '${parameters.futureColumnName}';`;
-	}
-
-	renameTable(tableName: string, parameters: RenameTableInterface): string {
-		return `ALTER TABLE '${tableName}' RENAME TO '${parameters.tableName}';`;
-	}
-
-	dropTable(tableName: string, parameters: DropTableInterface): string {
-		return `DROP TABLE ${parameters.ifExist ? 'IF EXISTS ' : ''}'${tableName}';`;
+		return `ALTER TABLE ${tableName} MODIFY COLUMN ${parameters.columnName} ${parameters.datatype};`;
 	}
 }

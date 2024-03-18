@@ -1,15 +1,26 @@
 import {
 	BaseAggregateQueries,
 	BaseAggregateQueriesInterface,
+	BaseDatabaseStructureModifier,
+	BaseDatabaseStructureModifierInterface,
 	BaseInsertQueries,
 	BaseInsertQueriesInterface,
 	BaseQueriesInterface,
 	BaseSelectQueries,
 	BaseSelectQueriesInterface,
 	BaseStructureQueries,
-	BaseStructureQueriesInterface
+	BaseStructureQueriesInterface,
+	BaseTableStructureModifier,
+	BaseTableStructureModifierInterface
 } from '@strategies/common';
 import { OrderOperators, QueryBuilderInterface } from '@context/common';
+import {
+	AddDefaultValueInterface,
+	DropDefaultValueInterface,
+	DropTableInterface,
+	RenameColumnInterface,
+	RenameTableInterface
+} from '@core/interfaces';
 
 
 export class BaseQueries implements BaseQueriesInterface {
@@ -17,7 +28,32 @@ export class BaseQueries implements BaseQueriesInterface {
 	private readonly _baseInsertQueries: BaseInsertQueriesInterface = new BaseInsertQueries();
 	private readonly _baseStructureQueries: BaseStructureQueriesInterface = new BaseStructureQueries();
 	private readonly _baseSelectQueries: BaseSelectQueriesInterface = new BaseSelectQueries();
+	private readonly _baseTableStructureModifierQueries: BaseTableStructureModifierInterface = new BaseTableStructureModifier();
+	private readonly _baseDatabaseStructureModifierQueries: BaseDatabaseStructureModifierInterface = new BaseDatabaseStructureModifier();
 
+	//Base database structure modifier
+	renameTable(tableName: string, parameters: RenameTableInterface): string {
+		return this._baseDatabaseStructureModifierQueries.renameTable(tableName, parameters);
+	}
+
+	dropTable(tableName: string, parameters: DropTableInterface): string {
+		return this._baseDatabaseStructureModifierQueries.dropTable(tableName, parameters);
+	}
+
+	//Base table structure modifier
+	addDefaultValue(tableName: string, parameters: AddDefaultValueInterface): string {
+		return this._baseTableStructureModifierQueries.addDefaultValue(tableName, parameters);
+	}
+
+	dropDefaultValue(tableName: string, parameters: DropDefaultValueInterface): string {
+		return this._baseTableStructureModifierQueries.dropDefaultValue(tableName, parameters);
+	}
+
+	renameColumn(tableName: string, parameters: RenameColumnInterface): string {
+		return this._baseTableStructureModifierQueries.renameColumn(tableName, parameters);
+	}
+
+	//Base select queries
 	select(columns: string[]): string {
 		return this._baseSelectQueries.select(columns);
 	}

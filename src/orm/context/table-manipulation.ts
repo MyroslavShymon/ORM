@@ -46,7 +46,7 @@ export class TableManipulation implements TableManipulationInterface {
 		return this._dataSource.client.query(addColumnQuery);
 	};
 
-	private _deleteColumn = (tableName: string, getQueryString: boolean = false) => async (parameters: DeleteColumnInterface): Promise<Object | string> => {
+	private _deleteColumn = (tableName: string, getQueryString: boolean = false) => async (parameters: DeleteColumnInterface<DataSourceInterface>): Promise<Object | string> => {
 		const deleteColumnQuery = this._dataSource.deleteColumn(tableName, parameters);
 		if (getQueryString) {
 			return deleteColumnQuery;
@@ -100,7 +100,7 @@ export class TableManipulation implements TableManipulationInterface {
 		return this._dataSource.client.query(renameTableQuery);
 	};
 
-	private _addNotNullToColumn = (tableName: string, getQueryString: boolean = false) => async (parameters: AddNotNullToColumnInterface): Promise<Object | string> => {
+	private _addNotNullToColumn = (tableName: string, getQueryString: boolean = false) => async (parameters: AddNotNullToColumnInterface<DataSourceInterface>): Promise<Object | string> => {
 		const addNotNullToColumnQuery = this._dataSource.addNotNullToColumn(tableName, parameters);
 		if (getQueryString) {
 			return addNotNullToColumnQuery;
@@ -109,7 +109,7 @@ export class TableManipulation implements TableManipulationInterface {
 		return this._dataSource.client.query(addNotNullToColumnQuery);
 	};
 
-	private _dropNotNullFromColumn = (tableName: string, getQueryString: boolean = false) => async (parameters: DropNotNullFromColumnInterface): Promise<Object | string> => {
+	private _dropNotNullFromColumn = (tableName: string, getQueryString: boolean = false) => async (parameters: DropNotNullFromColumnInterface<DataSourceInterface>): Promise<Object | string> => {
 		const dropNotNullFromColumnQuery = this._dataSource.dropNotNullFromColumn(tableName, parameters);
 		if (getQueryString) {
 			return dropNotNullFromColumnQuery;
@@ -118,7 +118,7 @@ export class TableManipulation implements TableManipulationInterface {
 		return this._dataSource.client.query(dropNotNullFromColumnQuery);
 	};
 
-	private _addUniqueToColumn = (tableName: string, getQueryString: boolean = false) => async (parameters: AddUniqueToColumnInterface): Promise<Object | string> => {
+	private _addUniqueToColumn = (tableName: string, getQueryString: boolean = false) => async (parameters: AddUniqueToColumnInterface<DataSourceInterface>): Promise<Object | string> => {
 		const addUniqueToColumnQuery = this._dataSource.addUniqueToColumn(tableName, parameters);
 		if (getQueryString) {
 			return addUniqueToColumnQuery;

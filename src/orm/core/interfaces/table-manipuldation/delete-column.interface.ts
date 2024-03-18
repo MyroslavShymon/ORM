@@ -1,4 +1,6 @@
-export interface DeleteColumnInterface {
+import { DataSourcePostgres } from '@strategies/postgres';
+
+export interface DeleteColumnInterface<DB> {
 	columnName: string,
-	isCascade: boolean
+	isCascade: DB extends DataSourcePostgres ? boolean : never;
 }
