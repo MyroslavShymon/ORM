@@ -13,8 +13,26 @@ import {
 	TableInterface
 } from '@core/interfaces';
 import { ConnectionData } from '@core/types';
-import { MigrationServiceInterface, TableAltererInterface, TableBuilderInterface } from '@strategies/mysql/interfaces';
-import { MigrationService, TableAlterer, TableBuilder } from '@strategies/mysql/components';
+import {
+	DeleteQueriesInterface,
+	InsertQueriesInterface,
+	MigrationServiceInterface,
+	SelectQueriesInterface,
+	TableAltererInterface,
+	TableBuilderInterface,
+	UpdateQueriesInterface,
+	ViewQueriesInterface
+} from '@strategies/mysql/interfaces';
+import {
+	DeleteQueries,
+	InsertQueries,
+	MigrationService,
+	SelectQueries,
+	TableAlterer,
+	TableBuilder,
+	UpdateQueries,
+	ViewQueries
+} from '@strategies/mysql/components';
 import { BaseQueries } from '@strategies/base-queries';
 import { Condition, LogicalOperators } from '@context/common';
 
@@ -23,12 +41,22 @@ export class DataSourceMySql extends BaseQueries implements DataSourceInterface 
 	tableBuilder: TableBuilderInterface;
 	tableAlterer: TableAltererInterface;
 	migrationService: MigrationServiceInterface;
+	insertQueries: InsertQueriesInterface;
+	updateQueries: UpdateQueriesInterface;
+	deleteQueries: DeleteQueriesInterface;
+	viewQueries: ViewQueriesInterface;
+	selectQueries: SelectQueriesInterface;
 
 	constructor() {
 		super();
 		this.tableBuilder = new TableBuilder();
 		this.tableAlterer = new TableAlterer();
 		this.migrationService = new MigrationService();
+		this.insertQueries = new InsertQueries();
+		this.updateQueries = new UpdateQueries();
+		this.deleteQueries = new DeleteQueries();
+		this.viewQueries = new ViewQueries();
+		this.selectQueries = new SelectQueries();
 	}
 
 	async connect(dataToConnect: ConnectionData): Promise<void> {
@@ -106,30 +134,30 @@ export class DataSourceMySql extends BaseQueries implements DataSourceInterface 
 		logicalOperator?: LogicalOperators;
 		exists?: string
 	} | string): string {
-		return '';
+		return this.selectQueries.where(params);
 	}
 
 	//Insert queries
 	insert(values: Partial<unknown>, tableName: string): string {
-		return '';
+		return this.insertQueries.insert(values, tableName);
 	}
 
 	insertMany(values: Partial<unknown>[], tableName: string): string {
-		return '';
+		return this.insertQueries.insertMany(values, tableName);
 	}
 
 	//Update queries
 	update(values: Partial<Object>, tableName: string): string {
-		return '';
+		return this.updateQueries.update(values, tableName);
 	}
 
 	//Delete queries
 	deleting(tableName: string): string {
-		return '';
+		return this.deleteQueries.deleting(tableName);
 	}
 
 	//Base queries
 	createView(name: string): string {
-		return '';
+		return this.viewQueries.createView(name);
 	}
 }
