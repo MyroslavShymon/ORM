@@ -1,15 +1,6 @@
 import { ConnectionData } from '@core/types';
 import { ColumnInterface, ComputedColumnInterface, TableInterface } from '@core/interfaces/decorators';
 import { AddColumnInterface } from '@core/interfaces/table-manipuldation/add-column.interface';
-import {
-	MigrationServiceInterface,
-	TableAltererInterface as TableAltererInterfacePostgres,
-	TableBuilderInterface as TableBuilderInterfacePostgres
-} from '../../strategies/postgres';
-import {
-	TableAltererInterface as TableAltererInterfaceMysql,
-	TableBuilderInterface as TableBuilderInterfaceMysql
-} from '../../strategies/mysql';
 import { DatabaseIngotInterface } from '@core/interfaces/database-ingot.interface';
 import { ForeignKeyInterface, PrimaryGeneratedColumnInterface } from '@decorators/postgres';
 import { Condition, LogicalOperators, OrderOperators, QueryBuilderInterface } from '@context/common';
@@ -28,9 +19,6 @@ import {
 
 export interface DataSourceInterface {
 	client;//TODO typing
-	tableBuilder: TableBuilderInterfacePostgres | TableBuilderInterfaceMysql;
-	tableAlterer: TableAltererInterfacePostgres | TableAltererInterfaceMysql;
-	migrationService: MigrationServiceInterface;
 
 	connect(dataToConnect: ConnectionData);
 
@@ -64,7 +52,7 @@ export interface DataSourceInterface {
 
 	dropTable(tableName: string, parameters: DropTableInterface): string;
 
-	///
+	// migration service
 	createMigrationTable(tableName: string, tableSchema: string): string;
 
 	checkTableExistence(dataSource: DataSourceInterface, tableName: string, tableSchema: string): Promise<boolean>;
@@ -82,6 +70,12 @@ export interface DataSourceInterface {
 		tableSchema: string,
 		databaseIngot: DatabaseIngotInterface
 	): Promise<void>;
+
+	getCurrentDatabaseIngot(
+		dataSource: DataSourceInterface,
+		tableName: string,
+		tableSchema: string
+	): Promise<DatabaseIngotInterface>;
 
 	//get time
 	getCurrentTimestamp(): string;

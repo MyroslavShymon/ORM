@@ -38,25 +38,25 @@ import { Condition, LogicalOperators } from '@context/common';
 
 export class DataSourceMySql extends BaseQueries implements DataSourceInterface {
 	client: Connection;
-	tableBuilder: TableBuilderInterface;
-	tableAlterer: TableAltererInterface;
-	migrationService: MigrationServiceInterface;
-	insertQueries: InsertQueriesInterface;
-	updateQueries: UpdateQueriesInterface;
-	deleteQueries: DeleteQueriesInterface;
-	viewQueries: ViewQueriesInterface;
-	selectQueries: SelectQueriesInterface;
+	private _tableBuilder: TableBuilderInterface;
+	private _tableAlterer: TableAltererInterface;
+	private _migrationService: MigrationServiceInterface;
+	private _insertQueries: InsertQueriesInterface;
+	private _updateQueries: UpdateQueriesInterface;
+	private _deleteQueries: DeleteQueriesInterface;
+	private _viewQueries: ViewQueriesInterface;
+	private _selectQueries: SelectQueriesInterface;
 
 	constructor() {
 		super();
-		this.tableBuilder = new TableBuilder();
-		this.tableAlterer = new TableAlterer();
-		this.migrationService = new MigrationService();
-		this.insertQueries = new InsertQueries();
-		this.updateQueries = new UpdateQueries();
-		this.deleteQueries = new DeleteQueries();
-		this.viewQueries = new ViewQueries();
-		this.selectQueries = new SelectQueries();
+		this._tableBuilder = new TableBuilder();
+		this._tableAlterer = new TableAlterer();
+		this._migrationService = new MigrationService();
+		this._insertQueries = new InsertQueries();
+		this._updateQueries = new UpdateQueries();
+		this._deleteQueries = new DeleteQueries();
+		this._viewQueries = new ViewQueries();
+		this._selectQueries = new SelectQueries();
 	}
 
 	async connect(dataToConnect: ConnectionData): Promise<void> {
@@ -68,15 +68,15 @@ export class DataSourceMySql extends BaseQueries implements DataSourceInterface 
 		columns?: ColumnInterface<DataSourceMySql>[],
 		computedColumns?: ComputedColumnInterface<DataSourceMySql>[]
 	): string {
-		return this.tableBuilder.createTable(table, columns, computedColumns);
+		return this._tableBuilder.createTable(table, columns, computedColumns);
 	}
 
 	checkTableExistence(dataSource: DataSourceInterface, tableName: string, tableSchema?: string): Promise<boolean> {
-		return this.migrationService.checkTableExistence(dataSource, tableName, tableSchema);
+		return this._migrationService.checkTableExistence(dataSource, tableName, tableSchema);
 	}
 
 	createMigrationTable(tableName: string, tableSchema: string): string {
-		return this.migrationService.createMigrationTable(tableName, tableSchema);
+		return this._migrationService.createMigrationTable(tableName, tableSchema);
 	}
 
 	initCurrentDatabaseIngot(
@@ -85,7 +85,7 @@ export class DataSourceMySql extends BaseQueries implements DataSourceInterface 
 		tableSchema: string,
 		databaseIngot: DatabaseIngotInterface
 	): Promise<void> {
-		return this.migrationService.initCurrentDatabaseIngot(dataSource, tableName, tableSchema, databaseIngot);
+		return this._migrationService.initCurrentDatabaseIngot(dataSource, tableName, tableSchema, databaseIngot);
 	}
 
 	syncDatabaseIngot(
@@ -94,32 +94,40 @@ export class DataSourceMySql extends BaseQueries implements DataSourceInterface 
 		tableSchema: string,
 		databaseIngot: DatabaseIngotInterface
 	): Promise<void> {
-		return this.migrationService.syncDatabaseIngot(dataSource, tableName, tableSchema, databaseIngot);
+		return this._migrationService.syncDatabaseIngot(dataSource, tableName, tableSchema, databaseIngot);
+	}
+
+	getCurrentDatabaseIngot(
+		dataSource: DataSourceInterface,
+		tableName: string,
+		tableSchema: string
+	): Promise<DatabaseIngotInterface> {
+		return this._migrationService.getCurrentDatabaseIngot(dataSource, tableName, tableSchema);
 	}
 
 	//table manipulation
 	addColumn(tableName: string, parameters: AddColumnInterface<DataSourceMySql>): string {
-		return this.tableAlterer.addColumn(tableName, parameters);
+		return this._tableAlterer.addColumn(tableName, parameters);
 	}
 
 	deleteColumn(tableName: string, parameters: DeleteColumnInterface<DataSourceMySql>): string {
-		return this.tableAlterer.deleteColumn(tableName, parameters);
+		return this._tableAlterer.deleteColumn(tableName, parameters);
 	}
 
 	addNotNullToColumn(tableName: string, parameters: AddNotNullToColumnInterface<DataSourceMySql>): string {
-		return this.tableAlterer.addNotNullToColumn(tableName, parameters);
+		return this._tableAlterer.addNotNullToColumn(tableName, parameters);
 	}
 
 	dropNotNullFromColumn(tableName: string, parameters: DropNotNullFromColumnInterface<DataSourceMySql>): string {
-		return this.tableAlterer.dropNotNullFromColumn(tableName, parameters);
+		return this._tableAlterer.dropNotNullFromColumn(tableName, parameters);
 	}
 
 	addUniqueToColumn(tableName: string, parameters: AddUniqueToColumnInterface<DataSourceMySql>): string {
-		return this.tableAlterer.addUniqueToColumn(tableName, parameters);
+		return this._tableAlterer.addUniqueToColumn(tableName, parameters);
 	}
 
 	changeDataTypeOfColumn(tableName: string, parameters: ChangeColumnDatatypeInterface): string {
-		return this.tableAlterer.changeDataTypeOfColumn(tableName, parameters);
+		return this._tableAlterer.changeDataTypeOfColumn(tableName, parameters);
 	}
 
 	//get time
@@ -134,30 +142,30 @@ export class DataSourceMySql extends BaseQueries implements DataSourceInterface 
 		logicalOperator?: LogicalOperators;
 		exists?: string
 	} | string): string {
-		return this.selectQueries.where(params);
+		return this._selectQueries.where(params);
 	}
 
 	//Insert queries
 	insert(values: Partial<unknown>, tableName: string): string {
-		return this.insertQueries.insert(values, tableName);
+		return this._insertQueries.insert(values, tableName);
 	}
 
 	insertMany(values: Partial<unknown>[], tableName: string): string {
-		return this.insertQueries.insertMany(values, tableName);
+		return this._insertQueries.insertMany(values, tableName);
 	}
 
 	//Update queries
 	update(values: Partial<Object>, tableName: string): string {
-		return this.updateQueries.update(values, tableName);
+		return this._updateQueries.update(values, tableName);
 	}
 
 	//Delete queries
 	deleting(tableName: string): string {
-		return this.deleteQueries.deleting(tableName);
+		return this._deleteQueries.deleting(tableName);
 	}
 
 	//Base queries
 	createView(name: string): string {
-		return this.viewQueries.createView(name);
+		return this._viewQueries.createView(name);
 	}
 }

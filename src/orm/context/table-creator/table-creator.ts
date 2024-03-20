@@ -59,7 +59,7 @@ export class TableCreator implements TableCreatorInterface {
 		}
 
 		let { tables: currentTablesIngot }: DatabaseIngotInterface =
-			await this._dataSource.migrationService.getCurrentDatabaseIngot(
+			await this._dataSource.getCurrentDatabaseIngot(
 				this._dataSource,
 				migrationTable,
 				migrationTableSchema

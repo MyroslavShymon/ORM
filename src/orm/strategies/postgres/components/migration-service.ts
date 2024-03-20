@@ -24,7 +24,6 @@ export class MigrationService implements MigrationServiceInterface {
 			);` + '\n' + this.preventUpdateName(tableName, tableSchema);
 	}
 
-	//TODO може колись переробити ці трігери(написати їхній виклик вище)
 	preventUpdateName(tableName: string, tableSchema: string) {
 		return `
 						CREATE OR REPLACE FUNCTION prevent_name_update()

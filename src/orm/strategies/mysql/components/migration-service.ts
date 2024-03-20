@@ -5,39 +5,35 @@ import { constants } from '@core/constants';
 export class MigrationService implements MigrationServiceInterface {
 	async getCurrentDatabaseIngot(
 		dataSource: DataSourceInterface,
-		tableName: string,
-		tableSchema: string
+		tableName: string
 	): Promise<DatabaseIngotInterface> {
-		const getCurrentDatabaseIngotQuery = `SELECT ingot FROM ${tableSchema}.${tableName} WHERE name = 'current_database_ingot'`;
+		const getCurrentDatabaseIngotQuery = `SELECT ingot FROM ${tableName} WHERE name = 'current_database_ingot'`;
 		const ingot = await dataSource.client.query(getCurrentDatabaseIngotQuery);
 		return ingot;
 	}
 
-	createMigrationTable(tableName: string, tableSchema: string): string {
-		return `CREATE TABLE ${tableSchema}.${tableName} (
-					id SERIAL PRIMARY KEY,
+	createMigrationTable(tableName: string): string {
+		return `CREATE TABLE ${tableName} (
+					id INT AUTO_INCREMENT PRIMARY KEY,
 					name VARCHAR(256),
 					is_up BOOLEAN DEFAULT FALSE,
 					ingot JSON NOT NULL,
 					created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 					updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-				);` + '\n' + this.preventUpdateName(tableName, tableSchema);
+				);` + '\n' + this.preventUpdateName(tableName);
 	}
 
-	//TODO може колись переробити ці трігери(написати їхній виклик вище)
-	preventUpdateName(tableName: string, tableSchema: string) {
-		//TODO може бути помилка через кавички BEFORE UPDATE ON `public`.`migrations`
+	preventUpdateName(tableName: string) {
 		return `
 			CREATE TRIGGER prevent_name_update_trigger
-			BEFORE UPDATE ON '${tableSchema}'.'${tableName}'
+			BEFORE UPDATE ON '${tableName}'
 			FOR EACH ROW
 			BEGIN
 			  IF NEW.name <> OLD.name THEN
 				SIGNAL SQLSTATE '45000'
-				SET MESSAGE_TEXT = 'Updating the "name" column is not allowed in the ${tableSchema}.${tableName} table.';
+				SET MESSAGE_TEXT = 'Updating the "name" column is not allowed in the ${tableName} table.';
 			  END IF;
-			END;
-						`;
+			END;`;
 	}
 
 
@@ -48,7 +44,7 @@ export class MigrationService implements MigrationServiceInterface {
 		databaseIngot: DatabaseIngotInterface
 	): Promise<void> {
 		const initCurrentDatabaseIngotQuery = `
-						INSERT INTO ${tableSchema}.${tableName} (name, ingot)
+						INSERT INTO ${tableName} (name, ingot)
 					  	VALUES 
 					    	('${constants.currentDatabaseIngot}', '${JSON.stringify(databaseIngot)}');
 						`;
@@ -63,7 +59,7 @@ export class MigrationService implements MigrationServiceInterface {
 		databaseIngot: DatabaseIngotInterface
 	): Promise<void> {
 		const syncDatabaseIngotQuery = `
-						UPDATE ${tableSchema}.${tableName}
+						UPDATE ${tableName}
 						SET ingot = '${JSON.stringify(databaseIngot)}'
 						WHERE name = '${constants.currentDatabaseIngot}';
 						`;
@@ -76,12 +72,13 @@ export class MigrationService implements MigrationServiceInterface {
 							SELECT 1
 							FROM information_schema.tables
 							WHERE
-							${tableSchema ? `table_schema = '${tableSchema}' AND` : ''}
 							table_name = '${tableName}'
 						) AS table_existence;
 						`;
 
 		const tableExistence = await dataSource.client.query(checkTableExistenceQuery);
+
+		console.log('tableExistence', tableExistence);
 
 		return !!tableExistence[0][0].table_existence;
 	}
