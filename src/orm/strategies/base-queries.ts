@@ -13,7 +13,6 @@ import {
 	BaseTableStructureModifier,
 	BaseTableStructureModifierInterface
 } from '@strategies/common';
-import { OrderOperators, QueryBuilderInterface } from '@context/common';
 import {
 	AddDefaultValueInterface,
 	DropDefaultValueInterface,
@@ -21,6 +20,8 @@ import {
 	RenameColumnInterface,
 	RenameTableInterface
 } from '@core/interfaces';
+import { OrderOperators } from '@core/types';
+import { QueryBuilderInterface } from '@context/common';
 
 
 export class BaseQueries implements BaseQueriesInterface {

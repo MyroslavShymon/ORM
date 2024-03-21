@@ -7,7 +7,8 @@
 // 	[key in LogicalOperators]?: Condition<T> | Array<Condition<T>>;
 // };
 // };
-import { ComparisonOperators } from '@context/common';
+
+import { ComparisonOperators } from '@core/types';
 
 export type Condition<T = unknown> = {
 	[K in keyof T]?: {

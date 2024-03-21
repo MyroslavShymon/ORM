@@ -1,4 +1,4 @@
-import { OrderOperators } from '@context/common';
+import { OrderOperators } from '@core/types';
 
 export interface BaseSelectQueriesInterface {
 	select(columns: string[]): string;

@@ -1,5 +1,5 @@
 import { SelectQueriesInterface } from '@strategies/postgres';
-import { Condition, LogicalOperators } from '@context/common';
+import { Condition, LogicalOperators } from '@core/types';
 
 export class SelectQueries implements SelectQueriesInterface {
 	where(params: {

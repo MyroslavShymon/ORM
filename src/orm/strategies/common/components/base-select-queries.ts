@@ -1,5 +1,5 @@
 import { BaseSelectQueriesInterface } from '@strategies/common';
-import { OrderOperators } from '@context/common';
+import { OrderOperators } from '@core/types';
 
 export class BaseSelectQueries implements BaseSelectQueriesInterface {
 	select(columns: string[]): string {

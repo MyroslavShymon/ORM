@@ -7,16 +7,14 @@ import { QueryStructureBuilder } from '@context/query-builder/query-structure-bu
 import { DataSourceInterface } from '@core/interfaces';
 import {
 	AggregateQueryBuilderInterface,
-	Condition,
 	DeleteQueryBuilderInterface,
 	InsertQueryBuilderInterface,
-	LogicalOperators,
-	OrderOperators,
 	QueryBuilderInterface,
 	QueryStructureBuilderInterface,
 	SelectQueryBuilderInterface,
 	UpdateQueryBuilderInterface
 } from '@context/common';
+import { Condition, LogicalOperators, OrderOperators } from '@core/types';
 
 export class QueryBuilder<T> implements QueryBuilderInterface<T> {
 	query: string;

@@ -11,35 +11,6 @@ import { ConnectionData } from '@core/types';
 import { TableCreationProcessor } from '@context/table-creator/table-creation-processor';
 import { DatabaseStateBuilder } from '@context/table-creator/database-state-builder';
 
-// type gdf = 'postgres' | 'mysql' | 'sqlserver'
-// const c: { c: gdf } = { c: 'mysql' };
-// type PostgresTypes = { a: '' }
-// type MySqlTypes = { b: '' }
-// type SqlServerTypes = { c: '' }
-//
-// type DatabaseTypes<T extends string> = T extends 'postgres' ? PostgresTypes :
-// 	T extends 'mysql' ? MySqlTypes :
-// 		T extends 'sqlserver' ? SqlServerTypes :
-// 			/* інші варіанти */ any;
-//
-// // Приклад використання:
-// const databaseType: gdf = c.c/* отримане значення */;
-// type MyDatabaseType = DatabaseTypes<typeof databaseType>;
-// const tt: MyDatabaseType = {};
-
-// type PostgresTypes = /* ваш тип для PostgreSQL */;
-// type MySqlTypes = /* ваш тип для MySQL */;
-// type SqlServerTypes = /* ваш тип для Microsoft SQL Server */;
-//
-// type DatabaseTypes<T extends string> = T extends 'postgres' ? PostgresTypes :
-// 	T extends 'mysql' ? MySqlTypes :
-// 		T extends 'sqlserver' ? SqlServerTypes :
-// 			/* інші варіанти */ any;
-//
-// // Приклад використання:
-// const databaseType: 'postgres' | 'mysql' | 'sqlserver' = /* отримане значення */;
-// type MyDatabaseType = DatabaseTypes<typeof databaseType>;
-
 export class TableCreator implements TableCreatorInterface {
 	private readonly _dataSource: DataSourceInterface;
 	private readonly _tableCreationProcessor: TableCreationProcessorInterface = new TableCreationProcessor();

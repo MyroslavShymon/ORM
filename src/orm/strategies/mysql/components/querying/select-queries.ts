@@ -1,5 +1,5 @@
-import { Condition, LogicalOperators } from '@context/common';
 import { SelectQueriesInterface } from '@strategies/mysql';
+import { Condition, LogicalOperators } from '@core/types';
 
 export class SelectQueries implements SelectQueriesInterface {
 	where(params: {

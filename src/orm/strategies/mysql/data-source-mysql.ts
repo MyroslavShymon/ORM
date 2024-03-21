@@ -12,7 +12,7 @@ import {
 	DropNotNullFromColumnInterface,
 	TableInterface
 } from '@core/interfaces';
-import { ConnectionData } from '@core/types';
+import { Condition, ConnectionData, LogicalOperators } from '@core/types';
 import {
 	DeleteQueriesInterface,
 	InsertQueriesInterface,
@@ -34,7 +34,6 @@ import {
 	ViewQueries
 } from '@strategies/mysql/components';
 import { BaseQueries } from '@strategies/base-queries';
-import { Condition, LogicalOperators } from '@context/common';
 
 export class DataSourceMySql extends BaseQueries implements DataSourceInterface {
 	client: Connection;
