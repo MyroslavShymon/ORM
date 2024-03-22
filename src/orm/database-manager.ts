@@ -1,7 +1,10 @@
+import * as ts from 'typescript';
+import * as fs from 'fs';
+import * as path from 'path';
 import 'reflect-metadata';
 import { DatabaseIngotInterface, DatabaseManagerInterface } from '@core/interfaces';
 import { ConnectionClient, ConnectionData } from '@core/types';
-import { DatabasesTypes } from '@core/enums';
+import { DatabasesTypes, MysqlDataTypes, PostgresqlDataTypes } from '@core/enums';
 import { DataSourcePostgres } from '@strategies/postgres';
 import { DataSourceMySql } from '@strategies/mysql';
 import {
@@ -38,6 +41,7 @@ class DatabaseManager implements DatabaseManagerInterface {
 
 	async createOrmConnection(): Promise<ConnectionClient> {
 		try {
+			this.generateInterface();
 			const databaseIngot: DatabaseIngotInterface = { tables: [] };
 
 			await this._dataSource.connectDatabase(this._connectionData);
@@ -114,6 +118,127 @@ class DatabaseManager implements DatabaseManagerInterface {
 
 	queryBuilder<T>(): QueryBuilderInterface<T> {
 		return this._dataSource.queryBuilder<T>();
+	}
+
+	generateInterface<T>() {
+		fs.unlink(path.join(__dirname, '/decorators/postgres/column/interfaces/column-options-postgresql.interface.d.ts'),
+			(err) => {
+				if (err) {
+					console.error('Error occurred while deleting the file:', err);
+					return;
+				}
+				console.log('File deleted successfully');
+			});
+		const mysqlImport = ts.factory.createImportDeclaration(
+			undefined,
+			ts.factory.createImportClause(
+				undefined, // Not type-only import
+				undefined, // No default import
+				ts.factory.createNamedImports([
+					ts.factory.createImportSpecifier(undefined, ts.factory.createIdentifier('MysqlDataTypes'), ts.factory.createIdentifier('MysqlDataTypes'))
+				])
+			),
+			ts.factory.createStringLiteral('../../../../core/enums'), // Adjust the path accordingly
+			undefined
+		);
+		const mysqlTypeNode = ts.factory.createTypeReferenceNode('MysqlDataTypes', []);
+
+
+		const postgresImport = ts.factory.createImportDeclaration(
+			undefined,
+			ts.factory.createImportClause(
+				undefined, // Not type-only import
+				undefined, // No default import
+				ts.factory.createNamedImports([
+					ts.factory.createImportSpecifier(undefined, ts.factory.createIdentifier('PostgresqlDataTypes'), ts.factory.createIdentifier('PostgresqlDataTypes'))
+				])
+			),
+			ts.factory.createStringLiteral('../../../../core/enums'), // Adjust the path accordingly
+			undefined
+		);
+		const postgresqlTypeNode = ts.factory.createTypeReferenceNode('PostgresqlDataTypes', []);
+
+		const dataTypeTypeNode: ts.TypeNode = this._connectionData.type === DatabasesTypes.MYSQL ? mysqlTypeNode : postgresqlTypeNode;
+
+		const interfaceDeclaration = ts.factory.createInterfaceDeclaration(
+			undefined,
+			'ColumnOptionsInterfacePostgres',
+			[],
+			undefined,
+			[
+				ts.factory.createPropertySignature(
+					undefined,
+					'dataType',
+					undefined,
+					dataTypeTypeNode
+				),
+				ts.factory.createPropertySignature(
+					undefined,
+					'nullable',
+					ts.factory.createToken(ts.SyntaxKind.QuestionToken),
+					ts.factory.createArrayTypeNode(
+						ts.factory.createTypeReferenceNode('boolean')
+					)
+				),
+				ts.factory.createPropertySignature(
+					undefined,
+					'length',
+					ts.factory.createToken(ts.SyntaxKind.QuestionToken),
+					ts.factory.createTypeReferenceNode('number')
+				),
+				ts.factory.createPropertySignature(
+					undefined,
+					'check',
+					ts.factory.createToken(ts.SyntaxKind.QuestionToken),
+					ts.factory.createTypeReferenceNode('string')
+				),
+				ts.factory.createPropertySignature(
+					undefined,
+					'nameOfCheckConstraint',
+					ts.factory.createToken(ts.SyntaxKind.QuestionToken),
+					ts.factory.createTypeReferenceNode('string')
+				),
+				ts.factory.createPropertySignature(
+					undefined,
+					'defaultValue',
+					ts.factory.createToken(ts.SyntaxKind.QuestionToken),
+					ts.factory.createUnionTypeNode([
+						ts.factory.createTypeReferenceNode('string', []),
+						ts.factory.createTypeReferenceNode('number', []),
+						ts.factory.createTypeReferenceNode('boolean', [])
+					])
+				),
+				ts.factory.createPropertySignature(
+					undefined,
+					'unique',
+					ts.factory.createToken(ts.SyntaxKind.QuestionToken),
+					ts.factory.createTypeReferenceNode('boolean')
+				),
+				ts.factory.createPropertySignature(
+					undefined,
+					'nullsNotDistinct',
+					ts.factory.createToken(ts.SyntaxKind.QuestionToken),
+					ts.factory.createTypeReferenceNode('boolean')
+				)
+			]
+		);
+		// Додаємо імпорт в залежності від типу даних
+		const imports = this._connectionData.type === DatabasesTypes.MYSQL ? [mysqlImport] : [postgresImport];
+		const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
+		const resultFile = ts.createSourceFile('column-options-postgresql.interface.d.ts', '', ts.ScriptTarget.Latest, false, ts.ScriptKind.TS);
+
+
+		// Додаємо імпорти до початку файлу
+		const resultWithImports = ts.factory.updateSourceFile(resultFile, imports);
+
+		// Додаємо інтерфейс до файлу
+		const resultWithInterface = ts.factory.updateSourceFile(resultWithImports, resultWithImports.statements.concat([interfaceDeclaration]));
+
+		// Друкуємо та записуємо результат у файл
+		const result = printer.printFile(resultWithInterface);
+
+		const filePath = path.join(__dirname, '/decorators/postgres/column/interfaces', 'column-options-postgresql.interface.d.ts');
+		fs.writeFileSync(filePath, result, 'utf8');
 	}
 }
 

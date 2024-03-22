@@ -1,7 +1,7 @@
-import { PostgresqlDataTypes } from '@core/enums';
+import { MysqlDataTypes, PostgresqlDataTypes } from '@core/enums';
 
 export interface ColumnOptionsInterfacePostgres {
-	dataType: PostgresqlDataTypes;
+	dataType: PostgresqlDataTypes | MysqlDataTypes;
 	nullable?: boolean;
 	length?: number;
 	check?: string;
