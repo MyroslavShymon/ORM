@@ -3,7 +3,7 @@ import {
 	ComputedColumnMetadataInterface,
 	ForeignKeyInterface,
 	PrimaryGeneratedColumnInterface
-} from '@decorators/postgres';
+} from '@decorators/index';
 import { DatabaseStateBuilderInterface, DatabaseStateInterface } from '@context/common';
 
 export class DatabaseStateBuilder implements DatabaseStateBuilderInterface {

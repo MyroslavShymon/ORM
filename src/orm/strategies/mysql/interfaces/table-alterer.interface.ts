@@ -9,7 +9,7 @@ import {
 import { DataSourceMySql } from '@strategies/mysql';
 
 export interface TableAltererInterface {
-	addColumn(tableName: string, parameters: AddColumnInterface<DataSourceMySql>): string;
+	addColumn(tableName: string, parameters: AddColumnInterface): string;
 
 	deleteColumn(tableName: string, parameters: DeleteColumnInterface<DataSourceMySql>): string;
 

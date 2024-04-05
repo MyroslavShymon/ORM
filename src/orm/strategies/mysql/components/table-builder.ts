@@ -4,7 +4,7 @@ import { ColumnInterface, ComputedColumnInterface, TableInterface } from '@core/
 export class TableBuilder implements TableBuilderInterface {
 	createTable(
 		table?: TableInterface<DataSourceMySql>,
-		columns?: ColumnInterface<DataSourceMySql>[],
+		columns?: ColumnInterface[],
 		computedColumns?: ComputedColumnInterface<DataSourceMySql>[]
 	): string {
 		let createTableQuery;

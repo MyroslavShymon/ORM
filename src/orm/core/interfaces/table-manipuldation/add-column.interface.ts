@@ -1,8 +1,7 @@
-import { DataSourcePostgres } from '@strategies/postgres';
-import { ColumnOptionsInterfacePostgres } from '@decorators/postgres';
-import { ColumnOptionsInterfaceMysql } from '@decorators/mysql';
+import { ColumnOptionsInterface } from '@decorators/column';
+import { DatabasesTypes } from '@core/enums';
 
-export interface AddColumnInterface<DB> {
+export interface AddColumnInterface<DB extends DatabasesTypes | undefined = undefined> {
 	columnName: string;
-	options?: DB extends DataSourcePostgres ? ColumnOptionsInterfacePostgres : ColumnOptionsInterfaceMysql;
+	options?: ColumnOptionsInterface<DB>;
 }

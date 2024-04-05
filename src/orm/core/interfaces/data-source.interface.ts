@@ -2,7 +2,7 @@ import { Condition, ConnectionData, LogicalOperators, OrderOperators } from '@co
 import { ColumnInterface, ComputedColumnInterface, TableInterface } from '@core/interfaces/decorators';
 import { AddColumnInterface } from '@core/interfaces/table-manipuldation/add-column.interface';
 import { DatabaseIngotInterface } from '@core/interfaces/database-ingot.interface';
-import { ForeignKeyInterface, PrimaryGeneratedColumnInterface } from '@decorators/postgres';
+import { ForeignKeyInterface, PrimaryGeneratedColumnInterface } from '@decorators/index';
 import {
 	AddDefaultValueInterface,
 	AddNotNullToColumnInterface,
@@ -24,13 +24,13 @@ export interface DataSourceInterface {
 
 	createTable(
 		table?: TableInterface<DataSourceInterface>,
-		columns?: ColumnInterface<DataSourceInterface>[],
+		columns?: ColumnInterface[],
 		computedColumns?: ComputedColumnInterface<DataSourceInterface>[],
 		foreignKeys?: ForeignKeyInterface[],
 		primaryColumn?: PrimaryGeneratedColumnInterface
 	): string;
 
-	addColumn(tableName: string, parameters: AddColumnInterface<DataSourceInterface>): string;
+	addColumn(tableName: string, parameters: AddColumnInterface): string;
 
 	deleteColumn(tableName: string, parameters: DeleteColumnInterface<DataSourceInterface>): string;
 

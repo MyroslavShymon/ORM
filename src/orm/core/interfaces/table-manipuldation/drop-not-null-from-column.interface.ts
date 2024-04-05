@@ -1,5 +1,5 @@
 import { DataSourceMySql } from '@strategies/mysql';
-import { MysqlDataTypes } from '@core/enums';
+import { MysqlDataTypes } from '@core/types';
 
 export interface DropNotNullFromColumnInterface<DB> {
 	columnName: string;

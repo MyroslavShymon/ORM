@@ -4,7 +4,7 @@ import * as path from 'path';
 import 'reflect-metadata';
 import { DatabaseIngotInterface, DatabaseManagerInterface } from '@core/interfaces';
 import { ConnectionClient, ConnectionData } from '@core/types';
-import { DatabasesTypes, MysqlDataTypes, PostgresqlDataTypes } from '@core/enums';
+import { DatabasesTypes } from '@core/enums';
 import { DataSourcePostgres } from '@strategies/postgres';
 import { DataSourceMySql } from '@strategies/mysql';
 import {
@@ -14,7 +14,7 @@ import {
 	TableManipulationInterface
 } from '@context/common';
 
-class DatabaseManager implements DatabaseManagerInterface {
+class DatabaseManager<DB extends DatabasesTypes> implements DatabaseManagerInterface {
 	private _connectionData: ConnectionData;
 	private _dataSource: DataSourceContextInterface;
 
@@ -108,7 +108,7 @@ class DatabaseManager implements DatabaseManagerInterface {
 		return this._connectionData;
 	}
 
-	get tableManipulation(): TableManipulationInterface {
+	get tableManipulation(): TableManipulationInterface<DB> {
 		return this._dataSource.tableManipulation;
 	}
 
@@ -121,14 +121,17 @@ class DatabaseManager implements DatabaseManagerInterface {
 	}
 
 	generateInterface<T>() {
-		fs.unlink(path.join(__dirname, '/decorators/postgres/column/interfaces/column-options-postgresql.interface.d.ts'),
-			(err) => {
+		const filePath = path.join(__dirname, '/decorators/column/interfaces', 'column-options.interface.d.ts');
+
+		if (fs.existsSync(filePath))
+			fs.unlink(filePath, (err) => {
 				if (err) {
-					console.error('Error occurred while deleting the file:', err);
-					return;
+					console.error('Error deleting file:', err);
+				} else {
+					console.log('File deleted successfully.');
 				}
-				console.log('File deleted successfully');
 			});
+
 		const mysqlImport = ts.factory.createImportDeclaration(
 			undefined,
 			ts.factory.createImportClause(
@@ -138,7 +141,7 @@ class DatabaseManager implements DatabaseManagerInterface {
 					ts.factory.createImportSpecifier(undefined, ts.factory.createIdentifier('MysqlDataTypes'), ts.factory.createIdentifier('MysqlDataTypes'))
 				])
 			),
-			ts.factory.createStringLiteral('../../../../core/enums'), // Adjust the path accordingly
+			ts.factory.createStringLiteral('../../../core/types/mysql-data-types'), // Adjust the path accordingly
 			undefined
 		);
 		const mysqlTypeNode = ts.factory.createTypeReferenceNode('MysqlDataTypes', []);
@@ -153,7 +156,7 @@ class DatabaseManager implements DatabaseManagerInterface {
 					ts.factory.createImportSpecifier(undefined, ts.factory.createIdentifier('PostgresqlDataTypes'), ts.factory.createIdentifier('PostgresqlDataTypes'))
 				])
 			),
-			ts.factory.createStringLiteral('../../../../core/enums'), // Adjust the path accordingly
+			ts.factory.createStringLiteral('../../../core/types/postgresql-data-types'), // Adjust the path accordingly
 			undefined
 		);
 		const postgresqlTypeNode = ts.factory.createTypeReferenceNode('PostgresqlDataTypes', []);
@@ -162,7 +165,7 @@ class DatabaseManager implements DatabaseManagerInterface {
 
 		const interfaceDeclaration = ts.factory.createInterfaceDeclaration(
 			undefined,
-			'ColumnOptionsInterfacePostgres',
+			'ColumnOptionsInterface',
 			[],
 			undefined,
 			[
@@ -225,8 +228,7 @@ class DatabaseManager implements DatabaseManagerInterface {
 		// Додаємо імпорт в залежності від типу даних
 		const imports = this._connectionData.type === DatabasesTypes.MYSQL ? [mysqlImport] : [postgresImport];
 		const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
-		const resultFile = ts.createSourceFile('column-options-postgresql.interface.d.ts', '', ts.ScriptTarget.Latest, false, ts.ScriptKind.TS);
-
+		const resultFile = ts.createSourceFile('column-options.interface.d.ts', '', ts.ScriptTarget.Latest, false, ts.ScriptKind.TS);
 
 		// Додаємо імпорти до початку файлу
 		const resultWithImports = ts.factory.updateSourceFile(resultFile, imports);
@@ -237,7 +239,6 @@ class DatabaseManager implements DatabaseManagerInterface {
 		// Друкуємо та записуємо результат у файл
 		const result = printer.printFile(resultWithInterface);
 
-		const filePath = path.join(__dirname, '/decorators/postgres/column/interfaces', 'column-options-postgresql.interface.d.ts');
 		fs.writeFileSync(filePath, result, 'utf8');
 	}
 }

@@ -33,7 +33,7 @@ import {
 	UpdateQueries,
 	ViewQueries
 } from '@strategies/postgres/components';
-import { ForeignKeyInterface, PrimaryGeneratedColumnInterface } from '@decorators/postgres';
+import { ForeignKeyInterface, PrimaryGeneratedColumnInterface } from '@decorators/index';
 import { BaseQueries } from '@strategies/base-queries';
 
 export class DataSourcePostgres extends BaseQueries implements DataSourceInterface {
@@ -66,7 +66,7 @@ export class DataSourcePostgres extends BaseQueries implements DataSourceInterfa
 
 	createTable(
 		table?: TableInterface<DataSourcePostgres>,
-		columns?: ColumnInterface<DataSourcePostgres>[],
+		columns?: ColumnInterface[],
 		computedColumns?: ComputedColumnInterface<DataSourcePostgres>[],
 		foreignKeys?: ForeignKeyInterface[],
 		primaryColumn?: PrimaryGeneratedColumnInterface
@@ -109,7 +109,7 @@ export class DataSourcePostgres extends BaseQueries implements DataSourceInterfa
 	}
 
 	//Base table manipulation queries
-	addColumn(tableName: string, parameters: AddColumnInterface<DataSourcePostgres>): string {
+	addColumn(tableName: string, parameters: AddColumnInterface): string {
 		return this._tableAlterer.addColumn(tableName, parameters);
 	}
 

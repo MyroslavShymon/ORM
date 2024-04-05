@@ -1,7 +1,11 @@
 import { ColumnInterface, ComputedColumnInterface, DataSourceInterface, TableIngotInterface } from '@core/interfaces';
 import { DataSourcePostgres } from '@strategies/postgres';
-import { ConstraintInterface, ForeignKeyInterface, TableOptionsPostgresqlInterface } from '@decorators/postgres';
-import { TableOptionsMysqlInterface } from '@decorators/mysql';
+import {
+	ConstraintInterface,
+	ForeignKeyInterface,
+	TableOptionsMysqlInterface,
+	TableOptionsPostgresqlInterface
+} from '@decorators/index';
 import { TableComparatorInterface, TablePercentageInterface } from '@context/common';
 
 export class TableComparator implements TableComparatorInterface {
@@ -97,8 +101,8 @@ export class TableComparator implements TableComparatorInterface {
 	}
 
 	private _calculateColumnPercentage(
-		newTableColumns: ColumnInterface<DataSourceInterface>[] | ComputedColumnInterface<DataSourceInterface>[],
-		deletedTableColumns: ColumnInterface<DataSourceInterface>[] | ComputedColumnInterface<DataSourceInterface>[],
+		newTableColumns: ColumnInterface[] | ComputedColumnInterface<DataSourceInterface>[],
+		deletedTableColumns: ColumnInterface[] | ComputedColumnInterface<DataSourceInterface>[],
 		newTablePrimaryColumnName?: string,
 		deletedTablePrimaryColumnName?: string
 	): number {

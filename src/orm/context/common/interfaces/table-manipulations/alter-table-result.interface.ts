@@ -11,10 +11,11 @@ import {
 	RenameColumnInterface,
 	RenameTableInterface
 } from '@core/interfaces';
+import { DatabasesTypes } from '@core/enums';
 
-export interface AlterTableResultInterface<DB> {
-	addColumn: (parameters: AddColumnInterface<DB>) => Promise<Object | string>;
-	deleteColumn: (parameters: DeleteColumnInterface<DB>) => Promise<Object | string>;
+export interface AlterTableResultInterface<DB, GT extends DatabasesTypes | undefined = undefined> {
+	addColumn: (parameters: AddColumnInterface<GT>) => Promise<Object | string>;
+	deleteColumn: (parameters: DeleteColumnInterface<DB, GT>) => Promise<Object | string>;
 	addDefaultValue: (parameters: AddDefaultValueInterface) => Promise<Object | string>;
 	dropDefaultValue: (parameters: DropDefaultValueInterface) => Promise<Object | string>;
 	changeDataTypeOfColumn: (parameters: ChangeColumnDatatypeInterface) => Promise<Object | string>;

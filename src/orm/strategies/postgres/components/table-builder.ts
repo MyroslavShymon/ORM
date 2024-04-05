@@ -4,14 +4,14 @@ import {
 	ForeignKeyInterface,
 	PrimaryGeneratedColumnInterface,
 	TableOptionsPostgresqlInterface
-} from '@decorators/postgres';
+} from '@decorators/index';
 import { isArrayArrayOfArrays } from '@utils/index';
-import { PostgresqlDataTypes } from '@core/enums';
+import { DatabasesTypes } from '@core/enums';
 
 export class TableBuilder implements TableBuilderInterface {
 	createTable(
 		table?: TableInterface<DataSourcePostgres>,
-		columns?: ColumnInterface<DataSourcePostgres>[],
+		columns?: ColumnInterface[],
 		computedColumns?: ComputedColumnInterface<DataSourcePostgres>[],
 		foreignKeys?: ForeignKeyInterface[],
 		primaryColumn?: PrimaryGeneratedColumnInterface
@@ -45,15 +45,14 @@ export class TableBuilder implements TableBuilderInterface {
 		return createTableQuery;
 	}
 
-	private _handleColumns(columns: ColumnInterface<DataSourcePostgres>[]): string {
+	private _handleColumns(columns: ColumnInterface<DatabasesTypes.POSTGRES>[]): string {
 		const formattedColumnStrings = columns.map(({ name, options }) => {
 			if (!options.dataType) {
 				throw new Error('Ви не вказали тип колонки');
 			}
 
 			if (
-				(options.dataType === PostgresqlDataTypes.CHAR ||
-					options.dataType === PostgresqlDataTypes.VARCHAR) && !options.length
+				(options.dataType === 'CHAR' || options.dataType === 'VARCHAR') && !options.length
 			) {
 				throw new Error('Ви не вказали довжину рядка');
 			}

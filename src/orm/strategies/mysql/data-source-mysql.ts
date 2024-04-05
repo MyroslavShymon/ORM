@@ -64,7 +64,7 @@ export class DataSourceMySql extends BaseQueries implements DataSourceInterface 
 
 	createTable(
 		table?: TableInterface<DataSourceMySql>,
-		columns?: ColumnInterface<DataSourceMySql>[],
+		columns?: ColumnInterface[],
 		computedColumns?: ComputedColumnInterface<DataSourceMySql>[]
 	): string {
 		return this._tableBuilder.createTable(table, columns, computedColumns);
@@ -105,7 +105,7 @@ export class DataSourceMySql extends BaseQueries implements DataSourceInterface 
 	}
 
 	//table manipulation
-	addColumn(tableName: string, parameters: AddColumnInterface<DataSourceMySql>): string {
+	addColumn(tableName: string, parameters: AddColumnInterface): string {
 		return this._tableAlterer.addColumn(tableName, parameters);
 	}
 

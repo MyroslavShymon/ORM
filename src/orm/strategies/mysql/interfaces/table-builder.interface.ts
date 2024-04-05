@@ -4,7 +4,7 @@ import { DataSourceMySql } from '@strategies/mysql';
 export interface TableBuilderInterface {
 	createTable(
 		table?: TableInterface<DataSourceMySql>,
-		columns?: ColumnInterface<DataSourceMySql>[],
+		columns?: ColumnInterface[],
 		computedColumns?: ComputedColumnInterface<DataSourceMySql>[]
 	): string;
 }

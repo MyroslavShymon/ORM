@@ -37,7 +37,7 @@ export class TableManipulation implements TableManipulationInterface {
 		};
 	};
 
-	private _addColumn = (tableName: string, getQueryString: boolean = false) => async (parameters: AddColumnInterface<DataSourceInterface>): Promise<Object | string> => {
+	private _addColumn = (tableName: string, getQueryString: boolean = false) => async (parameters: AddColumnInterface): Promise<Object | string> => {
 		try {
 			const addColumnQuery = this._dataSource.addColumn(tableName, parameters);
 			if (getQueryString) {

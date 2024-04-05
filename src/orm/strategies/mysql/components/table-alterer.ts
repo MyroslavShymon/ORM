@@ -9,7 +9,8 @@ import {
 } from '@core/interfaces';
 
 export class TableAlterer implements TableAltererInterface {
-	addColumn(tableName: string, parameters: AddColumnInterface<DataSourceMySql>): string {
+	// addColumn(tableName: string, parameters: AddColumnInterface<DatabasesTypes.MYSQL>): string {
+	addColumn(tableName: string, parameters: AddColumnInterface): string {
 		return `ALTER TABLE '${tableName}' ADD '${parameters.columnName}' ${parameters.options.dataType};`;
 	}
 

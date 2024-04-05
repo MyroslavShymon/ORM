@@ -96,7 +96,7 @@ export class TableCreationProcessor implements TableCreationProcessorInterface {
 			const id = table.id ? table.id : uuidv4();
 			const name = model.name;
 			const options = model.options;//TODO можливо потім будемо рефакторити options в table(якісь цікаві нові штуки туда добавим)
-			const columns = this._handleColumns<ColumnInterface<DataSourceInterface>[]>(table.columns, model.columns);
+			const columns = this._handleColumns<ColumnInterface[]>(table.columns, model.columns);
 			const computedColumns = this._handleColumns<ComputedColumnInterface<DataSourceInterface>[]>(table.computedColumns, model.computedColumns);
 			const foreignKeys = model.foreignKeys;//TODO подумати над тим чи foreignKeys мають бути з Id чи ні
 			const primaryColumn = model.primaryColumn;
@@ -107,7 +107,7 @@ export class TableCreationProcessor implements TableCreationProcessorInterface {
 		return tablesForIngot;
 	}
 
-	private _handleColumns<T extends ColumnInterface<DataSourceInterface>[] | ComputedColumnInterface<DataSourceInterface>[]>
+	private _handleColumns<T extends ColumnInterface[] | ComputedColumnInterface<DataSourceInterface>[]>
 	(tableColumns: T, modelColumns: T) {
 		let columns: any[] = [];
 

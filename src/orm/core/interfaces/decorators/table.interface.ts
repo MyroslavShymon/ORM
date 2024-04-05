@@ -1,6 +1,5 @@
 import { DataSourcePostgres } from '@strategies/postgres';
-import { TableOptionsPostgresqlInterface } from '@decorators/postgres';
-import { TableOptionsMysqlInterface } from '@decorators/mysql';
+import { TableOptionsMysqlInterface, TableOptionsPostgresqlInterface } from '@decorators/index';
 
 export interface TableInterface<DB> {
 	name: string;

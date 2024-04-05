@@ -9,7 +9,7 @@ import {
 import { DataSourcePostgres } from '@strategies/postgres';
 
 export interface TableAltererInterface {
-	addColumn(tableName: string, parameters: AddColumnInterface<DataSourcePostgres>): string;
+	addColumn(tableName: string, parameters: AddColumnInterface): string;
 
 	deleteColumn(tableName: string, parameters: DeleteColumnInterface<DataSourcePostgres>): string;
 
