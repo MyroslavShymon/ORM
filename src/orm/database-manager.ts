@@ -14,6 +14,17 @@ import {
 	TableManipulationInterface
 } from '@context/common';
 
+interface FieldTypeInterface {
+	type: string;
+	isArray?: boolean;
+}
+
+interface OptionsToCreateField {
+	fieldName: string,
+	fieldType: FieldTypeInterface[] | FieldTypeInterface | ts.TypeReferenceNode | ts.TypeReferenceNode[]
+	isFieldOptional?: boolean,
+}
+
 class DatabaseManager<DB extends DatabasesTypes> implements DatabaseManagerInterface {
 	private _connectionData: ConnectionData;
 	private _dataSource: DataSourceContextInterface;
@@ -120,7 +131,79 @@ class DatabaseManager<DB extends DatabasesTypes> implements DatabaseManagerInter
 		return this._dataSource.queryBuilder<T>();
 	}
 
-	generateInterface<T>() {
+	handleTypeElement(typeElement: FieldTypeInterface): ts.TypeNode {
+		const elementType = ts.factory.createTypeReferenceNode(typeElement.type, []);
+		return typeElement.isArray
+			? ts.factory.createArrayTypeNode(elementType)
+			: elementType;
+	};
+
+	formField = ({ isFieldOptional, fieldName, fieldType }: OptionsToCreateField): ts.PropertySignature => {
+		const typeArray = Array.isArray(fieldType) ? fieldType : [fieldType];
+
+		const dataType = typeArray.map((type) =>
+			'type' in type && type.type ? this.handleTypeElement(type) : type as ts.TypeReferenceNode
+		);
+
+		const dataTypeNode = dataType.length === 1
+			? dataType[0]
+			: ts.factory.createUnionTypeNode(dataType);
+
+		return ts.factory.createPropertySignature(
+			undefined,
+			fieldName,
+			isFieldOptional ? ts.factory.createToken(ts.SyntaxKind.QuestionToken) : undefined,
+			dataTypeNode
+		);
+	};
+
+	formInterface(interfaceName: string, fields: OptionsToCreateField[]): ts.InterfaceDeclaration {
+		return ts.factory.createInterfaceDeclaration(
+			undefined,
+			interfaceName,
+			[],
+			undefined,
+			fields.map(this.formField)
+		);
+	}
+
+	formImport(importName: string, importPath: string): [ts.ImportDeclaration, ts.TypeReferenceNode] {
+		const formedImport = ts.factory.createImportDeclaration(
+			undefined,
+			ts.factory.createImportClause(
+				undefined, // Not type-only import
+				undefined, // No default import
+				ts.factory.createNamedImports([
+					ts.factory.createImportSpecifier(undefined, ts.factory.createIdentifier(importName), ts.factory.createIdentifier(importName))
+				])
+			),
+			ts.factory.createStringLiteral(importPath), // Adjust the path accordingly
+			undefined
+		);
+		const typeNode = ts.factory.createTypeReferenceNode(importName, []);
+
+		return [formedImport, typeNode];
+	}
+
+	_generateInterface(
+		fileName: string,
+		interfaceDeclaration?: ts.InterfaceDeclaration,
+		imports?: ts.ImportDeclaration
+	): string {
+		const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
+		const resultFile = ts.createSourceFile(fileName, '', ts.ScriptTarget.Latest, false, ts.ScriptKind.TS);
+
+		// Додаємо імпорти до початку файлу
+		const resultWithImports = ts.factory.updateSourceFile(resultFile, [imports]);
+
+		// Додаємо інтерфейс до файлу
+		const resultWithInterface = ts.factory.updateSourceFile(resultWithImports, resultWithImports.statements.concat([interfaceDeclaration]));
+
+		// Друкуємо та записуємо результат у файл
+		return printer.printFile(resultWithInterface);
+	}
+
+	generateInterface() {
 		const filePath = path.join(__dirname, '/decorators/column/interfaces', 'column-options-decorator.interface.d.ts');
 
 		if (fs.existsSync(filePath))
@@ -132,114 +215,64 @@ class DatabaseManager<DB extends DatabasesTypes> implements DatabaseManagerInter
 				}
 			});
 
-		const mysqlImport = ts.factory.createImportDeclaration(
-			undefined,
-			ts.factory.createImportClause(
-				undefined, // Not type-only import
-				undefined, // No default import
-				ts.factory.createNamedImports([
-					ts.factory.createImportSpecifier(undefined, ts.factory.createIdentifier('MysqlDataTypes'), ts.factory.createIdentifier('MysqlDataTypes'))
-				])
-			),
-			ts.factory.createStringLiteral('../../../core/types/mysql-data-types'), // Adjust the path accordingly
-			undefined
-		);
-		const mysqlTypeNode = ts.factory.createTypeReferenceNode('MysqlDataTypes', []);
+		const [imports, dataTypeTypeNode] = this._connectionData.type === DatabasesTypes.MYSQL ?
+			this.formImport('MysqlDataTypes', '../../../core/types/mysql-data-types') :
+			this.formImport('PostgresqlDataTypes', '../../../core/types/postgresql-data-types');
 
-
-		const postgresImport = ts.factory.createImportDeclaration(
-			undefined,
-			ts.factory.createImportClause(
-				undefined, // Not type-only import
-				undefined, // No default import
-				ts.factory.createNamedImports([
-					ts.factory.createImportSpecifier(undefined, ts.factory.createIdentifier('PostgresqlDataTypes'), ts.factory.createIdentifier('PostgresqlDataTypes'))
-				])
-			),
-			ts.factory.createStringLiteral('../../../core/types/postgresql-data-types'), // Adjust the path accordingly
-			undefined
-		);
-		const postgresqlTypeNode = ts.factory.createTypeReferenceNode('PostgresqlDataTypes', []);
-
-		const dataTypeTypeNode: ts.TypeNode = this._connectionData.type === DatabasesTypes.MYSQL ? mysqlTypeNode : postgresqlTypeNode;
-
-		const interfaceDeclaration = ts.factory.createInterfaceDeclaration(
-			undefined,
+		const interfaceDeclaration = this.formInterface(
 			'ColumnOptionsDecoratorInterface',
-			[],
-			undefined,
 			[
-				ts.factory.createPropertySignature(
-					undefined,
-					'dataType',
-					undefined,
-					dataTypeTypeNode
-				),
-				ts.factory.createPropertySignature(
-					undefined,
-					'nullable',
-					ts.factory.createToken(ts.SyntaxKind.QuestionToken),
-					ts.factory.createArrayTypeNode(
-						ts.factory.createTypeReferenceNode('boolean')
-					)
-				),
-				ts.factory.createPropertySignature(
-					undefined,
-					'length',
-					ts.factory.createToken(ts.SyntaxKind.QuestionToken),
-					ts.factory.createTypeReferenceNode('number')
-				),
-				ts.factory.createPropertySignature(
-					undefined,
-					'check',
-					ts.factory.createToken(ts.SyntaxKind.QuestionToken),
-					ts.factory.createTypeReferenceNode('string')
-				),
-				ts.factory.createPropertySignature(
-					undefined,
-					'nameOfCheckConstraint',
-					ts.factory.createToken(ts.SyntaxKind.QuestionToken),
-					ts.factory.createTypeReferenceNode('string')
-				),
-				ts.factory.createPropertySignature(
-					undefined,
-					'defaultValue',
-					ts.factory.createToken(ts.SyntaxKind.QuestionToken),
-					ts.factory.createUnionTypeNode([
-						ts.factory.createTypeReferenceNode('string', []),
-						ts.factory.createTypeReferenceNode('number', []),
-						ts.factory.createTypeReferenceNode('boolean', [])
-					])
-				),
-				ts.factory.createPropertySignature(
-					undefined,
-					'unique',
-					ts.factory.createToken(ts.SyntaxKind.QuestionToken),
-					ts.factory.createTypeReferenceNode('boolean')
-				),
-				ts.factory.createPropertySignature(
-					undefined,
-					'nullsNotDistinct',
-					ts.factory.createToken(ts.SyntaxKind.QuestionToken),
-					ts.factory.createTypeReferenceNode('boolean')
-				)
+				{
+					fieldName: 'dataType',
+					fieldType: dataTypeTypeNode
+				},
+				{
+					fieldName: 'nullable',
+					isFieldOptional: true,
+					fieldType: { type: 'boolean' }
+				},
+				{
+					fieldName: 'length',
+					isFieldOptional: true,
+					fieldType: { type: 'number' }
+				},
+				{
+					fieldName: 'check',
+					isFieldOptional: true,
+					fieldType: { type: 'string' }
+				},
+				{
+					fieldName: 'nameOfCheckConstraint',
+					isFieldOptional: true,
+					fieldType: { type: 'string' }
+				},
+				{
+					fieldName: 'defaultValue',
+					isFieldOptional: true,
+					fieldType: [{ type: 'string' }, { type: 'number' }, { type: 'boolean' }]
+				},
+				{
+					fieldName: 'unique',
+					isFieldOptional: true,
+					fieldType: { type: 'boolean' }
+				},
+				{
+					fieldName: 'nullsNotDistinct',
+					isFieldOptional: true,
+					fieldType: { type: 'boolean' }
+				}
 			]
 		);
-		// Додаємо імпорт в залежності від типу даних
-		const imports = this._connectionData.type === DatabasesTypes.MYSQL ? [mysqlImport] : [postgresImport];
-		const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
-		const resultFile = ts.createSourceFile('column-options-decorator.interface.d.ts', '', ts.ScriptTarget.Latest, false, ts.ScriptKind.TS);
 
-		// Додаємо імпорти до початку файлу
-		const resultWithImports = ts.factory.updateSourceFile(resultFile, imports);
-
-		// Додаємо інтерфейс до файлу
-		const resultWithInterface = ts.factory.updateSourceFile(resultWithImports, resultWithImports.statements.concat([interfaceDeclaration]));
-
-		// Друкуємо та записуємо результат у файл
-		const result = printer.printFile(resultWithInterface);
-
-		fs.writeFileSync(filePath, result, 'utf8');
+		fs.writeFileSync(
+			filePath,
+			this._generateInterface(
+				'column-options-decorator.interface.d.ts',
+				interfaceDeclaration,
+				imports
+			),
+			'utf8'
+		);
 	}
 }
 
