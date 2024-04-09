@@ -121,12 +121,12 @@ class DatabaseManager<DB extends DatabasesTypes> implements DatabaseManagerInter
 	}
 
 	generateInterface<T>() {
-		const filePath = path.join(__dirname, '/decorators/column/interfaces', 'column-options.interface.d.ts');
+		const filePath = path.join(__dirname, '/decorators/column/interfaces', 'column-options-decorator.interface.d.ts');
 
 		if (fs.existsSync(filePath))
 			fs.unlink(filePath, (err) => {
 				if (err) {
-					console.error('Error deleting file:', err);
+					console.error('Error deleting file:\n', err);
 				} else {
 					console.log('File deleted successfully.');
 				}
@@ -165,7 +165,7 @@ class DatabaseManager<DB extends DatabasesTypes> implements DatabaseManagerInter
 
 		const interfaceDeclaration = ts.factory.createInterfaceDeclaration(
 			undefined,
-			'ColumnOptionsInterface',
+			'ColumnOptionsDecoratorInterface',
 			[],
 			undefined,
 			[
@@ -228,7 +228,7 @@ class DatabaseManager<DB extends DatabasesTypes> implements DatabaseManagerInter
 		// Додаємо імпорт в залежності від типу даних
 		const imports = this._connectionData.type === DatabasesTypes.MYSQL ? [mysqlImport] : [postgresImport];
 		const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
-		const resultFile = ts.createSourceFile('column-options.interface.d.ts', '', ts.ScriptTarget.Latest, false, ts.ScriptKind.TS);
+		const resultFile = ts.createSourceFile('column-options-decorator.interface.d.ts', '', ts.ScriptTarget.Latest, false, ts.ScriptKind.TS);
 
 		// Додаємо імпорти до початку файлу
 		const resultWithImports = ts.factory.updateSourceFile(resultFile, imports);
