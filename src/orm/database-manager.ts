@@ -1,6 +1,3 @@
-import * as ts from 'typescript';
-import * as fs from 'fs';
-import * as path from 'path';
 import 'reflect-metadata';
 import { DatabaseIngotInterface, DatabaseManagerInterface } from '@core/interfaces';
 import { ConnectionClient, ConnectionData } from '@core/types';
@@ -13,17 +10,7 @@ import {
 	TableCreatorInterface,
 	TableManipulationInterface
 } from '@context/common';
-
-interface FieldTypeInterface {
-	type: string;
-	isArray?: boolean;
-}
-
-interface OptionsToCreateField {
-	fieldName: string,
-	fieldType: FieldTypeInterface[] | FieldTypeInterface | ts.TypeReferenceNode | ts.TypeReferenceNode[]
-	isFieldOptional?: boolean,
-}
+import { FileStructureManager } from '@context/file-structure-manager';
 
 class DatabaseManager<DB extends DatabasesTypes> implements DatabaseManagerInterface {
 	private _connectionData: ConnectionData;
@@ -52,7 +39,8 @@ class DatabaseManager<DB extends DatabasesTypes> implements DatabaseManagerInter
 
 	async createOrmConnection(): Promise<ConnectionClient> {
 		try {
-			this.generateInterface();
+			FileStructureManager.generateColumnOptionsDecoratorInterface(this._connectionData);
+
 			const databaseIngot: DatabaseIngotInterface = { tables: [] };
 
 			await this._dataSource.connectDatabase(this._connectionData);
@@ -129,150 +117,6 @@ class DatabaseManager<DB extends DatabasesTypes> implements DatabaseManagerInter
 
 	queryBuilder<T>(): QueryBuilderInterface<T> {
 		return this._dataSource.queryBuilder<T>();
-	}
-
-	handleTypeElement(typeElement: FieldTypeInterface): ts.TypeNode {
-		const elementType = ts.factory.createTypeReferenceNode(typeElement.type, []);
-		return typeElement.isArray
-			? ts.factory.createArrayTypeNode(elementType)
-			: elementType;
-	};
-
-	formField = ({ isFieldOptional, fieldName, fieldType }: OptionsToCreateField): ts.PropertySignature => {
-		const typeArray = Array.isArray(fieldType) ? fieldType : [fieldType];
-
-		const dataType = typeArray.map((type) =>
-			'type' in type && type.type ? this.handleTypeElement(type) : type as ts.TypeReferenceNode
-		);
-
-		const dataTypeNode = dataType.length === 1
-			? dataType[0]
-			: ts.factory.createUnionTypeNode(dataType);
-
-		return ts.factory.createPropertySignature(
-			undefined,
-			fieldName,
-			isFieldOptional ? ts.factory.createToken(ts.SyntaxKind.QuestionToken) : undefined,
-			dataTypeNode
-		);
-	};
-
-	formInterface(interfaceName: string, fields: OptionsToCreateField[]): ts.InterfaceDeclaration {
-		return ts.factory.createInterfaceDeclaration(
-			undefined,
-			interfaceName,
-			[],
-			undefined,
-			fields.map(this.formField)
-		);
-	}
-
-	formImport(importName: string, importPath: string): [ts.ImportDeclaration, ts.TypeReferenceNode] {
-		const formedImport = ts.factory.createImportDeclaration(
-			undefined,
-			ts.factory.createImportClause(
-				undefined, // Not type-only import
-				undefined, // No default import
-				ts.factory.createNamedImports([
-					ts.factory.createImportSpecifier(undefined, ts.factory.createIdentifier(importName), ts.factory.createIdentifier(importName))
-				])
-			),
-			ts.factory.createStringLiteral(importPath), // Adjust the path accordingly
-			undefined
-		);
-		const typeNode = ts.factory.createTypeReferenceNode(importName, []);
-
-		return [formedImport, typeNode];
-	}
-
-	_generateInterface(
-		fileName: string,
-		interfaceDeclaration?: ts.InterfaceDeclaration,
-		imports?: ts.ImportDeclaration
-	): string {
-		const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
-		const resultFile = ts.createSourceFile(fileName, '', ts.ScriptTarget.Latest, false, ts.ScriptKind.TS);
-
-		// Додаємо імпорти до початку файлу
-		const resultWithImports = ts.factory.updateSourceFile(resultFile, [imports]);
-
-		// Додаємо інтерфейс до файлу
-		const resultWithInterface = ts.factory.updateSourceFile(resultWithImports, resultWithImports.statements.concat([interfaceDeclaration]));
-
-		// Друкуємо та записуємо результат у файл
-		return printer.printFile(resultWithInterface);
-	}
-
-	generateInterface() {
-		const filePath = path.join(__dirname, '/decorators/column/interfaces', 'column-options-decorator.interface.d.ts');
-
-		if (fs.existsSync(filePath))
-			fs.unlink(filePath, (err) => {
-				if (err) {
-					console.error('Error deleting file:\n', err);
-				} else {
-					console.log('File deleted successfully.');
-				}
-			});
-
-		const [imports, dataTypeTypeNode] = this._connectionData.type === DatabasesTypes.MYSQL ?
-			this.formImport('MysqlDataTypes', '../../../core/types/mysql-data-types') :
-			this.formImport('PostgresqlDataTypes', '../../../core/types/postgresql-data-types');
-
-		const interfaceDeclaration = this.formInterface(
-			'ColumnOptionsDecoratorInterface',
-			[
-				{
-					fieldName: 'dataType',
-					fieldType: dataTypeTypeNode
-				},
-				{
-					fieldName: 'nullable',
-					isFieldOptional: true,
-					fieldType: { type: 'boolean' }
-				},
-				{
-					fieldName: 'length',
-					isFieldOptional: true,
-					fieldType: { type: 'number' }
-				},
-				{
-					fieldName: 'check',
-					isFieldOptional: true,
-					fieldType: { type: 'string' }
-				},
-				{
-					fieldName: 'nameOfCheckConstraint',
-					isFieldOptional: true,
-					fieldType: { type: 'string' }
-				},
-				{
-					fieldName: 'defaultValue',
-					isFieldOptional: true,
-					fieldType: [{ type: 'string' }, { type: 'number' }, { type: 'boolean' }]
-				},
-				{
-					fieldName: 'unique',
-					isFieldOptional: true,
-					fieldType: { type: 'boolean' }
-				},
-				{
-					fieldName: 'nullsNotDistinct',
-					isFieldOptional: true,
-					fieldType: { type: 'boolean' }
-				}
-			]
-		);
-
-		fs.writeFileSync(
-			filePath,
-			this._generateInterface(
-				'column-options-decorator.interface.d.ts',
-				interfaceDeclaration,
-				imports
-			),
-			'utf8'
-		);
 	}
 }
 

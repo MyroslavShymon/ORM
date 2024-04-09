@@ -4,3 +4,4 @@ export * from './table-creator';
 export * from './common';
 export * from './migration-manager';
 export * from './query-builder';
+export * from './file-structure-manager';
