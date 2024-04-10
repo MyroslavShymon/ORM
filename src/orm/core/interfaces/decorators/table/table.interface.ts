@@ -1,5 +1,5 @@
-import { TableOptionsMysqlInterface, TableOptionsPostgresqlInterface } from '@decorators/index';
 import { DatabasesTypes } from '@core/enums';
+import { TableOptionsMysqlInterface, TableOptionsPostgresqlInterface } from '@core/interfaces';
 
 export interface TableInterface<DB extends DatabasesTypes | undefined = undefined> {
 	name: string;

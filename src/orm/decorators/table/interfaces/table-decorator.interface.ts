@@ -1,4 +1,4 @@
-import { TableOptionsMysqlInterface, TableOptionsPostgresqlInterface } from '@decorators/index';
+import { TableOptionsMysqlInterface, TableOptionsPostgresqlInterface } from '@core/interfaces';
 
 export interface TableDecoratorInterface {
 	name?: string;

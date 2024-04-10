@@ -4,9 +4,9 @@ import {
 	ComputedColumnInterface,
 	ForeignKeyInterface,
 	PrimaryGeneratedColumnInterface,
-	TableInterface
+	TableInterface,
+	TableOptionsPostgresqlInterface
 } from '@core/interfaces';
-import { TableOptionsPostgresqlInterface } from '@decorators/index';
 import { isArrayArrayOfArrays } from '@utils/index';
 import { DatabasesTypes } from '@core/enums';
 
