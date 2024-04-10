@@ -5,6 +5,14 @@ import {
 import { FieldTypeInterface } from '@utils/typescript-code-generator/interfaces/field-type.interface';
 
 export interface TypescriptCodeGeneratorInterface {
+	generateInterfaceFile(
+		interfaceFileName: string,
+		interfaceFilePath: string,
+		interfaceName: string,
+		interfaceImports: ts.ImportDeclaration,
+		interfaceFields: OptionsToCreateFieldInterface[]
+	): void;
+
 	generateInterface(
 		fileName: string,
 		interfaceDeclaration?: ts.InterfaceDeclaration,

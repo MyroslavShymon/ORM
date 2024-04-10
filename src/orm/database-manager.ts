@@ -39,7 +39,7 @@ class DatabaseManager<DB extends DatabasesTypes> implements DatabaseManagerInter
 
 	async createOrmConnection(): Promise<ConnectionClient> {
 		try {
-			FileStructureManager.generateColumnOptionsDecoratorInterface(this._connectionData);
+			FileStructureManager.manage(this._connectionData);
 
 			const databaseIngot: DatabaseIngotInterface = { tables: [] };
 

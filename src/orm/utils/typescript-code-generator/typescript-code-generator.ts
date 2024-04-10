@@ -1,12 +1,37 @@
 import * as ts from 'typescript';
+import * as fs from 'fs';
 import {
 	FieldTypeInterface,
 	OptionsToCreateFieldInterface,
 	TypescriptCodeGeneratorInterface
 } from '@utils/typescript-code-generator/interfaces';
+import { FS } from '@utils/fs';
 
 export class TypescriptCodeGenerator implements TypescriptCodeGeneratorInterface {
 	constructor() {
+	}
+
+	generateInterfaceFile(
+		interfaceFileName: string,
+		interfaceFilePath: string,
+		interfaceName: string,
+		interfaceImports: ts.ImportDeclaration,
+		interfaceFields: OptionsToCreateFieldInterface[]
+	): void {
+		FS.deleteFile(interfaceFilePath);
+
+		fs.writeFileSync(
+			interfaceFilePath,
+			this.generateInterface(
+				interfaceFileName,
+				this.formInterface(
+					interfaceName,
+					interfaceFields
+				),
+				interfaceImports
+			),
+			'utf8'
+		);
 	}
 
 	generateInterface(

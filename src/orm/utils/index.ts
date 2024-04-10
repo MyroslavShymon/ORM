@@ -1,3 +1,4 @@
+import { FS } from './fs';
 import { TypescriptCodeGenerator } from './typescript-code-generator';
 
 export function isArrayArrayOfArrays(array: any[]): boolean {
@@ -7,4 +8,4 @@ export function isArrayArrayOfArrays(array: any[]): boolean {
 	return false;
 }
 
-export { TypescriptCodeGenerator };
+export { TypescriptCodeGenerator, FS };

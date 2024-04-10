@@ -1,8 +1,7 @@
-import { PostgresqlDataTypes } from '@core/types';
+import { DatabasesTypes } from '@core/enums';
+import { BaseComputedColumnInterface } from '@decorators/computed-column';
 
-export interface ComputedColumnDecoratorInterface {
+export interface ComputedColumnDecoratorInterface<DT extends DatabasesTypes | undefined = undefined>
+	extends BaseComputedColumnInterface {
 	name?: string;
-	calculate: string;
-	dataType: PostgresqlDataTypes;
-	stored: boolean;
 }

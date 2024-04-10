@@ -3,7 +3,7 @@ import { ComputedColumnDecoratorInterface, ComputedColumnMetadataInterface } fro
 export function ComputedColumn({ name, stored, calculate, dataType }: ComputedColumnDecoratorInterface) {
 	return function(target: any, propertyKey: string) {
 
-		if (!name || name === '') {
+		if (!name) {
 			name = propertyKey;
 		}
 

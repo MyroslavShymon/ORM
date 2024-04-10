@@ -1,4 +1,3 @@
-import * as fs from 'fs';
 import * as path from 'path';
 import { DatabasesTypes } from '@core/enums';
 import { TypescriptCodeGenerator, TypescriptCodeGeneratorInterface } from '@utils/typescript-code-generator';
@@ -7,24 +6,54 @@ import { ConnectionData } from '@core/types';
 export class FileStructureManager {
 	private static _typescriptCodeGenerator: TypescriptCodeGeneratorInterface = new TypescriptCodeGenerator();
 
-	static generateColumnOptionsDecoratorInterface(connectionData: ConnectionData) {
-		const filePath = path.join(__dirname, '../..', '/decorators/column/interfaces', 'column-options-decorator.interface.d.ts');
+	static manage(connectionData: ConnectionData) {
+		this._generateColumnOptionsDecoratorInterface(connectionData);
+		this._generateBaseComputedColumnInterface(connectionData);
+	}
 
-		if (fs.existsSync(filePath))
-			fs.unlink(filePath, (err) => {
-				if (err) {
-					console.error('Error deleting file:\n', err);
-				} else {
-					console.log('File deleted successfully.');
-				}
-			});
+	private static _generateBaseComputedColumnInterface(connectionData: ConnectionData) {
+		const fileName = 'base-computed-column.interface.d.ts';
+		const filePath = path.join(__dirname, '../..', '/decorators/computed-column/interfaces', fileName);
 
 		const [imports, dataTypeTypeNode] = connectionData.type === DatabasesTypes.MYSQL ?
 			this._typescriptCodeGenerator.formImport('MysqlDataTypes', '../../../core/types/mysql-data-types') :
 			this._typescriptCodeGenerator.formImport('PostgresqlDataTypes', '../../../core/types/postgresql-data-types');
 
-		const interfaceDeclaration = this._typescriptCodeGenerator.formInterface(
+		this._typescriptCodeGenerator.generateInterfaceFile(
+			fileName,
+			filePath,
+			'BaseComputedColumnInterface',
+			imports,
+			[
+				{
+					fieldName: 'dataType',
+					fieldType: dataTypeTypeNode
+				},
+				{
+					fieldName: 'calculate',
+					fieldType: { type: 'string' }
+				},
+				{
+					fieldName: 'stored',
+					fieldType: { type: 'boolean' }
+				}
+			]
+		);
+	}
+
+	private static _generateColumnOptionsDecoratorInterface(connectionData: ConnectionData) {
+		const fileName = 'column-options-decorator.interface.d.ts';
+		const filePath = path.join(__dirname, '../..', '/decorators/column/interfaces', fileName);
+
+		const [imports, dataTypeTypeNode] = connectionData.type === DatabasesTypes.MYSQL ?
+			this._typescriptCodeGenerator.formImport('MysqlDataTypes', '../../../core/types/mysql-data-types') :
+			this._typescriptCodeGenerator.formImport('PostgresqlDataTypes', '../../../core/types/postgresql-data-types');
+
+		this._typescriptCodeGenerator.generateInterfaceFile(
+			fileName,
+			filePath,
 			'ColumnOptionsDecoratorInterface',
+			imports,
 			[
 				{
 					fieldName: 'dataType',
@@ -66,17 +95,6 @@ export class FileStructureManager {
 					fieldType: { type: 'boolean' }
 				}
 			]
-		);
-
-
-		fs.writeFileSync(
-			filePath,
-			this._typescriptCodeGenerator.generateInterface(
-				'column-options-decorator.interface.d.ts',
-				interfaceDeclaration,
-				imports
-			),
-			'utf8'
 		);
 	}
 }
