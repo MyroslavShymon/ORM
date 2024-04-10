@@ -3,8 +3,7 @@ import { TableDecoratorInterface } from '@decorators/index';
 
 export function Table({ name, options }: TableDecoratorInterface) {
 	return function(constructor: Function) {
-
-		if (!name || name === '') {
+		if (!name) {
 			console.info(
 				'Ви вказали назву таблиці не коректно або вона відсутня, тому назва буде взята за назвою класу'
 			);

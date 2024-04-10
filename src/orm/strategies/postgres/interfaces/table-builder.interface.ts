@@ -1,4 +1,3 @@
-import { DataSourcePostgres } from '@strategies/postgres';
 import {
 	ColumnInterface,
 	ComputedColumnInterface,
@@ -6,10 +5,11 @@ import {
 	PrimaryGeneratedColumnInterface,
 	TableInterface
 } from '@core/interfaces';
+import { DatabasesTypes } from '@core/enums';
 
 export interface TableBuilderInterface {
 	createTable(
-		table?: TableInterface<DataSourcePostgres>,
+		table?: TableInterface<DatabasesTypes.POSTGRES>,
 		columns?: ColumnInterface[],
 		computedColumns?: ComputedColumnInterface[],
 		foreignKeys?: ForeignKeyInterface[],

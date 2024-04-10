@@ -9,6 +9,35 @@ export class FileStructureManager {
 	static manage(connectionData: ConnectionData) {
 		this._generateColumnOptionsDecoratorInterface(connectionData);
 		this._generateBaseComputedColumnInterface(connectionData);
+		this._generateTableDecoratorInterface(connectionData);
+	}
+
+	private static _generateTableDecoratorInterface(connectionData: ConnectionData) {
+		const fileName = 'table-decorator.interface.d.ts';
+		const filePath = path.join(__dirname, '../..', '/decorators/table/interfaces', fileName);
+
+		const [imports, TableOptionsTypeNode] = connectionData.type === DatabasesTypes.MYSQL ?
+			this._typescriptCodeGenerator.formImport('TableOptionsMysqlInterface', '../interfaces/table-options-mysql.interface') :
+			this._typescriptCodeGenerator.formImport('TableOptionsPostgresqlInterface', '../interfaces/table-options-postgresql.interface');
+
+		this._typescriptCodeGenerator.generateInterfaceFile(
+			fileName,
+			filePath,
+			'TableDecoratorInterface',
+			imports,
+			[
+				{
+					fieldName: 'options',
+					isFieldOptional: true,
+					fieldType: TableOptionsTypeNode
+				},
+				{
+					fieldName: 'name',
+					isFieldOptional: true,
+					fieldType: { type: 'string' }
+				}
+			]
+		);
 	}
 
 	private static _generateBaseComputedColumnInterface(connectionData: ConnectionData) {

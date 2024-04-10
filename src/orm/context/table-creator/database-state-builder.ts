@@ -17,7 +17,7 @@ export class DatabaseStateBuilder implements DatabaseStateBuilderInterface {
 		const preparedModels: TableIngotInterface<DataSourceInterface>[] = [];
 
 		for (let model of models) {
-			const table: TableInterface<DataSourceInterface>
+			const table: TableInterface
 				= Reflect.getMetadata('table', model.prototype);
 			const metadataColumns
 				= Reflect.getMetadata('columns', model.prototype);

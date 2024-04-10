@@ -63,7 +63,7 @@ export class DataSourceMySql extends BaseQueries implements DataSourceInterface 
 	}
 
 	createTable(
-		table?: TableInterface<DataSourceMySql>,
+		table?: TableInterface,
 		columns?: ColumnInterface[],
 		computedColumns?: ComputedColumnInterface[]
 	): string {

@@ -1,9 +1,9 @@
-import { DataSourceMySql, TableBuilderInterface } from '@strategies/mysql';
+import { TableBuilderInterface } from '@strategies/mysql';
 import { ColumnInterface, ComputedColumnInterface, TableInterface } from '@core/interfaces';
 
 export class TableBuilder implements TableBuilderInterface {
 	createTable(
-		table?: TableInterface<DataSourceMySql>,
+		table?: TableInterface,
 		columns?: ColumnInterface[],
 		computedColumns?: ComputedColumnInterface[]
 	): string {

@@ -1,6 +1,6 @@
-import { TableOptionsPostgresqlInterface } from '@decorators/index';
+import { TableOptionsMysqlInterface, TableOptionsPostgresqlInterface } from '@decorators/index';
 
 export interface TableDecoratorInterface {
 	name?: string;
-	options?: TableOptionsPostgresqlInterface;
+	options?: TableOptionsPostgresqlInterface | TableOptionsMysqlInterface;
 }

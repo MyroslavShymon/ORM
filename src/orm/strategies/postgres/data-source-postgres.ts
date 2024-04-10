@@ -66,7 +66,7 @@ export class DataSourcePostgres extends BaseQueries implements DataSourceInterfa
 	}
 
 	createTable(
-		table?: TableInterface<DataSourcePostgres>,
+		table?: TableInterface,
 		columns?: ColumnInterface[],
 		computedColumns?: ComputedColumnInterface[],
 		foreignKeys?: ForeignKeyInterface[],

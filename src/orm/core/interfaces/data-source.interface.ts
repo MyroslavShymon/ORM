@@ -28,7 +28,7 @@ export interface DataSourceInterface {
 	connect(dataToConnect: ConnectionData);
 
 	createTable(
-		table?: TableInterface<DataSourceInterface>,
+		table?: TableInterface,
 		columns?: ColumnInterface[],
 		computedColumns?: ComputedColumnInterface[],
 		foreignKeys?: ForeignKeyInterface[],
