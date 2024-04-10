@@ -1,6 +1,11 @@
 import { DataSourcePostgres } from '@strategies/postgres';
-import { ColumnInterface, ComputedColumnInterface, TableInterface } from '@core/interfaces';
-import { ForeignKeyInterface, PrimaryGeneratedColumnInterface } from '@decorators/index';
+import {
+	ColumnInterface,
+	ComputedColumnInterface,
+	ForeignKeyInterface,
+	PrimaryGeneratedColumnInterface,
+	TableInterface
+} from '@core/interfaces';
 
 export interface TableBuilderInterface {
 	createTable(

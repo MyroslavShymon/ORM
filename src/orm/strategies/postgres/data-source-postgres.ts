@@ -10,6 +10,8 @@ import {
 	DataSourceInterface,
 	DeleteColumnInterface,
 	DropNotNullFromColumnInterface,
+	ForeignKeyInterface,
+	PrimaryGeneratedColumnInterface,
 	TableInterface
 } from '@core/interfaces';
 import { Condition, ConnectionData, LogicalOperators } from '@core/types';
@@ -33,7 +35,6 @@ import {
 	UpdateQueries,
 	ViewQueries
 } from '@strategies/postgres/components';
-import { ForeignKeyInterface, PrimaryGeneratedColumnInterface } from '@decorators/index';
 import { BaseQueries } from '@strategies/base-queries';
 
 export class DataSourcePostgres extends BaseQueries implements DataSourceInterface {

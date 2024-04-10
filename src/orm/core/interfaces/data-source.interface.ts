@@ -1,8 +1,13 @@
 import { Condition, ConnectionData, LogicalOperators, OrderOperators } from '@core/types';
-import { ColumnInterface, ComputedColumnInterface, TableInterface } from '@core/interfaces/decorators';
+import {
+	ColumnInterface,
+	ComputedColumnInterface,
+	ForeignKeyInterface,
+	PrimaryGeneratedColumnInterface,
+	TableInterface
+} from '@core/interfaces/decorators';
 import { AddColumnInterface } from '@core/interfaces/table-manipuldation/add-column.interface';
 import { DatabaseIngotInterface } from '@core/interfaces/database-ingot.interface';
-import { ForeignKeyInterface, PrimaryGeneratedColumnInterface } from '@decorators/index';
 import {
 	AddDefaultValueInterface,
 	AddNotNullToColumnInterface,

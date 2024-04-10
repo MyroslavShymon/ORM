@@ -1,4 +1,5 @@
-import { ForeignKeyDecoratorInterface, ForeignKeyInterface } from '@decorators/foreign-key/interfaces';
+import { ForeignKeyDecoratorInterface } from '@decorators/foreign-key/interfaces';
+import { ForeignKeyInterface } from '@core/interfaces';
 
 export function ForeignKey({ key, table }: ForeignKeyDecoratorInterface) {
 	return function(target: any, propertyKey: string) {

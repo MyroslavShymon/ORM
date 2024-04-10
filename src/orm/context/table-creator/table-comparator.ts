@@ -1,11 +1,12 @@
-import { ColumnInterface, ComputedColumnInterface, DataSourceInterface, TableIngotInterface } from '@core/interfaces';
-import { DataSourcePostgres } from '@strategies/postgres';
 import {
-	ConstraintInterface,
+	ColumnInterface,
+	ComputedColumnInterface,
+	DataSourceInterface,
 	ForeignKeyInterface,
-	TableOptionsMysqlInterface,
-	TableOptionsPostgresqlInterface
-} from '@decorators/index';
+	TableIngotInterface
+} from '@core/interfaces';
+import { DataSourcePostgres } from '@strategies/postgres';
+import { ConstraintInterface, TableOptionsMysqlInterface, TableOptionsPostgresqlInterface } from '@decorators/index';
 import { TableComparatorInterface, TablePercentageInterface } from '@context/common';
 
 export class TableComparator implements TableComparatorInterface {

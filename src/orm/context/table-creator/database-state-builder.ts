@@ -1,9 +1,12 @@
-import { DataSourceInterface, ModelInterface, TableIngotInterface, TableInterface } from '@core/interfaces';
 import {
-	ComputedColumnMetadataInterface,
+	DataSourceInterface,
 	ForeignKeyInterface,
-	PrimaryGeneratedColumnInterface
-} from '@decorators/index';
+	ModelInterface,
+	PrimaryGeneratedColumnInterface,
+	TableIngotInterface,
+	TableInterface
+} from '@core/interfaces';
+import { ComputedColumnMetadataInterface } from '@decorators/index';
 import { DatabaseStateBuilderInterface, DatabaseStateInterface } from '@context/common';
 
 export class DatabaseStateBuilder implements DatabaseStateBuilderInterface {

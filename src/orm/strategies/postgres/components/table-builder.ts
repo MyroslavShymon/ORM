@@ -1,10 +1,12 @@
 import { DataSourcePostgres, TableBuilderInterface } from '@strategies/postgres';
-import { ColumnInterface, ComputedColumnInterface, TableInterface } from '@core/interfaces';
 import {
+	ColumnInterface,
+	ComputedColumnInterface,
 	ForeignKeyInterface,
 	PrimaryGeneratedColumnInterface,
-	TableOptionsPostgresqlInterface
-} from '@decorators/index';
+	TableInterface
+} from '@core/interfaces';
+import { TableOptionsPostgresqlInterface } from '@decorators/index';
 import { isArrayArrayOfArrays } from '@utils/index';
 import { DatabasesTypes } from '@core/enums';
 
