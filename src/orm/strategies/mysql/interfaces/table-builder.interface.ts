@@ -5,6 +5,6 @@ export interface TableBuilderInterface {
 	createTable(
 		table?: TableInterface<DataSourceMySql>,
 		columns?: ColumnInterface[],
-		computedColumns?: ComputedColumnInterface<DataSourceMySql>[]
+		computedColumns?: ComputedColumnInterface[]
 	): string;
 }

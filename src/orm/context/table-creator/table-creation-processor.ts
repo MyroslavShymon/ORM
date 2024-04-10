@@ -1,5 +1,11 @@
 import { v4 as uuidv4 } from 'uuid';
-import { ColumnInterface, ComputedColumnInterface, DataSourceInterface, TableIngotInterface } from '@core/interfaces';
+import {
+	BaseColumnInterface,
+	ColumnInterface,
+	ComputedColumnInterface,
+	DataSourceInterface,
+	TableIngotInterface
+} from '@core/interfaces';
 import { constants } from '@core/constants';
 import { TableComparator } from '@context/table-creator/table-comparator';
 import { TableCreationProcessorInterface } from '@context/common';
@@ -97,7 +103,7 @@ export class TableCreationProcessor implements TableCreationProcessorInterface {
 			const name = model.name;
 			const options = model.options;//TODO можливо потім будемо рефакторити options в table(якісь цікаві нові штуки туда добавим)
 			const columns = this._handleColumns<ColumnInterface[]>(table.columns, model.columns);
-			const computedColumns = this._handleColumns<ComputedColumnInterface<DataSourceInterface>[]>(table.computedColumns, model.computedColumns);
+			const computedColumns = this._handleColumns<ComputedColumnInterface[]>(table.computedColumns, model.computedColumns);
 			const foreignKeys = model.foreignKeys;//TODO подумати над тим чи foreignKeys мають бути з Id чи ні
 			const primaryColumn = model.primaryColumn;
 
@@ -107,9 +113,10 @@ export class TableCreationProcessor implements TableCreationProcessorInterface {
 		return tablesForIngot;
 	}
 
-	private _handleColumns<T extends ColumnInterface[] | ComputedColumnInterface<DataSourceInterface>[]>
-	(tableColumns: T, modelColumns: T) {
-		let columns: any[] = [];
+	//TODO тут шось дивне з типізацією, треба переглянути цей метод
+	private _handleColumns<T extends BaseColumnInterface[]>
+	(tableColumns: T, modelColumns: T): ColumnInterface[] | ComputedColumnInterface[] {
+		let columns: (ColumnInterface | ComputedColumnInterface)[] = [];
 
 		if (modelColumns == undefined || modelColumns.length === 0) {
 			return columns;
@@ -141,5 +148,4 @@ export class TableCreationProcessor implements TableCreationProcessorInterface {
 
 		return [...columns, ...resultModelColumns];
 	}
-
 }

@@ -65,7 +65,7 @@ export class DataSourceMySql extends BaseQueries implements DataSourceInterface 
 	createTable(
 		table?: TableInterface<DataSourceMySql>,
 		columns?: ColumnInterface[],
-		computedColumns?: ComputedColumnInterface<DataSourceMySql>[]
+		computedColumns?: ComputedColumnInterface[]
 	): string {
 		return this._tableBuilder.createTable(table, columns, computedColumns);
 	}

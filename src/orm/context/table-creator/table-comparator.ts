@@ -101,8 +101,8 @@ export class TableComparator implements TableComparatorInterface {
 	}
 
 	private _calculateColumnPercentage(
-		newTableColumns: ColumnInterface[] | ComputedColumnInterface<DataSourceInterface>[],
-		deletedTableColumns: ColumnInterface[] | ComputedColumnInterface<DataSourceInterface>[],
+		newTableColumns: ColumnInterface[] | ComputedColumnInterface[],
+		deletedTableColumns: ColumnInterface[] | ComputedColumnInterface[],
 		newTablePrimaryColumnName?: string,
 		deletedTablePrimaryColumnName?: string
 	): number {

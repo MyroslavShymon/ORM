@@ -25,7 +25,7 @@ export interface DataSourceInterface {
 	createTable(
 		table?: TableInterface<DataSourceInterface>,
 		columns?: ColumnInterface[],
-		computedColumns?: ComputedColumnInterface<DataSourceInterface>[],
+		computedColumns?: ComputedColumnInterface[],
 		foreignKeys?: ForeignKeyInterface[],
 		primaryColumn?: PrimaryGeneratedColumnInterface
 	): string;

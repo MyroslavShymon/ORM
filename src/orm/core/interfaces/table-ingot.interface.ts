@@ -13,7 +13,7 @@ export interface TableIngotInterface<DB> {
 	name: string;
 	options?: DB extends DataSourcePostgres ? TableOptionsPostgresqlInterface : TableOptionsMysqlInterface;
 	columns: ColumnInterface[];
-	computedColumns: ComputedColumnInterface<DB>[];
+	computedColumns: ComputedColumnInterface[];
 	foreignKeys: ForeignKeyInterface[];
 	primaryColumn: PrimaryGeneratedColumnInterface;
 }

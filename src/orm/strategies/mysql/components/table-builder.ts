@@ -5,7 +5,7 @@ export class TableBuilder implements TableBuilderInterface {
 	createTable(
 		table?: TableInterface<DataSourceMySql>,
 		columns?: ColumnInterface[],
-		computedColumns?: ComputedColumnInterface<DataSourceMySql>[]
+		computedColumns?: ComputedColumnInterface[]
 	): string {
 		let createTableQuery;
 

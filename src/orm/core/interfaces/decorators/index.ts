@@ -1,3 +1,2 @@
-export * from './column';
+export * from './columns';
 export * from './table.interface';
-export * from './computed-column.interface';

@@ -12,7 +12,7 @@ export class TableBuilder implements TableBuilderInterface {
 	createTable(
 		table?: TableInterface<DataSourcePostgres>,
 		columns?: ColumnInterface[],
-		computedColumns?: ComputedColumnInterface<DataSourcePostgres>[],
+		computedColumns?: ComputedColumnInterface[],
 		foreignKeys?: ForeignKeyInterface[],
 		primaryColumn?: PrimaryGeneratedColumnInterface
 	): string {
@@ -98,7 +98,7 @@ export class TableBuilder implements TableBuilderInterface {
 		return formattedColumnStrings.join(',\n\t\t');
 	}
 
-	private _handleComputedColumns(computedColumns: ComputedColumnInterface<DataSourcePostgres>[]): string {
+	private _handleComputedColumns(computedColumns: ComputedColumnInterface[]): string {
 		const formattedComputedColumns = computedColumns
 			.map(({ name, stored, calculate, dataType }) =>
 				`"${name}" ${dataType} GENERATED ALWAYS AS (${calculate}) ${stored === true ? 'STORED' : ''}`);
