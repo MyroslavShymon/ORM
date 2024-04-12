@@ -1,20 +1,9 @@
 import 'reflect-metadata';
-import { ColumnMetadataInterface, StringDecoratorInterface } from '@decorators/index';
+import { ColumnMetadataInterface } from '@decorators/index';
+import { StringDecoratorInterface as StringDecoratorInterface } from './interfaces/string/string-decorator.interface';
 
 export function String({ type, length }: StringDecoratorInterface) {
 	return function(target: any, propertyKey: string) {
-		if (!type) {
-			throw new Error('Ви не вказали тип');
-		}
-
-		if (
-			type !== 'TEXT' &&
-			type !== 'CHAR' &&
-			type !== 'VARCHAR'
-		) {
-			throw new Error('Ви вказали не вірний тип колонки');
-		}
-
 		if ((type === 'CHAR' || type === 'VARCHAR') && !length) {
 			throw new Error('Ви не вказали довжину рядка');
 		}

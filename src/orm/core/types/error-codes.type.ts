@@ -1,0 +1,1 @@
+export const ErrorCodesType: string[] = ['2322'];

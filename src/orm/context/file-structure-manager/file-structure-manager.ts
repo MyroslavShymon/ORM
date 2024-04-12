@@ -10,6 +10,34 @@ export class FileStructureManager {
 		this._generateColumnOptionsDecoratorInterface(connectionData);
 		this._generateBaseComputedColumnInterface(connectionData);
 		this._generateTableDecoratorInterface(connectionData);
+		this._generateStringDecoratorInterface(connectionData);
+	}
+
+	private static _generateStringDecoratorInterface(connectionData: ConnectionData) {
+		const fileName = 'string-decorator.interface.d.ts';
+		const filePath = path.join(__dirname, '../..', '/decorators/types/interfaces/string', fileName);
+
+		const [imports, StringTypesTypeNode] = connectionData.type === DatabasesTypes.MYSQL ?
+			this._typescriptCodeGenerator.formImport('MysqlStringTypesType', '../../types/string/mysql-string-types.type') :
+			this._typescriptCodeGenerator.formImport('PostgresStringTypesType', '../../types/string/postgres-string-types.type');
+
+		this._typescriptCodeGenerator.generateInterfaceFile(
+			fileName,
+			filePath,
+			'StringDecoratorInterface',
+			[
+				{
+					fieldName: 'length',
+					isFieldOptional: true,
+					fieldType: { type: 'number' }
+				},
+				{
+					fieldName: 'type',
+					fieldType: StringTypesTypeNode
+				}
+			],
+			imports
+		);
 	}
 
 	private static _generateTableDecoratorInterface(connectionData: ConnectionData) {
@@ -17,14 +45,13 @@ export class FileStructureManager {
 		const filePath = path.join(__dirname, '../..', '/decorators/table/interfaces', fileName);
 
 		const [imports, TableOptionsTypeNode] = connectionData.type === DatabasesTypes.MYSQL ?
-			this._typescriptCodeGenerator.formImport('TableOptionsMysqlInterface', '../interfaces/table-options-mysql.interface') :
-			this._typescriptCodeGenerator.formImport('TableOptionsPostgresqlInterface', '../interfaces/table-options-postgresql.interface');
+			this._typescriptCodeGenerator.formImport('TableOptionsMysqlInterface', '../../../core/interfaces/decorators/table/table-options-mysql.interface') :
+			this._typescriptCodeGenerator.formImport('TableOptionsPostgresqlInterface', '../../../core/interfaces/decorators/table/table-options-postgresql.interface');
 
 		this._typescriptCodeGenerator.generateInterfaceFile(
 			fileName,
 			filePath,
 			'TableDecoratorInterface',
-			imports,
 			[
 				{
 					fieldName: 'options',
@@ -36,7 +63,8 @@ export class FileStructureManager {
 					isFieldOptional: true,
 					fieldType: { type: 'string' }
 				}
-			]
+			],
+			imports
 		);
 	}
 
@@ -52,7 +80,6 @@ export class FileStructureManager {
 			fileName,
 			filePath,
 			'BaseComputedColumnInterface',
-			imports,
 			[
 				{
 					fieldName: 'dataType',
@@ -66,7 +93,8 @@ export class FileStructureManager {
 					fieldName: 'stored',
 					fieldType: { type: 'boolean' }
 				}
-			]
+			],
+			imports
 		);
 	}
 
@@ -82,7 +110,6 @@ export class FileStructureManager {
 			fileName,
 			filePath,
 			'ColumnOptionsDecoratorInterface',
-			imports,
 			[
 				{
 					fieldName: 'dataType',
@@ -123,7 +150,8 @@ export class FileStructureManager {
 					isFieldOptional: true,
 					fieldType: { type: 'boolean' }
 				}
-			]
+			],
+			imports
 		);
 	}
 }

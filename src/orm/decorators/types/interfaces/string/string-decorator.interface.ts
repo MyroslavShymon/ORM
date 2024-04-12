@@ -1,8 +1,6 @@
+import { MysqlStringTypesType, PostgresStringTypesType } from '@decorators/types/types';
+
 export interface StringDecoratorInterface {
-	type: 'TEXT' | 'VARCHAR' | 'CHAR';
+	type: PostgresStringTypesType | MysqlStringTypesType;
 	length?: number;
 }
-
-//TODO
-// import ts from 'typescript'
-// ts.factory.createInterface('f')

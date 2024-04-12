@@ -9,8 +9,8 @@ export interface TypescriptCodeGeneratorInterface {
 		interfaceFileName: string,
 		interfaceFilePath: string,
 		interfaceName: string,
-		interfaceImports: ts.ImportDeclaration,
-		interfaceFields: OptionsToCreateFieldInterface[]
+		interfaceFields: OptionsToCreateFieldInterface[],
+		interfaceImports?: ts.ImportDeclaration
 	): void;
 
 	generateInterface(

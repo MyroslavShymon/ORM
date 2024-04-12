@@ -1,11 +1,12 @@
 import * as ts from 'typescript';
 import * as fs from 'fs';
+import * as path from 'path';
+import { FS } from '@utils/fs';
 import {
 	FieldTypeInterface,
 	OptionsToCreateFieldInterface,
 	TypescriptCodeGeneratorInterface
 } from '@utils/typescript-code-generator/interfaces';
-import { FS } from '@utils/fs';
 
 export class TypescriptCodeGenerator implements TypescriptCodeGeneratorInterface {
 	constructor() {
@@ -15,10 +16,34 @@ export class TypescriptCodeGenerator implements TypescriptCodeGeneratorInterface
 		interfaceFileName: string,
 		interfaceFilePath: string,
 		interfaceName: string,
-		interfaceImports: ts.ImportDeclaration,
-		interfaceFields: OptionsToCreateFieldInterface[]
+		interfaceFields: OptionsToCreateFieldInterface[],
+		interfaceImports?: ts.ImportDeclaration
 	): void {
 		FS.deleteFile(interfaceFilePath);
+
+		const configFileName = ts.findConfigFile(path.join(__dirname, '../../../..', '/tsconfig.json'), ts.sys.fileExists, 'tsconfig.json');
+
+		if (!configFileName) {
+			throw new Error('Could not find a valid \'tsconfig.json\'.');
+		}
+
+		const host = ts.createWatchCompilerHost(
+			configFileName,
+			{},
+			ts.sys,
+			ts.createSemanticDiagnosticsBuilderProgram,
+			this.reportDiagnostic,
+			this.reportWatchStatusChanged
+		);
+
+		const origCreateProgram = host.createProgram;
+		host.createProgram = (rootNames, options, host, oldProgram) => {
+			options.incremental = true; // Встановлюємо параметр інкрементальної переіндексації
+			options.tsBuildInfoFile = './.tsbuildinfo';
+			return origCreateProgram(rootNames, options, host, oldProgram);
+		};
+
+		const program = ts.createWatchProgram(host);
 
 		fs.writeFileSync(
 			interfaceFilePath,
@@ -34,6 +59,33 @@ export class TypescriptCodeGenerator implements TypescriptCodeGeneratorInterface
 		);
 	}
 
+	reportDiagnostic(diagnostic: ts.Diagnostic): void {
+		if (diagnostic.code === 2322) {
+			throw Error(
+				'Error ' +
+				diagnostic.code +
+				':' +
+				ts.flattenDiagnosticMessageText(diagnostic.messageText, ts.sys.newLine)
+			);
+		}
+		console.error(
+			'Error',
+			diagnostic.code,
+			':',
+			ts.flattenDiagnosticMessageText(diagnostic.messageText, ts.sys.newLine)
+		);
+	}
+
+	reportWatchStatusChanged(diagnostic: ts.Diagnostic): void {
+		console.info(
+			ts.formatDiagnostic(diagnostic, {
+				getCanonicalFileName: (fileName) => fileName,
+				getCurrentDirectory: ts.sys.getCurrentDirectory,
+				getNewLine: () => ts.sys.newLine
+			})
+		);
+	}
+
 	generateInterface(
 		fileName: string,
 		interfaceDeclaration?: ts.InterfaceDeclaration,
@@ -43,7 +95,7 @@ export class TypescriptCodeGenerator implements TypescriptCodeGeneratorInterface
 		const resultFile = ts.createSourceFile(fileName, '', ts.ScriptTarget.Latest, false, ts.ScriptKind.TS);
 
 		// Додаємо імпорти до початку файлу
-		const resultWithImports = ts.factory.updateSourceFile(resultFile, [imports]);
+		const resultWithImports = ts.factory.updateSourceFile(resultFile, imports ? [imports] : []);
 
 		// Додаємо інтерфейс до файлу
 		const resultWithInterface = ts.factory.updateSourceFile(resultWithImports, resultWithImports.statements.concat([interfaceDeclaration]));
@@ -71,13 +123,29 @@ export class TypescriptCodeGenerator implements TypescriptCodeGeneratorInterface
 	}
 
 	formInterface(interfaceName: string, fields: OptionsToCreateFieldInterface[]): ts.InterfaceDeclaration {
-		return ts.factory.createInterfaceDeclaration(
+		const interfaceDeclaration = ts.factory.createInterfaceDeclaration(
 			undefined,
 			interfaceName,
 			[],
 			undefined,
 			fields.map(this.formField)
 		);
+
+		return ts.factory.updateInterfaceDeclaration(
+			interfaceDeclaration,
+			[ts.factory.createModifier(ts.SyntaxKind.ExportKeyword)], // Додаємо модифікатор export
+			interfaceDeclaration.name,
+			interfaceDeclaration.typeParameters,
+			interfaceDeclaration.heritageClauses,
+			interfaceDeclaration.members
+		);
+		// return ts.factory.createInterfaceDeclaration(
+		// 	undefined,
+		// 	interfaceName,
+		// 	[],
+		// 	undefined,
+		// 	fields.map(this.formField)
+		// );
 	}
 
 	formField = ({ isFieldOptional, fieldName, fieldType }: OptionsToCreateFieldInterface): ts.PropertySignature => {
@@ -100,6 +168,13 @@ export class TypescriptCodeGenerator implements TypescriptCodeGeneratorInterface
 	};
 
 	handleTypeElement(typeElement: FieldTypeInterface): ts.TypeNode {
+		// let elementType: ts.TypeNode = typeElement.isStringLiteral ?
+		// 	ts.factory.createLiteralTypeNode(ts.factory.createStringLiteral(typeElement.type)) :
+		// 	ts.factory.createTypeReferenceNode(typeElement.type, []);
+		//
+		// return typeElement.isArray && !typeElement.isStringLiteral
+		// 	? ts.factory.createArrayTypeNode(elementType)
+		// 	: elementType;
 		const elementType = ts.factory.createTypeReferenceNode(typeElement.type, []);
 		return typeElement.isArray
 			? ts.factory.createArrayTypeNode(elementType)

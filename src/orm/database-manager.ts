@@ -11,6 +11,7 @@ import {
 	TableManipulationInterface
 } from '@context/common';
 import { FileStructureManager } from '@context/file-structure-manager';
+import { ErrorHandler } from '@context/error-handler';
 
 class DatabaseManager<DB extends DatabasesTypes> implements DatabaseManagerInterface {
 	private _connectionData: ConnectionData;
@@ -77,6 +78,7 @@ class DatabaseManager<DB extends DatabasesTypes> implements DatabaseManagerInter
 			});
 		} catch (error) {
 			console.error('Error while creating orm connection', error);
+			ErrorHandler.handleCreateOrmConnection(error);
 		} finally {
 			// await this._dataSource.client.release();
 		}
