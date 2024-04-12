@@ -30,19 +30,20 @@ export class IncrementalTypeIndexator {
 	}
 
 	private static _reportDiagnostic(diagnostic: ts.Diagnostic): void {
+		// const localizedMessage = ts.formatDiagnosticsWithColorAndContext([diagnostic], ts.createCompilerHost({}));
 		if (diagnostic.code === constants.errors.assignableToType) {
 			throw Error(
 				'Error ' +
 				diagnostic.code +
-				':' +
-				ts.flattenDiagnosticMessageText(diagnostic.messageText, ts.sys.newLine)
+				':'
+				// + localizedMessage
 			);
 		}
 		console.error(
 			'Error',
 			diagnostic.code,
 			':',
-			ts.flattenDiagnosticMessageText(diagnostic.messageText, ts.sys.newLine)
+			// localizedMessage
 		);
 	}
 

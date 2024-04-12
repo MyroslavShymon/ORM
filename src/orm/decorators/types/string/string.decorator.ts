@@ -17,6 +17,7 @@ export function String({ type, length }: StringDecoratorInterface) {
 
 		columns = columns.map(column => {
 			if (column.propertyKey === propertyKey) {
+				column.name = propertyKey.toString();
 				column.options.dataType = type;
 				column.options.length = length;
 			}

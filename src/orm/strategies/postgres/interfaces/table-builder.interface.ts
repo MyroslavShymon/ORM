@@ -13,6 +13,6 @@ export interface TableBuilderInterface {
 		columns?: ColumnInterface[],
 		computedColumns?: ComputedColumnInterface[],
 		foreignKeys?: ForeignKeyInterface[],
-		primaryColumn?: PrimaryGeneratedColumnInterface
+		primaryColumn?: PrimaryGeneratedColumnInterface<DatabasesTypes.POSTGRES>
 	): string;
 }

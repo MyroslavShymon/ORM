@@ -13,15 +13,90 @@ export class FileStructureManager {
 		this._generateBaseComputedColumnInterface(connectionData);
 		this._generateTableDecoratorInterface(connectionData);
 		this._generateStringDecoratorInterface(connectionData);
+		this._generatePrimaryGeneratedColumnDecoratorInterface(connectionData);
+	}
+
+	private static _generatePrimaryGeneratedColumnDecoratorInterface(connectionData: ConnectionData) {
+		const fileName = 'primary-generated-column-decorator.interface.d.ts';
+		const filePath = path.join(__dirname, '../..', '/decorators/primary-generated-column/interfaces', fileName);
+
+		const [imports, AutoIncrementColumnTypesTypeNode] = connectionData.type === DatabasesTypes.MYSQL ?
+			this._typescriptCodeGenerator.formImport('AutoIncrementColumnTypesMysqlType', '../types/auto-increment-column-types-mysql.type') :
+			this._typescriptCodeGenerator.formImport('AutoIncrementColumnTypesPostgresType', '../types/auto-increment-column-types-postgres.type');
+
+		const interfaceFields = [
+			{
+				fieldName: 'type',
+				fieldType: AutoIncrementColumnTypesTypeNode
+			},
+			{
+				fieldName: 'startWith',
+				isFieldOptional: true,
+				fieldType: { type: 'number' }
+			},
+			{
+				fieldName: 'incrementBy',
+				isFieldOptional: true,
+				fieldType: { type: 'number' }
+			},
+			{
+				fieldName: 'minValue',
+				isFieldOptional: true,
+				fieldType: { type: 'number' }
+			},
+			{
+				fieldName: 'maxValue',
+				isFieldOptional: true,
+				fieldType: { type: 'number' }
+			},
+			{
+				fieldName: 'isCycle',
+				isFieldOptional: true,
+				fieldType: { type: 'boolean' }
+			},
+			{
+				fieldName: 'cache',
+				isFieldOptional: true,
+				fieldType: { type: 'number' }
+			},
+			{
+				fieldName: 'ownedBy',
+				isFieldOptional: true,
+				fieldType: { type: 'string' }
+			}
+		];
+
+		if (connectionData.type === DatabasesTypes.POSTGRES) {
+			interfaceFields.push(
+				{
+					fieldName: 'restartWith',
+					isFieldOptional: true,
+					fieldType: { type: 'number' }
+				},
+				{
+					fieldName: 'noOrder',
+					isFieldOptional: true,
+					fieldType: { type: 'boolean' }
+				}
+			);
+		}
+
+		this._typescriptCodeGenerator.generateInterfaceFile(
+			fileName,
+			filePath,
+			'PrimaryGeneratedColumnDecoratorInterface',
+			interfaceFields,
+			imports
+		);
 	}
 
 	private static _generateStringDecoratorInterface(connectionData: ConnectionData) {
 		const fileName = 'string-decorator.interface.d.ts';
-		const filePath = path.join(__dirname, '../..', '/decorators/types/interfaces/string', fileName);
+		const filePath = path.join(__dirname, '../..', '/decorators/types/string/common', fileName);
 
 		const [imports, StringTypesTypeNode] = connectionData.type === DatabasesTypes.MYSQL ?
-			this._typescriptCodeGenerator.formImport('MysqlStringTypesType', '../../types/string/mysql-string-types.type') :
-			this._typescriptCodeGenerator.formImport('PostgresStringTypesType', '../../types/string/postgres-string-types.type');
+			this._typescriptCodeGenerator.formImport('MysqlStringTypesType', './mysql-string-types.type') :
+			this._typescriptCodeGenerator.formImport('PostgresStringTypesType', './postgres-string-types.type');
 
 		this._typescriptCodeGenerator.generateInterfaceFile(
 			fileName,

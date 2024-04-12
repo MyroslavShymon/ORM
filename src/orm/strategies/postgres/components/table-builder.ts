@@ -16,7 +16,7 @@ export class TableBuilder implements TableBuilderInterface {
 		columns?: ColumnInterface[],
 		computedColumns?: ComputedColumnInterface[],
 		foreignKeys?: ForeignKeyInterface[],
-		primaryColumn?: PrimaryGeneratedColumnInterface
+		primaryColumn?: PrimaryGeneratedColumnInterface<DatabasesTypes.POSTGRES>
 	): string {
 		let createTableQuery;
 		createTableQuery = `\n\tCREATE TABLE IF NOT EXISTS "${table.name}" (\n`;
@@ -122,8 +122,9 @@ export class TableBuilder implements TableBuilderInterface {
 		return `${formattedForeignKeys.length > 0 ? `, \n${formattedForeignKeys.join(',')}` : ''}`.trim();
 	}
 
-	private _handlePrimaryGeneratedColumns(primaryColumn: PrimaryGeneratedColumnInterface) {
-		return `\t\t${primaryColumn.columnName || 'id'} ${primaryColumn.isBigSerial ? 'BIGSERIAL' : 'SERIAL'} PRIMARY KEY,\n\t\t`;
+	private _handlePrimaryGeneratedColumns(primaryColumn: PrimaryGeneratedColumnInterface<DatabasesTypes.POSTGRES>) {
+		//TODO опрацювати всі параметри
+		return `\t\t${primaryColumn.columnName || 'id'} ${primaryColumn.type} PRIMARY KEY,\n\t\t`;
 	}
 
 	private _handleOptionsOfTable({ unique, checkConstraint, primaryKeys }: TableOptionsPostgresqlInterface): string {
