@@ -1,4 +1,5 @@
 import { FS } from './fs';
+import { IncrementalTypeIndexator } from './incremental-type-indexator';
 import { TypescriptCodeGenerator } from './typescript-code-generator';
 
 export function isArrayArrayOfArrays(array: any[]): boolean {
@@ -8,4 +9,4 @@ export function isArrayArrayOfArrays(array: any[]): boolean {
 	return false;
 }
 
-export { TypescriptCodeGenerator, FS };
+export { TypescriptCodeGenerator, FS, IncrementalTypeIndexator };

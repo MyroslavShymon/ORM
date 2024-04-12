@@ -4,7 +4,9 @@ import { TypescriptCodeGenerator, TypescriptCodeGeneratorInterface } from '@util
 import { ConnectionData } from '@core/types';
 
 export class FileStructureManager {
-	private static _typescriptCodeGenerator: TypescriptCodeGeneratorInterface = new TypescriptCodeGenerator();
+	private static readonly _configFilePath = path.join(__dirname, '../../../..', '/tsconfig.json');
+	private static _typescriptCodeGenerator: TypescriptCodeGeneratorInterface =
+		new TypescriptCodeGenerator(this._configFilePath);
 
 	static manage(connectionData: ConnectionData) {
 		this._generateColumnOptionsDecoratorInterface(connectionData);
