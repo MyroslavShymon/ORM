@@ -1,5 +1,6 @@
 import 'reflect-metadata';
 import { TableDecoratorInterface } from '@decorators/index';
+import { constants } from '@core/constants';
 
 export function Table({ name, options }: TableDecoratorInterface) {
 	return function(constructor: Function) {
@@ -10,6 +11,6 @@ export function Table({ name, options }: TableDecoratorInterface) {
 			name = constructor.name;
 		}
 
-		Reflect.defineMetadata('table', { name, options }, constructor.prototype);
+		Reflect.defineMetadata(constants.decoratorsMetadata.table, { name, options }, constructor.prototype);
 	};
 }

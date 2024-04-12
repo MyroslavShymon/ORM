@@ -1,7 +1,7 @@
 import 'reflect-metadata';
-import { ColumnMetadataInterface } from '@decorators/index';
-import { StringDecoratorInterface as StringDecoratorInterface } from './interfaces/string/string-decorator.interface';
-import { StringTypesWithParams } from '@decorators/types/constants';
+import { constants } from '@core/constants';
+import { StringDecoratorInterface, StringTypesWithParams } from '@decorators/types';
+import { ColumnMetadataInterface } from '@decorators/column';
 
 export function String({ type, length }: StringDecoratorInterface) {
 	return function(target: any, propertyKey: string) {
@@ -13,7 +13,7 @@ export function String({ type, length }: StringDecoratorInterface) {
 			throw new Error('В декораторі String не потрібна довжина рядка');
 		}
 
-		let columns: ColumnMetadataInterface[] = Reflect.getMetadata('columns', target) || [];
+		let columns: ColumnMetadataInterface[] = Reflect.getMetadata(constants.decoratorsMetadata.columns, target) || [];
 
 		columns = columns.map(column => {
 			if (column.propertyKey === propertyKey) {
@@ -24,6 +24,6 @@ export function String({ type, length }: StringDecoratorInterface) {
 			return column;
 		});
 
-		Reflect.defineMetadata('columns', columns, target);
+		Reflect.defineMetadata(constants.decoratorsMetadata.columns, columns, target);
 	};
 }

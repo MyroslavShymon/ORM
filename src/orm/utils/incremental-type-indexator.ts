@@ -1,4 +1,5 @@
 import * as ts from 'typescript';
+import { constants } from '@core/constants';
 
 export class IncrementalTypeIndexator {
 	static performIncrementalTypeIndexing(configFilePath: string) {
@@ -29,7 +30,7 @@ export class IncrementalTypeIndexator {
 	}
 
 	private static _reportDiagnostic(diagnostic: ts.Diagnostic): void {
-		if (diagnostic.code === 2322) {
+		if (diagnostic.code === constants.errors.assignableToType) {
 			throw Error(
 				'Error ' +
 				diagnostic.code +

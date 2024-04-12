@@ -1,8 +1,9 @@
-import { ErrorCodesType } from '@core/types';
+import { constants } from '@core/constants';
 
 export class ErrorHandler {
 	static handleCreateOrmConnection(error: unknown) {
-		if (typeof error === 'string' && ErrorCodesType.some(code => error.includes(code))) {
+		const errorCodes = Object.values(constants.errors).map(value => value.toString());
+		if (typeof error === 'string' && errorCodes.some(code => error.includes(code))) {
 			throw error;
 		}
 	}

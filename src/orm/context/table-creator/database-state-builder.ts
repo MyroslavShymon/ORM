@@ -8,6 +8,7 @@ import {
 } from '@core/interfaces';
 import { ComputedColumnMetadataInterface } from '@decorators/index';
 import { DatabaseStateBuilderInterface, DatabaseStateInterface } from '@context/common';
+import { constants } from '@core/constants';
 
 export class DatabaseStateBuilder implements DatabaseStateBuilderInterface {
 	constructor() {
@@ -18,15 +19,15 @@ export class DatabaseStateBuilder implements DatabaseStateBuilderInterface {
 
 		for (let model of models) {
 			const table: TableInterface
-				= Reflect.getMetadata('table', model.prototype);
+				= Reflect.getMetadata(constants.decoratorsMetadata.table, model.prototype);
 			const metadataColumns
-				= Reflect.getMetadata('columns', model.prototype);
+				= Reflect.getMetadata(constants.decoratorsMetadata.columns, model.prototype);
 			const metadataComputedColumns: ComputedColumnMetadataInterface[]
-				= Reflect.getMetadata('computed-columns', model.prototype);
+				= Reflect.getMetadata(constants.decoratorsMetadata.computedColumns, model.prototype);
 			const foreignKeys: ForeignKeyInterface[]
-				= Reflect.getMetadata('foreign-keys', model.prototype);
+				= Reflect.getMetadata(constants.decoratorsMetadata.foreignKeys, model.prototype);
 			const primaryColumn: PrimaryGeneratedColumnInterface
-				= Reflect.getMetadata('primary-column', model.prototype);
+				= Reflect.getMetadata(constants.decoratorsMetadata.primaryColumn, model.prototype);
 
 			let columns = [];
 			if (metadataColumns) {

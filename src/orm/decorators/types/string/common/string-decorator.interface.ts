@@ -1,4 +1,4 @@
-import { MysqlStringTypesType, PostgresStringTypesType } from '@decorators/types/types';
+import { MysqlStringTypesType, PostgresStringTypesType } from '@decorators/types';
 
 export interface StringDecoratorInterface {
 	type: PostgresStringTypesType | MysqlStringTypesType;
