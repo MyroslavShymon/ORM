@@ -1,0 +1,1 @@
+export const StringTypesWithParams: string[] = ['CHAR', 'VARCHAR', 'BPCHAR', 'CHARACTER', 'CHARACTER VARYING'];
