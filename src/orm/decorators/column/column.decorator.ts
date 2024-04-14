@@ -14,7 +14,6 @@ export function Column(decoratorParams?: ColumnDecoratorInterface) {
 		const columns: ColumnMetadataInterface[] = Reflect.getMetadata('columns', target) || [];
 
 		columns.forEach(column => {
-			console.log('column.options', column.options);
 			if (!column.options?.dataType) {
 				throw Error('Ви не вказали тип колонки!');
 			}

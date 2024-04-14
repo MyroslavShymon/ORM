@@ -19,6 +19,70 @@ export class FileStructureManager {
 		this._generateStringDecoratorInterface(connectionData);
 		this._generatePrimaryGeneratedColumnDecoratorInterface(connectionData);
 		this._generateIntegerDecoratorInterface(connectionData);
+		this._generateFloatDecoratorInterface(connectionData);
+	}
+
+	private static _generateFloatDecoratorInterface(connectionData: ConnectionData) {
+		const fileName = 'float-decorator.interface.d.ts';
+		const filePath = path.join(__dirname, '../..', '/decorators/types/float/common', fileName);
+
+		const [imports, FloatTypesTypeNode] = connectionData.type === DatabasesTypes.MYSQL ?
+			this._typescriptCodeGenerator.formImport('MysqlFloatTypesType', './mysql-float-types.type') :
+			this._typescriptCodeGenerator.formImport('PostgresFloatTypesType', './postgres-float-types.type.ts');
+
+		const interfaceFields: OptionsToCreateFieldInterface[] = [
+			{
+				fieldName: 'type',
+				fieldType: FloatTypesTypeNode
+			}
+		];
+
+		if (connectionData.type === DatabasesTypes.MYSQL) {
+			interfaceFields.push(
+				{
+					fieldName: 'totalNumberOfDigits',
+					isFieldOptional: true,
+					fieldType: { type: 'number' }
+				},
+				{
+					fieldName: 'numberOfDigitsAfterPoint',
+					isFieldOptional: true,
+					fieldType: { type: 'number' }
+				},
+				{
+					fieldName: 'isUnsigned',
+					isFieldOptional: true,
+					fieldType: { type: 'boolean' }
+				},
+				{
+					fieldName: 'isZerofill',
+					isFieldOptional: true,
+					fieldType: { type: 'boolean' }
+				}
+			);
+		}
+		if (connectionData.type === DatabasesTypes.POSTGRES) {
+			interfaceFields.push(
+				{
+					fieldName: 'precision',
+					isFieldOptional: true,
+					fieldType: { type: 'number' }
+				},
+				{
+					fieldName: 'scale',
+					isFieldOptional: true,
+					fieldType: { type: 'number' }
+				}
+			);
+		}
+
+		this._typescriptCodeGenerator.generateInterfaceFile(
+			fileName,
+			filePath,
+			'FloatDecoratorInterface',
+			interfaceFields,
+			imports
+		);
 	}
 
 	private static _generateIntegerDecoratorInterface(connectionData: ConnectionData) {
@@ -261,7 +325,7 @@ export class FileStructureManager {
 				fieldName: 'unique',
 				isFieldOptional: true,
 				fieldType: { type: 'boolean' }
-			},
+			}
 		];
 
 		if (connectionData.type === DatabasesTypes.MYSQL) {
@@ -285,8 +349,8 @@ export class FileStructureManager {
 					fieldName: 'isUnsigned',
 					isFieldOptional: true,
 					fieldType: { type: 'boolean' }
-				},
-			)
+				}
+			);
 		}
 
 		if (connectionData.type === DatabasesTypes.POSTGRES) {
@@ -306,7 +370,7 @@ export class FileStructureManager {
 					isFieldOptional: true,
 					fieldType: { type: 'boolean' }
 				}
-			)
+			);
 		}
 
 		this._typescriptCodeGenerator.generateInterfaceFile(

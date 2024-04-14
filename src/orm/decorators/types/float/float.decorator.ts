@@ -1,10 +1,10 @@
-import { IntegerDecoratorInterface } from '@decorators/types';
+import { FloatDecoratorInterface } from '@decorators/types/float/common';
 import { DecoratorCreator } from '@decorators/types/common/decorator-creator';
 
-export function Integer(decoratorParams: IntegerDecoratorInterface) {
+export function Float(decoratorParams: FloatDecoratorInterface) {
 	return function(target: any, propertyKey: string) {
 		DecoratorCreator.createBaseTypeDecorator(
-			'Integer',
+			'Float',
 			target,
 			propertyKey,
 			decoratorParams
