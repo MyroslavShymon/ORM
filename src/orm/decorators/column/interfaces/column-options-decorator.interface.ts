@@ -2,7 +2,7 @@ import { MysqlDataTypes, PostgresqlDataTypes } from '@core/types';
 import { DatabasesTypes } from '@core/enums';
 
 export interface ColumnOptionsDecoratorInterface<DT extends DatabasesTypes | undefined = undefined> {
-	dataType: PostgresqlDataTypes | MysqlDataTypes;
+	dataType?: PostgresqlDataTypes | MysqlDataTypes;
 	nullable?: boolean;
 	length?: number;
 	check?: string;
@@ -10,4 +10,8 @@ export interface ColumnOptionsDecoratorInterface<DT extends DatabasesTypes | und
 	defaultValue?: string | number | boolean;
 	unique?: boolean;
 	nullsNotDistinct?: boolean;
+	displayWidth?: number;//only mysql
+	isUnsigned?: boolean;//only mysql
+	isZerofill?: boolean;//only mysql
+	isAutoIncrement?: boolean;//only mysql
 }

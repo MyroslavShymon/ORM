@@ -1,6 +1,10 @@
 import * as path from 'path';
 import { DatabasesTypes } from '@core/enums';
-import { TypescriptCodeGenerator, TypescriptCodeGeneratorInterface } from '@utils/typescript-code-generator';
+import {
+	OptionsToCreateFieldInterface,
+	TypescriptCodeGenerator,
+	TypescriptCodeGeneratorInterface
+} from '@utils/typescript-code-generator';
 import { ConnectionData } from '@core/types';
 
 export class FileStructureManager {
@@ -14,6 +18,56 @@ export class FileStructureManager {
 		this._generateTableDecoratorInterface(connectionData);
 		this._generateStringDecoratorInterface(connectionData);
 		this._generatePrimaryGeneratedColumnDecoratorInterface(connectionData);
+		this._generateIntegerDecoratorInterface(connectionData);
+	}
+
+	private static _generateIntegerDecoratorInterface(connectionData: ConnectionData) {
+		const fileName = 'integer-decorator.interface.d.ts';
+		const filePath = path.join(__dirname, '../..', '/decorators/types/integer/common', fileName);
+
+		const [imports, IntegerTypesTypeNode] = connectionData.type === DatabasesTypes.MYSQL ?
+			this._typescriptCodeGenerator.formImport('MysqlIntegerTypesType', './mysql-integer-types.type') :
+			this._typescriptCodeGenerator.formImport('PostgresIntegerTypesType', './postgres-integer-types.type.ts');
+
+		const interfaceFields: OptionsToCreateFieldInterface[] = [
+			{
+				fieldName: 'type',
+				fieldType: IntegerTypesTypeNode
+			}
+		];
+
+		if (connectionData.type === DatabasesTypes.MYSQL) {
+			interfaceFields.push(
+				{
+					fieldName: 'displayWidth',
+					isFieldOptional: true,
+					fieldType: { type: 'number' }
+				},
+				{
+					fieldName: 'isUnsigned',
+					isFieldOptional: true,
+					fieldType: { type: 'boolean' }
+				},
+				{
+					fieldName: 'isZerofill',
+					isFieldOptional: true,
+					fieldType: { type: 'boolean' }
+				},
+				{
+					fieldName: 'isAutoIncrement',
+					isFieldOptional: true,
+					fieldType: { type: 'boolean' }
+				}
+			);
+		}
+
+		this._typescriptCodeGenerator.generateInterfaceFile(
+			fileName,
+			filePath,
+			'IntegerDecoratorInterface',
+			interfaceFields,
+			imports
+		);
 	}
 
 	private static _generatePrimaryGeneratedColumnDecoratorInterface(connectionData: ConnectionData) {

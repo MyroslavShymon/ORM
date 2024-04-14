@@ -4,4 +4,10 @@ export type AutoIncrementColumnTypesPostgresType =
 	'BIGSERIAL' |
 	'SMALLINT' |
 	'INTEGER' |
-	'BIGINT'
+	'BIGINT' |
+	'INT2' |
+	'INT4' |
+	'INT8' |
+	'SERIAL2' |
+	'SERIAL4' |
+	'SERIAL8'
