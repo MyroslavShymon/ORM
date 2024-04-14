@@ -1,13 +1,5 @@
 import { DatabasesTypes } from '@core/enums';
-import { DatabaseTypesMap } from '@core/types';
+import { ColumnOptionsMysqlInterface, ColumnOptionsPostgresInterface } from '@core/interfaces';
 
-export interface ColumnOptionsInterface<DB extends DatabasesTypes | undefined = undefined> {
-	dataType: DatabaseTypesMap<DB>;
-	nullable?: boolean;
-	length?: number;
-	check?: string;
-	nameOfCheckConstraint?: string;
-	defaultValue?: string | number | boolean;
-	unique?: boolean;
-	nullsNotDistinct?: boolean;
-}
+export type ColumnOptionsInterface<DB extends DatabasesTypes | undefined = undefined> =
+	DB extends DatabasesTypes.POSTGRES ? ColumnOptionsPostgresInterface : ColumnOptionsMysqlInterface;

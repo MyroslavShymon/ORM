@@ -237,25 +237,60 @@ export class FileStructureManager {
 			this._typescriptCodeGenerator.formImport('MysqlDataTypes', '../../../core/types/mysql-data-types') :
 			this._typescriptCodeGenerator.formImport('PostgresqlDataTypes', '../../../core/types/postgresql-data-types');
 
-		this._typescriptCodeGenerator.generateInterfaceFile(
-			fileName,
-			filePath,
-			'ColumnOptionsDecoratorInterface',
-			[
+		const interfaceFields = [
+			{
+				fieldName: 'dataType',
+				fieldType: dataTypeTypeNode
+			},
+			{
+				fieldName: 'nullable',
+				isFieldOptional: true,
+				fieldType: { type: 'boolean' }
+			},
+			{
+				fieldName: 'length',
+				isFieldOptional: true,
+				fieldType: { type: 'number' }
+			},
+			{
+				fieldName: 'defaultValue',
+				isFieldOptional: true,
+				fieldType: [{ type: 'string' }, { type: 'number' }, { type: 'boolean' }]
+			},
+			{
+				fieldName: 'unique',
+				isFieldOptional: true,
+				fieldType: { type: 'boolean' }
+			},
+		];
+
+		if (connectionData.type === DatabasesTypes.MYSQL) {
+			interfaceFields.push(
 				{
-					fieldName: 'dataType',
-					fieldType: dataTypeTypeNode
+					fieldName: 'displayWidth',
+					isFieldOptional: true,
+					fieldType: { type: 'number' }
 				},
 				{
-					fieldName: 'nullable',
+					fieldName: 'isZerofill',
 					isFieldOptional: true,
 					fieldType: { type: 'boolean' }
 				},
 				{
-					fieldName: 'length',
+					fieldName: 'isAutoIncrement',
 					isFieldOptional: true,
-					fieldType: { type: 'number' }
+					fieldType: { type: 'boolean' }
 				},
+				{
+					fieldName: 'isUnsigned',
+					isFieldOptional: true,
+					fieldType: { type: 'boolean' }
+				},
+			)
+		}
+
+		if (connectionData.type === DatabasesTypes.POSTGRES) {
+			interfaceFields.push(
 				{
 					fieldName: 'check',
 					isFieldOptional: true,
@@ -267,21 +302,18 @@ export class FileStructureManager {
 					fieldType: { type: 'string' }
 				},
 				{
-					fieldName: 'defaultValue',
-					isFieldOptional: true,
-					fieldType: [{ type: 'string' }, { type: 'number' }, { type: 'boolean' }]
-				},
-				{
-					fieldName: 'unique',
-					isFieldOptional: true,
-					fieldType: { type: 'boolean' }
-				},
-				{
 					fieldName: 'nullsNotDistinct',
 					isFieldOptional: true,
 					fieldType: { type: 'boolean' }
 				}
-			],
+			)
+		}
+
+		this._typescriptCodeGenerator.generateInterfaceFile(
+			fileName,
+			filePath,
+			'ColumnOptionsDecoratorInterface',
+			interfaceFields,
 			imports
 		);
 	}

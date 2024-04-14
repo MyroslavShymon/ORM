@@ -15,6 +15,10 @@ export function String({ type, length }: StringDecoratorInterface) {
 
 		let columns: ColumnMetadataInterface[] = Reflect.getMetadata(constants.decoratorsMetadata.columns, target) || [];
 
+		if (!columns.map(column => column.propertyKey).includes(propertyKey)) {
+			throw Error('Декоратор String має асоціюватись з декоратором Column');
+		}
+
 		columns = columns.map(column => {
 			if (column.propertyKey === propertyKey) {
 				column.options.dataType = type;

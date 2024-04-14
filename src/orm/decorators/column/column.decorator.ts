@@ -1,17 +1,25 @@
 import 'reflect-metadata';
-import { ColumnDecoratorInterface, ColumnMetadataInterface } from '@decorators/index';
+import { ColumnDecoratorInterface, ColumnMetadataInterface, ColumnOptionsDecoratorInterface } from '@decorators/index';
 
-export function Column(decoratorOptions?: ColumnDecoratorInterface) {
+export function Column(decoratorParams?: ColumnDecoratorInterface) {
 	return function(target: any, propertyKey: string) {
 		let name = propertyKey;
-		let options = { nullable: true };
+		let options: ColumnOptionsDecoratorInterface = { nullable: true };
 
-		if (decoratorOptions) {
-			name = decoratorOptions.name || propertyKey;
-			options = { ...options, ...decoratorOptions };
+		if (decoratorParams) {
+			name = decoratorParams.name || propertyKey;
+			options = { ...options, ...decoratorParams.options };
 		}
 
 		const columns: ColumnMetadataInterface[] = Reflect.getMetadata('columns', target) || [];
+
+		columns.forEach(column => {
+			console.log('column.options', column.options);
+			if (!column.options?.dataType) {
+				throw Error('Ви не вказали тип колонки!');
+			}
+		});
+
 		columns.push({ name, options, propertyKey });
 		Reflect.defineMetadata('columns', columns, target);
 	};

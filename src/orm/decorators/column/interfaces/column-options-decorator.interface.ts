@@ -5,11 +5,11 @@ export interface ColumnOptionsDecoratorInterface<DT extends DatabasesTypes | und
 	dataType?: PostgresqlDataTypes | MysqlDataTypes;
 	nullable?: boolean;
 	length?: number;
-	check?: string;
-	nameOfCheckConstraint?: string;
+	check?: string;//only postgres
+	nameOfCheckConstraint?: string;//only postgres
 	defaultValue?: string | number | boolean;
 	unique?: boolean;
-	nullsNotDistinct?: boolean;
+	nullsNotDistinct?: boolean;//only postgres
 	displayWidth?: number;//only mysql
 	isUnsigned?: boolean;//only mysql
 	isZerofill?: boolean;//only mysql
