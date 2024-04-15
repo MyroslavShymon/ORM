@@ -20,7 +20,7 @@ export class TypescriptCodeGenerator implements TypescriptCodeGeneratorInterface
 		interfaceFilePath: string,
 		interfaceName: string,
 		interfaceFields: OptionsToCreateFieldInterface[],
-		interfaceImports?: ts.ImportDeclaration
+		interfaceImports?: ts.ImportDeclaration[]
 	): void {
 		FS.deleteFile(interfaceFilePath);
 		IncrementalTypeIndexator.performIncrementalTypeIndexing(this._configFilePath);
@@ -42,13 +42,13 @@ export class TypescriptCodeGenerator implements TypescriptCodeGeneratorInterface
 	generateInterface(
 		fileName: string,
 		interfaceDeclaration?: ts.InterfaceDeclaration,
-		imports?: ts.ImportDeclaration
+		imports?: ts.ImportDeclaration[]
 	): string {
 		const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
 		const resultFile = ts.createSourceFile(fileName, '', ts.ScriptTarget.Latest, false, ts.ScriptKind.TS);
 
 		// Add imports into the start of the file
-		const resultWithImports = ts.factory.updateSourceFile(resultFile, imports ? [imports] : []);
+		const resultWithImports = ts.factory.updateSourceFile(resultFile, imports || []);
 
 		// Add interface into files
 		const resultWithInterface = ts.factory.updateSourceFile(resultWithImports, resultWithImports.statements.concat([interfaceDeclaration]));

@@ -10,13 +10,13 @@ export interface TypescriptCodeGeneratorInterface {
 		interfaceFilePath: string,
 		interfaceName: string,
 		interfaceFields: OptionsToCreateFieldInterface[],
-		interfaceImports?: ts.ImportDeclaration
+		interfaceImports?: ts.ImportDeclaration[]
 	): void;
 
 	generateInterface(
 		fileName: string,
 		interfaceDeclaration?: ts.InterfaceDeclaration,
-		imports?: ts.ImportDeclaration
+		imports?: ts.ImportDeclaration[]
 	): string;
 
 	formImport(importName: string, importPath: string): [ts.ImportDeclaration, ts.TypeReferenceNode];

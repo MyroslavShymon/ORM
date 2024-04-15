@@ -1,5 +1,5 @@
 export {
-	Table, Column, String, ComputedColumn, ForeignKey, PrimaryGeneratedColumn, Boolean, Integer, Float
+	Table, Column, String, ComputedColumn, ForeignKey, PrimaryGeneratedColumn, Boolean, Integer, Float, Numeric
 } from '@decorators/index';
 export { DataSourceContext } from './orm/context/data-source-context';
 export { DatabaseManager } from './orm/database-manager';

@@ -1,5 +1,4 @@
-import { IntegerDecoratorInterface } from '@decorators/types';
-import { DecoratorCreator } from '@decorators/types/common/decorator-creator';
+import { DecoratorCreator, IntegerDecoratorInterface } from '@decorators/types';
 
 export function Integer(decoratorParams: IntegerDecoratorInterface) {
 	return function(target: any, propertyKey: string) {

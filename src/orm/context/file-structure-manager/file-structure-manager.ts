@@ -20,6 +20,83 @@ export class FileStructureManager {
 		this._generatePrimaryGeneratedColumnDecoratorInterface(connectionData);
 		this._generateIntegerDecoratorInterface(connectionData);
 		this._generateFloatDecoratorInterface(connectionData);
+		this._generateNumericDecoratorInterface(connectionData);
+	}
+
+	private static _generateNumericDecoratorInterface(connectionData: ConnectionData) {
+		const fileName = 'numeric-decorator.interface.d.ts';
+		const filePath = path.join(__dirname, '../..', '/decorators/types/numeric/common', fileName);
+
+		const [floatImports, FloatTypesTypeNode] = connectionData.type === DatabasesTypes.MYSQL ?
+			this._typescriptCodeGenerator.formImport('MysqlFloatTypesType', '../../float/common/mysql-float-types.type') :
+			this._typescriptCodeGenerator.formImport('PostgresFloatTypesType', '../../float/common/postgres-float-types.type');
+		const [integerImports, IntegerTypesTypeNode] = connectionData.type === DatabasesTypes.MYSQL ?
+			this._typescriptCodeGenerator.formImport('MysqlIntegerTypesType', '../../integer/common/mysql-integer-types.type') :
+			this._typescriptCodeGenerator.formImport('PostgresIntegerTypesType', '../../integer/common/postgres-integer-types.type');
+
+		const interfaceFields: OptionsToCreateFieldInterface[] = [
+			{
+				fieldName: 'type',
+				fieldType: [FloatTypesTypeNode, IntegerTypesTypeNode]
+			}
+		];
+
+		if (connectionData.type === DatabasesTypes.MYSQL) {
+			interfaceFields.push(
+				{
+					fieldName: 'totalNumberOfDigits',
+					isFieldOptional: true,
+					fieldType: { type: 'number' }
+				},
+				{
+					fieldName: 'numberOfDigitsAfterPoint',
+					isFieldOptional: true,
+					fieldType: { type: 'number' }
+				},
+				{
+					fieldName: 'displayWidth',
+					isFieldOptional: true,
+					fieldType: { type: 'number' }
+				},
+				{
+					fieldName: 'isUnsigned',
+					isFieldOptional: true,
+					fieldType: { type: 'boolean' }
+				},
+				{
+					fieldName: 'isZerofill',
+					isFieldOptional: true,
+					fieldType: { type: 'boolean' }
+				},
+				{
+					fieldName: 'isAutoIncrement',
+					isFieldOptional: true,
+					fieldType: { type: 'boolean' }
+				}
+			);
+		}
+		if (connectionData.type === DatabasesTypes.POSTGRES) {
+			interfaceFields.push(
+				{
+					fieldName: 'precision',
+					isFieldOptional: true,
+					fieldType: { type: 'number' }
+				},
+				{
+					fieldName: 'scale',
+					isFieldOptional: true,
+					fieldType: { type: 'number' }
+				}
+			);
+		}
+
+		this._typescriptCodeGenerator.generateInterfaceFile(
+			fileName,
+			filePath,
+			'NumericDecoratorInterface',
+			interfaceFields,
+			[integerImports, floatImports]
+		);
 	}
 
 	private static _generateFloatDecoratorInterface(connectionData: ConnectionData) {
@@ -28,7 +105,7 @@ export class FileStructureManager {
 
 		const [imports, FloatTypesTypeNode] = connectionData.type === DatabasesTypes.MYSQL ?
 			this._typescriptCodeGenerator.formImport('MysqlFloatTypesType', './mysql-float-types.type') :
-			this._typescriptCodeGenerator.formImport('PostgresFloatTypesType', './postgres-float-types.type.ts');
+			this._typescriptCodeGenerator.formImport('PostgresFloatTypesType', './postgres-float-types.type');
 
 		const interfaceFields: OptionsToCreateFieldInterface[] = [
 			{
@@ -81,7 +158,7 @@ export class FileStructureManager {
 			filePath,
 			'FloatDecoratorInterface',
 			interfaceFields,
-			imports
+			[imports]
 		);
 	}
 
@@ -91,7 +168,7 @@ export class FileStructureManager {
 
 		const [imports, IntegerTypesTypeNode] = connectionData.type === DatabasesTypes.MYSQL ?
 			this._typescriptCodeGenerator.formImport('MysqlIntegerTypesType', './mysql-integer-types.type') :
-			this._typescriptCodeGenerator.formImport('PostgresIntegerTypesType', './postgres-integer-types.type.ts');
+			this._typescriptCodeGenerator.formImport('PostgresIntegerTypesType', './postgres-integer-types.type');
 
 		const interfaceFields: OptionsToCreateFieldInterface[] = [
 			{
@@ -130,7 +207,7 @@ export class FileStructureManager {
 			filePath,
 			'IntegerDecoratorInterface',
 			interfaceFields,
-			imports
+			[imports]
 		);
 	}
 
@@ -204,7 +281,7 @@ export class FileStructureManager {
 			filePath,
 			'PrimaryGeneratedColumnDecoratorInterface',
 			interfaceFields,
-			imports
+			[imports]
 		);
 	}
 
@@ -231,7 +308,7 @@ export class FileStructureManager {
 					fieldType: StringTypesTypeNode
 				}
 			],
-			imports
+			[imports]
 		);
 	}
 
@@ -259,7 +336,7 @@ export class FileStructureManager {
 					fieldType: { type: 'string' }
 				}
 			],
-			imports
+			[imports]
 		);
 	}
 
@@ -289,7 +366,7 @@ export class FileStructureManager {
 					fieldType: { type: 'boolean' }
 				}
 			],
-			imports
+			[imports]
 		);
 	}
 
@@ -331,6 +408,16 @@ export class FileStructureManager {
 		if (connectionData.type === DatabasesTypes.MYSQL) {
 			interfaceFields.push(
 				{
+					fieldName: 'totalNumberOfDigits',
+					isFieldOptional: true,
+					fieldType: { type: 'number' }
+				},
+				{
+					fieldName: 'numberOfDigitsAfterPoint',
+					isFieldOptional: true,
+					fieldType: { type: 'number' }
+				},
+				{
 					fieldName: 'displayWidth',
 					isFieldOptional: true,
 					fieldType: { type: 'number' }
@@ -369,6 +456,16 @@ export class FileStructureManager {
 					fieldName: 'nullsNotDistinct',
 					isFieldOptional: true,
 					fieldType: { type: 'boolean' }
+				},
+				{
+					fieldName: 'precision',
+					isFieldOptional: true,
+					fieldType: { type: 'number' }
+				},
+				{
+					fieldName: 'scale',
+					isFieldOptional: true,
+					fieldType: { type: 'number' }
 				}
 			);
 		}
@@ -378,7 +475,7 @@ export class FileStructureManager {
 			filePath,
 			'ColumnOptionsDecoratorInterface',
 			interfaceFields,
-			imports
+			[imports]
 		);
 	}
 }
