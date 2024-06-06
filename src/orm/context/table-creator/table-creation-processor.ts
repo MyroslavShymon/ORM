@@ -104,10 +104,24 @@ export class TableCreationProcessor implements TableCreationProcessorInterface {
 			const options = model.options;//TODO можливо потім будемо рефакторити options в table(якісь цікаві нові штуки туда добавим)
 			const columns = this._handleColumns<ColumnInterface[]>(table.columns, model.columns);
 			const computedColumns = this._handleColumns<ComputedColumnInterface[]>(table.computedColumns, model.computedColumns);
-			const foreignKeys = model.foreignKeys;//TODO подумати над тим чи foreignKeys мають бути з Id чи ні
+			const foreignKeys = model.foreignKeys;//TODO подумати над тим чи foreignKeys мають бути з Id чи ні\
+			const oneToOne = model.oneToOne;
+			const oneToMany = model.oneToMany;
+			const manyToMany = model.manyToMany;
 			const primaryColumn = model.primaryColumn;
 
-			tablesForIngot.push({ id, name, options, columns, computedColumns, foreignKeys, primaryColumn });
+			tablesForIngot.push({
+				id,
+				name,
+				options,
+				columns,
+				computedColumns,
+				foreignKeys,
+				oneToOne,
+				oneToMany,
+				manyToMany,
+				primaryColumn
+			});
 		}
 
 		return tablesForIngot;

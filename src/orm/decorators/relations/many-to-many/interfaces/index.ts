@@ -1,0 +1,1 @@
+export * from './many-to-many-decorator.interface';

@@ -11,5 +11,12 @@ export interface TablePercentageInterface {
 		constraintsPercentage?: number
 		foreignKeyPercentage?: number
 		primaryKeyPercentage?: number
+		oneToOnePercentage?: number
+		oneToManyPercentage?: number
+		manyToManyPercentage?: number
 	}
 }
+
+// npm install -g .
+//npm run build
+//orm-cli --migration:create init

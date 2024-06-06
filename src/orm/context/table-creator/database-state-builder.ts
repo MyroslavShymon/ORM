@@ -1,7 +1,10 @@
 import {
 	DataSourceInterface,
 	ForeignKeyInterface,
+	ManyToManyInterface,
 	ModelInterface,
+	OneToManyInterface,
+	OneToOneInterface,
 	PrimaryGeneratedColumnInterface,
 	TableIngotInterface,
 	TableInterface
@@ -28,6 +31,12 @@ export class DatabaseStateBuilder implements DatabaseStateBuilderInterface {
 				= Reflect.getMetadata(constants.decoratorsMetadata.foreignKeys, model.prototype);
 			const primaryColumn: PrimaryGeneratedColumnInterface
 				= Reflect.getMetadata(constants.decoratorsMetadata.primaryColumn, model.prototype);
+			const oneToOne: OneToOneInterface[]
+				= Reflect.getMetadata(constants.decoratorsMetadata.oneToOne, model.prototype);
+			const oneToMany: OneToManyInterface[]
+				= Reflect.getMetadata(constants.decoratorsMetadata.oneToMany, model.prototype);
+			const manyToMany: ManyToManyInterface[]
+				= Reflect.getMetadata(constants.decoratorsMetadata.manyToMany, model.prototype);
 
 			let columns = [];
 			if (metadataColumns) {
@@ -54,7 +63,10 @@ export class DatabaseStateBuilder implements DatabaseStateBuilderInterface {
 				columns,
 				computedColumns,
 				foreignKeys,
-				primaryColumn
+				primaryColumn,
+				oneToOne,
+				oneToMany,
+				manyToMany
 			};
 
 			preparedModels.push(potentialModel);

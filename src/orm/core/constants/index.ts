@@ -13,7 +13,10 @@ export const constants = {
 		columns: 'columns',
 		primaryColumn: 'primary-column',
 		foreignKeys: 'foreign-keys',
-		computedColumns: 'computed-columns'
+		computedColumns: 'computed-columns',
+		oneToOne: 'one-to-one',
+		oneToMany: 'one-to-many',
+		manyToMany: 'many-to-many'
 	},
 
 	errors: {

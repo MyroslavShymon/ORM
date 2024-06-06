@@ -3,6 +3,9 @@ import {
 	ColumnInterface,
 	ComputedColumnInterface,
 	ForeignKeyInterface,
+	ManyToManyInterface,
+	OneToManyInterface,
+	OneToOneInterface,
 	PrimaryGeneratedColumnInterface,
 	TableOptionsMysqlInterface,
 	TableOptionsPostgresqlInterface
@@ -17,4 +20,7 @@ export interface TableIngotInterface<DB> {
 	computedColumns: ComputedColumnInterface[];
 	foreignKeys: ForeignKeyInterface[];
 	primaryColumn: PrimaryGeneratedColumnInterface;
+	oneToOne: OneToOneInterface[];
+	oneToMany: OneToManyInterface[];
+	manyToMany: ManyToManyInterface[];
 }
