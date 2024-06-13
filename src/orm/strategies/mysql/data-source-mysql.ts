@@ -4,13 +4,11 @@ import {
 	AddNotNullToColumnInterface,
 	AddUniqueToColumnInterface,
 	ChangeColumnDatatypeInterface,
-	ColumnInterface,
-	ComputedColumnInterface,
+	CreateTableOptionsInterface,
 	DatabaseIngotInterface,
 	DataSourceInterface,
 	DeleteColumnInterface,
-	DropNotNullFromColumnInterface,
-	TableInterface
+	DropNotNullFromColumnInterface
 } from '@core/interfaces';
 import { Condition, ConnectionData, LogicalOperators } from '@core/types';
 import {
@@ -62,12 +60,17 @@ export class DataSourceMySql extends BaseQueries implements DataSourceInterface 
 		this.client = await createConnection(dataToConnect);
 	}
 
-	createTable(
-		table?: TableInterface,
-		columns?: ColumnInterface[],
-		computedColumns?: ComputedColumnInterface[]
-	): string {
-		return this._tableBuilder.createTable(table, columns, computedColumns);
+	createTable(options: CreateTableOptionsInterface): string {
+		return this._tableBuilder.createTable(
+			options?.table,
+			options?.columns,
+			options?.computedColumns,
+			options?.foreignKeys,
+			options?.primaryColumn,
+			options?.oneToOne,
+			options?.oneToMany,
+			options?.manyToMany
+		);
 	}
 
 	checkTableExistence(dataSource: DataSourceInterface, tableName: string, tableSchema?: string): Promise<boolean> {

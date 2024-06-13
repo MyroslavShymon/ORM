@@ -16,7 +16,3 @@ export interface TablePercentageInterface {
 		manyToManyPercentage?: number
 	}
 }
-
-// npm install -g .
-//npm run build
-//orm-cli --migration:create init

@@ -4,15 +4,11 @@ import {
 	AddNotNullToColumnInterface,
 	AddUniqueToColumnInterface,
 	ChangeColumnDatatypeInterface,
-	ColumnInterface,
-	ComputedColumnInterface,
+	CreateTableOptionsInterface,
 	DatabaseIngotInterface,
 	DataSourceInterface,
 	DeleteColumnInterface,
-	DropNotNullFromColumnInterface,
-	ForeignKeyInterface,
-	PrimaryGeneratedColumnInterface,
-	TableInterface
+	DropNotNullFromColumnInterface
 } from '@core/interfaces';
 import { Condition, ConnectionData, LogicalOperators } from '@core/types';
 import {
@@ -65,14 +61,17 @@ export class DataSourcePostgres extends BaseQueries implements DataSourceInterfa
 		this.client = await pool.connect();
 	}
 
-	createTable(
-		table?: TableInterface,
-		columns?: ColumnInterface[],
-		computedColumns?: ComputedColumnInterface[],
-		foreignKeys?: ForeignKeyInterface[],
-		primaryColumn?: PrimaryGeneratedColumnInterface
-	): string {
-		return this._tableBuilder.createTable(table, columns, computedColumns, foreignKeys, primaryColumn);
+	createTable(options: CreateTableOptionsInterface): string {
+		return this._tableBuilder.createTable(
+			options?.table,
+			options?.columns,
+			options?.computedColumns,
+			options?.foreignKeys,
+			options?.primaryColumn,
+			options?.oneToOne,
+			options?.oneToMany,
+			options?.manyToMany
+		);
 	}
 
 	createMigrationTable(tableName: string, tableSchema: string): string {

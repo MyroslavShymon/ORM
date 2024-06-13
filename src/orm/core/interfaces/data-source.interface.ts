@@ -1,11 +1,4 @@
 import { Condition, ConnectionData, LogicalOperators, OrderOperators } from '@core/types';
-import {
-	ColumnInterface,
-	ComputedColumnInterface,
-	ForeignKeyInterface,
-	PrimaryGeneratedColumnInterface,
-	TableInterface
-} from '@core/interfaces/decorators';
 import { AddColumnInterface } from '@core/interfaces/table-manipuldation/add-column.interface';
 import { DatabaseIngotInterface } from '@core/interfaces/database-ingot.interface';
 import {
@@ -21,19 +14,14 @@ import {
 	RenameTableInterface
 } from '@core/interfaces/table-manipuldation';
 import { QueryBuilderInterface } from '@context/common';
+import { CreateTableOptionsInterface } from '@core/interfaces/create-table-options.interface';
 
 export interface DataSourceInterface {
 	client;//TODO typing
 
 	connect(dataToConnect: ConnectionData);
 
-	createTable(
-		table?: TableInterface,
-		columns?: ColumnInterface[],
-		computedColumns?: ComputedColumnInterface[],
-		foreignKeys?: ForeignKeyInterface[],
-		primaryColumn?: PrimaryGeneratedColumnInterface
-	): string;
+	createTable(options: CreateTableOptionsInterface): string;
 
 	addColumn(tableName: string, parameters: AddColumnInterface): string;
 

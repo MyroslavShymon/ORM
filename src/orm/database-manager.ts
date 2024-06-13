@@ -13,7 +13,7 @@ import {
 import { FileStructureManager } from '@context/file-structure-manager';
 import { ErrorHandler } from '@context/error-handler';
 
-class DatabaseManager<DB extends DatabasesTypes> implements DatabaseManagerInterface {
+class DatabaseManager<DB extends DatabasesTypes> implements DatabaseManagerInterface<DB> {
 	private _connectionData: ConnectionData;
 	private _dataSource: DataSourceContextInterface;
 

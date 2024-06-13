@@ -3,6 +3,9 @@ import {
 	ColumnInterface,
 	ComputedColumnInterface,
 	ForeignKeyInterface,
+	ManyToManyInterface,
+	OneToManyInterface,
+	OneToOneInterface,
 	PrimaryGeneratedColumnInterface,
 	TableInterface,
 	TableOptionsPostgresqlInterface
@@ -16,7 +19,10 @@ export class TableBuilder implements TableBuilderInterface {
 		columns?: ColumnInterface[],
 		computedColumns?: ComputedColumnInterface[],
 		foreignKeys?: ForeignKeyInterface[],
-		primaryColumn?: PrimaryGeneratedColumnInterface<DatabasesTypes.POSTGRES>
+		primaryColumn?: PrimaryGeneratedColumnInterface<DatabasesTypes.POSTGRES>,
+		oneToOne?: OneToOneInterface[],
+		oneToMany?: OneToManyInterface[],
+		manyToMany?: ManyToManyInterface[]
 	): string {
 		let createTableQuery;
 		createTableQuery = `\n\tCREATE TABLE IF NOT EXISTS "${table.name}" (\n`;
@@ -25,26 +31,54 @@ export class TableBuilder implements TableBuilderInterface {
 			createTableQuery += this._handlePrimaryGeneratedColumns(primaryColumn);
 		}
 
-		if (columns) {
+		if (columns?.length) {
 			createTableQuery += this._handleColumns(columns);
 		}
 
-		if (computedColumns) {
+		if (computedColumns?.length) {
 			createTableQuery += this._handleComputedColumns(computedColumns);
 		}
 
-		if (foreignKeys) {
+		if (foreignKeys?.length) {
 			createTableQuery += this._handleForeignKeys(foreignKeys);
 		}
 
+		if (oneToOne?.length) {
+			createTableQuery += this._handleOneToOne(oneToOne);
+		}
+
+		if (oneToMany?.length) {
+			createTableQuery += this._handleOneToMany(oneToMany);
+		}
+
 		if (table.options) {
-			console.log('table options', table.options.primaryKeys);
 			createTableQuery += this._handleOptionsOfTable(table.options);
 		}
 
 		createTableQuery += '\n );';
 
 		return createTableQuery;
+	}
+
+	private _handleOneToMany(oneToManyConnections: OneToManyInterface[]): string {
+		const formattedOneToManyConnectionsStrings = oneToManyConnections.map(o2m => `\n\n\t\t${o2m.foreignKey} INTEGER,
+			\tCONSTRAINT fk_${o2m.tableName}
+			\tFOREIGN KEY(${o2m.foreignKey})
+			\t\tREFERENCES ${o2m.tableName}(${o2m.referenceColumn})
+		`);
+
+		return formattedOneToManyConnectionsStrings.join(',\n\t\t');
+	}
+
+	private _handleOneToOne(oneToOneConnections: OneToOneInterface[]): string {
+		const formattedOneToOneConnectionsStrings = oneToOneConnections.map(o2o => `
+			${o2o.foreignKey} INTEGER UNIQUE,
+			\tCONSTRAINT fk_oo_${o2o.columnName}
+			\tFOREIGN KEY(${o2o.foreignKey})
+			\t\tREFERENCES ${o2o.table}(${o2o.referenceColumn})\n
+		`);
+
+		return formattedOneToOneConnectionsStrings.join(',\n\t\t');
 	}
 
 	private _handleColumns(columns: ColumnInterface<DatabasesTypes.POSTGRES>[]): string {

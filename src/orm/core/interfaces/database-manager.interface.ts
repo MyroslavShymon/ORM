@@ -1,10 +1,10 @@
 import { ConnectionClient, ConnectionData } from '@core/types';
 import { QueryBuilderInterface, TableCreatorInterface, TableManipulationInterface } from '@context/common';
+import { DatabasesTypes } from '@core/enums';
 
-export interface DatabaseManagerInterface {
+export interface DatabaseManagerInterface<DB extends DatabasesTypes | undefined> {
 	connectionData: ConnectionData;
 
-	tableManipulation: TableManipulationInterface;
 	tableCreator: TableCreatorInterface;
 
 	queryBuilder<T>(): QueryBuilderInterface<T>;
@@ -14,4 +14,6 @@ export interface DatabaseManagerInterface {
 	connectDatabase(): Promise<void>;
 
 	createOrmConnection(): Promise<ConnectionClient>;
+
+	get tableManipulation(): TableManipulationInterface<DB>;
 }

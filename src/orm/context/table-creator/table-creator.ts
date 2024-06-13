@@ -4,7 +4,7 @@ import {
 	TableCreationProcessorInterface,
 	TableCreatorInterface
 } from '@context/common';
-import { DatabaseIngotInterface, DataSourceInterface } from '@core/interfaces';
+import { DatabaseIngotInterface, DataSourceInterface, ManyToManyInterface } from '@core/interfaces';
 import { TableIngotInterface } from '@core/interfaces/table-ingot.interface';
 import { constants } from '@core/constants';
 import { ConnectionData } from '@core/types';
@@ -79,9 +79,80 @@ export class TableCreator implements TableCreatorInterface {
 
 	generateCreateTableQuery(ingotsOfTables: TableIngotInterface<DataSourceInterface>[]): string {
 		let createTablesQuery = '';
+		const manyToManys: ManyToManyInterface[] = [];
+		const createdManyToManyTables: string[] = [];
 
-		for (const { columns, computedColumns, foreignKeys, primaryColumn, ...table } of ingotsOfTables) {
-			createTablesQuery += this._dataSource.createTable(table, columns, computedColumns, foreignKeys, primaryColumn) + '\n\n';
+		for (const {
+			columns,
+			computedColumns,
+			foreignKeys,
+			primaryColumn,
+			oneToOne,
+			oneToMany,
+			manyToMany,
+			...table
+		} of ingotsOfTables) {
+			if (manyToMany?.length) {
+				manyToManys.push(...manyToMany.map(m2m => ({ ...m2m, tableName: table.name })));
+			}
+
+			createTablesQuery += this._dataSource.createTable({
+				table,
+				columns,
+				computedColumns,
+				foreignKeys,
+				primaryColumn,
+				oneToOne,
+				oneToMany,
+				manyToMany
+			}) + '\n\n';
+		}
+
+		for (let i = 0; i < manyToManys.length; i++) {
+			for (let j = 0; j < manyToManys.length; j++) {
+				if (
+					i !== j &&
+					manyToManys[i].referencedTable === manyToManys[j].tableName &&
+					manyToManys[i].tableName === manyToManys[j].referencedTable
+				) {
+					const tableName = `${manyToManys[i].referencedTable}_${manyToManys[j].referencedTable}`;
+					
+					if (!createdManyToManyTables.some(createdManyToManyTable => createdManyToManyTable ===
+						tableName
+							.split('_')
+							.reverse()
+							.join('_'))
+					) {
+						createTablesQuery += this._dataSource.createTable(
+							{
+								table: {
+									name: tableName,
+									options:
+										{
+											primaryKeys: [
+												manyToManys[i].foreignKey,
+												manyToManys[j].foreignKey
+											]
+										}
+								},
+								oneToMany: [
+									{
+										tableName: manyToManys[i].referencedTable,
+										referenceColumn: manyToManys[i].referencedColumn,
+										foreignKey: manyToManys[i].foreignKey
+									},
+									{
+										tableName: manyToManys[j].referencedTable,
+										referenceColumn: manyToManys[j].referencedColumn,
+										foreignKey: manyToManys[j].foreignKey
+									}
+								]
+							}
+						) + '\n\n';
+						createdManyToManyTables.push(tableName);
+					}
+				}
+			}
 		}
 
 		console.log('Sql of table create', createTablesQuery);

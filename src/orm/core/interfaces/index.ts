@@ -6,3 +6,4 @@ export * from './table-ingot.interface';
 export * from './database-ingot.interface';
 export * from './migration.interface';
 export * from './table-manipuldation';
+export * from './create-table-options.interface';
