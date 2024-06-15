@@ -7,10 +7,44 @@ import {
 	DeleteColumnInterface,
 	DropNotNullFromColumnInterface
 } from '@core/interfaces';
+import { DatabasesTypes } from '@core/enums';
 
 export class TableAlterer implements TableAltererInterface {
-	addColumn(tableName: string, parameters: AddColumnInterface): string {
-		return `ALTER TABLE ${tableName} ADD COLUMN ${parameters.columnName} ${parameters.options.dataType};`;
+	addColumn(tableName: string, parameters: AddColumnInterface<DatabasesTypes.POSTGRES>): string {
+		const { columnName, options } = parameters;
+		let columnDefinition = `${columnName} ${options?.dataType}`;
+
+		if (options?.length) {
+			columnDefinition += `(${options.length})`;
+		}
+
+		if (options?.nullable === false) {
+			columnDefinition += ` NOT NULL`;
+		} else if (options?.nullable === true) {
+			columnDefinition += ` NULL`;
+		}
+
+		if (options?.unique) {
+			columnDefinition += ` UNIQUE`;
+		}
+
+		if (options?.defaultValue !== undefined) {
+			columnDefinition += ` DEFAULT ${typeof options.defaultValue === 'string' ? `'${options.defaultValue}'` : options.defaultValue}`;
+		}
+
+		if (options?.check) {
+			columnDefinition += ` CHECK (${options.check})`;
+		}
+
+		if (options?.nameOfCheckConstraint) {
+			columnDefinition += ` CONSTRAINT ${options.nameOfCheckConstraint}`;
+		}
+
+		if (options?.nullsNotDistinct) {
+			columnDefinition += ` NULLS NOT DISTINCT`;
+		}
+
+		return `ALTER TABLE ${tableName} ADD COLUMN ${columnDefinition};`;
 	}
 
 	deleteColumn(tableName: string, parameters: DeleteColumnInterface<DataSourcePostgres>): string {

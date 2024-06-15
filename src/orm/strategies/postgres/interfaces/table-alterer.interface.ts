@@ -7,9 +7,10 @@ import {
 	DropNotNullFromColumnInterface
 } from '@core/interfaces';
 import { DataSourcePostgres } from '@strategies/postgres';
+import { DatabasesTypes } from '@core/enums';
 
 export interface TableAltererInterface {
-	addColumn(tableName: string, parameters: AddColumnInterface): string;
+	addColumn(tableName: string, parameters: AddColumnInterface<DatabasesTypes.POSTGRES>): string;
 
 	deleteColumn(tableName: string, parameters: DeleteColumnInterface<DataSourcePostgres>): string;
 
