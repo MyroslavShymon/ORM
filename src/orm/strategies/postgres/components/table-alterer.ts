@@ -64,6 +64,6 @@ export class TableAlterer implements TableAltererInterface {
 	}
 
 	changeDataTypeOfColumn(tableName: string, parameters: ChangeColumnDatatypeInterface): string {
-		return `ALTER TABLE ${tableName} ALTER COLUMN ${parameters.columnName} TYPE ${parameters.datatype}(${parameters.typeParams});`;
+		return `ALTER TABLE ${tableName} ALTER COLUMN ${parameters.columnName} TYPE ${parameters.datatype}${parameters.typeParams ? '(' + parameters.typeParams + ')' : ''};`;
 	}
 }
