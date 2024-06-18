@@ -5,7 +5,8 @@ export const constants = {
 
 	tableComparerAlgorithm: {
 		maximumConvergenceOfTable: 100,
-		minimumUniquesPercentage: 70
+		minimumUniquesPercentage: 70,
+		minimumColumnUniquePercentage: 80
 	},
 
 	decoratorsMetadata: {

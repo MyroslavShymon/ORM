@@ -9,9 +9,11 @@ import {
 import { constants } from '@core/constants';
 import { TableComparator } from '@context/table-creator/table-comparator';
 import { TableCreationProcessorInterface } from '@context/common';
+import { ColumnsComparator } from '@context/table-creator/columns-comparator';
 
 export class TableCreationProcessor implements TableCreationProcessorInterface {
 	private readonly tableComparator = new TableComparator();
+	private readonly columnsComparator = new ColumnsComparator();
 
 	constructor() {
 	}
@@ -25,6 +27,7 @@ export class TableCreationProcessor implements TableCreationProcessorInterface {
 			model: TableIngotInterface<DataSourceInterface>
 		}[] = [];
 		const tablesWithPercentage = this.tableComparator.calculatePercentagesOfTablesWithModifiedState(potentiallyNewTables, potentiallyDeletedTables);
+		console.log('tablesWithPercentatablesWithPercentagetablesWithPercentagege', tablesWithPercentage);
 
 		for (const tableWithPercentage of tablesWithPercentage) {
 			if (!tableWithPercentage.percentages.columnsPercentage) {
@@ -140,6 +143,14 @@ export class TableCreationProcessor implements TableCreationProcessorInterface {
 			return modelColumns.map(modelColumn => ({ id: uuidv4(), ...modelColumn }));
 		}
 
+		const columnsPercentage = this.columnsComparator.calculatePercentagesOfModifiedColumns(modelColumns, tableColumns);
+
+		for (const columnPercentage of columnsPercentage) {
+			if (columnPercentage.percentage >= constants.tableComparerAlgorithm.minimumColumnUniquePercentage) {
+				columns.push({ id: columnPercentage.oldColumnId, ...columnPercentage.newColumn });
+			}
+		}
+		
 		//add columns with same names
 		for (const modelColumn of modelColumns) {
 			for (const tableColumn of tableColumns) {

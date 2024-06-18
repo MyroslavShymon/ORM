@@ -67,6 +67,20 @@ export class TableAlterer implements TableAltererInterface {
 		return `ALTER TABLE ${tableName} ${parameters.constraintName ? `ADD CONSTRAINT ${parameters.constraintName}` : ''} UNIQUE (${parameters.columnName});`;
 	}
 
+	deleteUniqueFromColum(tableName: string, parameters: DeleteUniqueFromColumnInterface): string {
+		const constraintName = `${tableName}_${parameters.columnName}_key`;
+
+		let query = `
+			SELECT constraint_name as ${constraintName}
+			FROM information_schema.table_constraints
+			WHERE table_name = '${tableName}' 
+			AND constraint_type = 'UNIQUE';` + '\n';
+
+		query += this.dropConstraint(tableName, { constraintName });
+
+		return query;
+	}
+	
 	addCheckConstraintToColumn(tableName: string, parameters: AddCheckConstraintToColumnInterface): string {
 		let query = `ALTER TABLE ${tableName} ALTER COLUMN ${parameters.columnName}`;
 
@@ -95,22 +109,7 @@ export class TableAlterer implements TableAltererInterface {
 
 	dropConstraint(tableName: string, parameters: DropConstraintInterface): string {
 		return `
-			ALTER TABLE ${tableName} DROP CONSTRAINT ${parameters.constraintName};
-			` + '\n';
-	}
-
-	deleteUniqueFromColum(tableName: string, parameters: DeleteUniqueFromColumnInterface): string {
-		const constraintName = `${tableName}_${parameters.columnName}_key`;
-
-		let query = `
-			SELECT constraint_name as ${constraintName}
-			FROM information_schema.table_constraints
-			WHERE table_name = '${tableName}' 
-			AND constraint_type = 'UNIQUE';` + '\n';
-
-		query += this.dropConstraint(tableName, { constraintName });
-
-		return query;
+			ALTER TABLE ${tableName} DROP CONSTRAINT ${parameters.constraintName};`;
 	}
 
 	changeDataTypeOfColumn(tableName: string, parameters: ChangeColumnDatatypeInterface): string {
