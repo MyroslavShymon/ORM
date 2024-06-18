@@ -1,12 +1,16 @@
 import { AlterTableResultInterface, TableManipulationInterface } from '@context/common';
 import {
+	AddCheckConstraintToColumnInterface,
 	AddColumnInterface,
 	AddDefaultValueInterface,
 	AddNotNullToColumnInterface,
 	AddUniqueToColumnInterface,
 	ChangeColumnDatatypeInterface,
 	DataSourceInterface,
+	DeleteCheckConstraintOfColumnInterface,
 	DeleteColumnInterface,
+	DeleteUniqueFromColumnInterface,
+	DropConstraintInterface,
 	DropDefaultValueInterface,
 	DropNotNullFromColumnInterface,
 	DropTableInterface,
@@ -33,7 +37,11 @@ export class TableManipulation implements TableManipulationInterface {
 			addNotNullToColumn: this._addNotNullToColumn(tableName, getQueryString),
 			dropNotNullFromColumn: this._dropNotNullFromColumn(tableName, getQueryString),
 			addUniqueToColumn: this._addUniqueToColumn(tableName, getQueryString),
-			dropTable: this._dropTable(tableName, getQueryString)
+			dropTable: this._dropTable(tableName, getQueryString),
+			addCheckConstraintToColumn: this._addCheckConstraintToColumn(tableName, getQueryString),
+			deleteCheckConstraintOfColumn: this._deleteCheckConstraintOfColumn(tableName, getQueryString),
+			deleteUniqueFromColumn: this._deleteUniqueFromColum(tableName, getQueryString),
+			dropConstraint: this._dropConstraint(tableName, getQueryString)
 		};
 	};
 
@@ -166,6 +174,63 @@ export class TableManipulation implements TableManipulationInterface {
 			console.error(`Error while adding unique to column: ${error}`);
 		}
 	};
+
+	private _addCheckConstraintToColumn = (tableName: string, getQueryString: boolean = false) => async (parameters: AddCheckConstraintToColumnInterface): Promise<Object | string> => {
+		try {
+			const addCheckConstraintToColumnQuery = this._dataSource.addCheckConstraintToColumn(tableName, parameters);
+			if (getQueryString) {
+				return addCheckConstraintToColumnQuery;
+			}
+			console.log('Add check constraint to column Sql ', addCheckConstraintToColumnQuery);
+			return this._dataSource.client.query(addCheckConstraintToColumnQuery);
+		} catch (error) {
+			console.error(`Error while adding check constraint to column: ${error}`);
+		}
+	};
+
+	private _deleteCheckConstraintOfColumn = (tableName: string, getQueryString: boolean = false) =>
+		async (parameters: DeleteCheckConstraintOfColumnInterface): Promise<Object | string> => {
+			try {
+				const deleteCheckConstraintOfColumnQuery = this._dataSource.deleteCheckConstraintOfColumn(tableName, parameters);
+				if (getQueryString) {
+					return deleteCheckConstraintOfColumnQuery;
+				}
+				console.log('Delete check constraint of column Sql ', deleteCheckConstraintOfColumnQuery);
+				return this._dataSource.client.query(deleteCheckConstraintOfColumnQuery);
+			} catch (error) {
+				console.error(`Error while deleting check constraint of column: ${error}`);
+			}
+		};
+
+
+	private _dropConstraint = (tableName: string, getQueryString: boolean = false) =>
+		async (parameters: DropConstraintInterface): Promise<Object | string> => {
+			try {
+				const dropConstraintQuery = this._dataSource.dropConstraint(tableName, parameters);
+				if (getQueryString) {
+					return dropConstraintQuery;
+				}
+				console.log('Drop constraint of column Sql ', dropConstraintQuery);
+				return this._dataSource.client.query(dropConstraintQuery);
+			} catch (error) {
+				console.error(`Error while dropping constraint of column: ${error}`);
+			}
+		};
+
+	private _deleteUniqueFromColum = (tableName: string, getQueryString: boolean = false) =>
+		async (parameters: DeleteUniqueFromColumnInterface): Promise<Object | string> => {
+			try {
+				const deleteUniqueFromColumnQuery = this._dataSource.deleteUniqueFromColum(tableName, parameters);
+				if (getQueryString) {
+					return deleteUniqueFromColumnQuery;
+				}
+				console.log('Delete unique constraint of column Sql ', deleteUniqueFromColumnQuery);
+				return this._dataSource.client.query(deleteUniqueFromColumnQuery);
+			} catch (error) {
+				console.error(`Error while deleting unique constraint of column: ${error}`);
+			}
+		};
+
 
 	private _dropTable = (tableName: string, getQueryString: boolean = false) => async (parameters: DropTableInterface): Promise<Object | string> => {
 		try {

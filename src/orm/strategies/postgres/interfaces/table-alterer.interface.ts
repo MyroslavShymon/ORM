@@ -1,9 +1,13 @@
 import {
+	AddCheckConstraintToColumnInterface,
 	AddColumnInterface,
 	AddNotNullToColumnInterface,
 	AddUniqueToColumnInterface,
 	ChangeColumnDatatypeInterface,
+	DeleteCheckConstraintOfColumnInterface,
 	DeleteColumnInterface,
+	DeleteUniqueFromColumnInterface,
+	DropConstraintInterface,
 	DropNotNullFromColumnInterface
 } from '@core/interfaces';
 import { DataSourcePostgres } from '@strategies/postgres';
@@ -21,4 +25,12 @@ export interface TableAltererInterface {
 	addUniqueToColumn(tableName: string, parameters: AddUniqueToColumnInterface<DataSourcePostgres>): string;
 
 	changeDataTypeOfColumn(tableName: string, parameters: ChangeColumnDatatypeInterface): string;
+
+	addCheckConstraintToColumn(tableName: string, parameters: AddCheckConstraintToColumnInterface): string;
+
+	deleteCheckConstraintOfColumn(tableName: string, parameters: DeleteCheckConstraintOfColumnInterface): string;
+
+	dropConstraint(tableName: string, parameters: DropConstraintInterface): string;
+
+	deleteUniqueFromColum(tableName: string, parameters: DeleteUniqueFromColumnInterface): string;
 }

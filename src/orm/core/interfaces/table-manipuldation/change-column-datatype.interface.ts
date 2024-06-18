@@ -1,5 +1,7 @@
 export interface ChangeColumnDatatypeInterface {
 	columnName: string;
-	datatype: string;
-	typeParams?: string;
+	dataType: string;
+	length?: string;
+	precision?: string;
+	scale?: string;
 }

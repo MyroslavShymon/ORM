@@ -2,11 +2,15 @@ import { Condition, ConnectionData, LogicalOperators, OrderOperators } from '@co
 import { AddColumnInterface } from '@core/interfaces/table-manipuldation/add-column.interface';
 import { DatabaseIngotInterface } from '@core/interfaces/database-ingot.interface';
 import {
+	AddCheckConstraintToColumnInterface,
 	AddDefaultValueInterface,
 	AddNotNullToColumnInterface,
 	AddUniqueToColumnInterface,
 	ChangeColumnDatatypeInterface,
+	DeleteCheckConstraintOfColumnInterface,
 	DeleteColumnInterface,
+	DeleteUniqueFromColumnInterface,
+	DropConstraintInterface,
 	DropDefaultValueInterface,
 	DropNotNullFromColumnInterface,
 	DropTableInterface,
@@ -38,6 +42,14 @@ export interface DataSourceInterface {
 	addDefaultValue(tableName: string, parameters: AddDefaultValueInterface): string;
 
 	dropDefaultValue(tableName: string, parameters: DropDefaultValueInterface): string;
+
+	addCheckConstraintToColumn(tableName: string, parameters: AddCheckConstraintToColumnInterface): string;
+
+	deleteCheckConstraintOfColumn(tableName: string, parameters: DeleteCheckConstraintOfColumnInterface): string;
+
+	dropConstraint(tableName: string, parameters: DropConstraintInterface): string;
+
+	deleteUniqueFromColum(tableName: string, parameters: DeleteUniqueFromColumnInterface): string;
 
 	renameColumn(tableName: string, parameters: RenameColumnInterface): string;
 

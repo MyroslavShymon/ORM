@@ -1,10 +1,14 @@
 import { DataSourceMySql, TableAltererInterface } from '@strategies/mysql';
 import {
+	AddCheckConstraintToColumnInterface,
 	AddColumnInterface,
 	AddNotNullToColumnInterface,
 	AddUniqueToColumnInterface,
 	ChangeColumnDatatypeInterface,
+	DeleteCheckConstraintOfColumnInterface,
 	DeleteColumnInterface,
+	DeleteUniqueFromColumnInterface,
+	DropConstraintInterface,
 	DropNotNullFromColumnInterface
 } from '@core/interfaces';
 
@@ -36,7 +40,37 @@ export class TableAlterer implements TableAltererInterface {
 		return `ALTER TABLE ${tableName} ADD UNIQUE (${parameters.columnName});`;
 	}
 
+	addCheckConstraintToColumn(tableName: string, parameters: AddCheckConstraintToColumnInterface): string {
+		let query = `ALTER TABLE ${tableName} ALTER COLUMN ${parameters.columnName}`;
+
+		if (parameters.check && parameters.nameOfCheckConstraint) {
+			query += `, ADD CONSTRAINT ${parameters.nameOfCheckConstraint} CHECK (${parameters.check})`;
+		} else if (parameters.check) {
+			query += `, ADD CHECK (${parameters.check})`;
+		}
+
+		return query;
+	}
+
+	deleteCheckConstraintOfColumn(tableName: string, parameters: DeleteCheckConstraintOfColumnInterface): string {
+		let query = '';
+
+		return query;
+	}
+
+	dropConstraint(tableName: string, parameters: DropConstraintInterface): string {
+		let query = ``;
+
+		return query;
+	}
+
+	deleteUniqueFromColum(tableName: string, parameters: DeleteUniqueFromColumnInterface): string {
+		let query = ``;
+
+		return query;
+	}
+
 	changeDataTypeOfColumn(tableName: string, parameters: ChangeColumnDatatypeInterface): string {
-		return `ALTER TABLE ${tableName} MODIFY COLUMN ${parameters.columnName} ${parameters.datatype};`;
+		return `ALTER TABLE ${tableName} MODIFY COLUMN ${parameters.columnName} ${parameters.dataType};`;
 	}
 }

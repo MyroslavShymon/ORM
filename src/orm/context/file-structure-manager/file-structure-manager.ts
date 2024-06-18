@@ -381,6 +381,7 @@ export class FileStructureManager {
 		const interfaceFields = [
 			{
 				fieldName: 'dataType',
+				isFieldOptional: true,
 				fieldType: dataTypeTypeNode
 			},
 			{
@@ -402,6 +403,16 @@ export class FileStructureManager {
 				fieldName: 'unique',
 				isFieldOptional: true,
 				fieldType: { type: 'boolean' }
+			},
+			{
+				fieldName: 'check',
+				isFieldOptional: true,
+				fieldType: { type: 'string' }
+			},
+			{
+				fieldName: 'nameOfCheckConstraint',
+				isFieldOptional: true,
+				fieldType: { type: 'string' }
 			}
 		];
 
@@ -442,16 +453,6 @@ export class FileStructureManager {
 
 		if (connectionData.type === DatabasesTypes.POSTGRES) {
 			interfaceFields.push(
-				{
-					fieldName: 'check',
-					isFieldOptional: true,
-					fieldType: { type: 'string' }
-				},
-				{
-					fieldName: 'nameOfCheckConstraint',
-					isFieldOptional: true,
-					fieldType: { type: 'string' }
-				},
 				{
 					fieldName: 'nullsNotDistinct',
 					isFieldOptional: true,

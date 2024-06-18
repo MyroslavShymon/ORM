@@ -1,5 +1,6 @@
 import { Connection, createConnection } from 'mysql2/promise';
 import {
+	AddCheckConstraintToColumnInterface,
 	AddColumnInterface,
 	AddNotNullToColumnInterface,
 	AddUniqueToColumnInterface,
@@ -7,7 +8,10 @@ import {
 	CreateTableOptionsInterface,
 	DatabaseIngotInterface,
 	DataSourceInterface,
+	DeleteCheckConstraintOfColumnInterface,
 	DeleteColumnInterface,
+	DeleteUniqueFromColumnInterface,
+	DropConstraintInterface,
 	DropNotNullFromColumnInterface
 } from '@core/interfaces';
 import { Condition, ConnectionData, LogicalOperators } from '@core/types';
@@ -126,6 +130,22 @@ export class DataSourceMySql extends BaseQueries implements DataSourceInterface 
 
 	addUniqueToColumn(tableName: string, parameters: AddUniqueToColumnInterface<DataSourceMySql>): string {
 		return this._tableAlterer.addUniqueToColumn(tableName, parameters);
+	}
+
+	addCheckConstraintToColumn(tableName: string, parameters: AddCheckConstraintToColumnInterface): string {
+		return this._tableAlterer.addCheckConstraintToColumn(tableName, parameters);
+	}
+
+	deleteCheckConstraintOfColumn(tableName: string, parameters: DeleteCheckConstraintOfColumnInterface): string {
+		return this._tableAlterer.deleteCheckConstraintOfColumn(tableName, parameters);
+	}
+
+	dropConstraint(tableName: string, parameters: DropConstraintInterface): string {
+		return this._tableAlterer.dropConstraint(tableName, parameters);
+	}
+
+	deleteUniqueFromColum(tableName: string, parameters: DeleteUniqueFromColumnInterface): string {
+		return this._tableAlterer.deleteUniqueFromColum(tableName, parameters);
 	}
 
 	changeDataTypeOfColumn(tableName: string, parameters: ChangeColumnDatatypeInterface): string {

@@ -1,9 +1,13 @@
 import {
+	AddCheckConstraintToColumnInterface,
 	AddColumnInterface,
 	AddNotNullToColumnInterface,
 	AddUniqueToColumnInterface,
 	ChangeColumnDatatypeInterface,
+	DeleteCheckConstraintOfColumnInterface,
 	DeleteColumnInterface,
+	DeleteUniqueFromColumnInterface,
+	DropConstraintInterface,
 	DropNotNullFromColumnInterface
 } from '@core/interfaces';
 import { DataSourceMySql } from '@strategies/mysql';
@@ -20,4 +24,12 @@ export interface TableAltererInterface {
 	addUniqueToColumn(tableName: string, parameters: AddUniqueToColumnInterface<DataSourceMySql>): string;
 
 	changeDataTypeOfColumn(tableName: string, parameters: ChangeColumnDatatypeInterface): string;
+
+	addCheckConstraintToColumn(tableName: string, parameters: AddCheckConstraintToColumnInterface): string;
+
+	deleteCheckConstraintOfColumn(tableName: string, parameters: DeleteCheckConstraintOfColumnInterface): string;
+
+	dropConstraint(tableName: string, parameters: DropConstraintInterface): string;
+
+	deleteUniqueFromColum(tableName: string, parameters: DeleteUniqueFromColumnInterface): string;
 }

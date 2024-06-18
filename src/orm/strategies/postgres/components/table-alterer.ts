@@ -1,10 +1,14 @@
 import { DataSourcePostgres, TableAltererInterface } from '@strategies/postgres';
 import {
+	AddCheckConstraintToColumnInterface,
 	AddColumnInterface,
 	AddNotNullToColumnInterface,
 	AddUniqueToColumnInterface,
 	ChangeColumnDatatypeInterface,
+	DeleteCheckConstraintOfColumnInterface,
 	DeleteColumnInterface,
+	DeleteUniqueFromColumnInterface,
+	DropConstraintInterface,
 	DropNotNullFromColumnInterface
 } from '@core/interfaces';
 import { DatabasesTypes } from '@core/enums';
@@ -60,10 +64,68 @@ export class TableAlterer implements TableAltererInterface {
 	}
 
 	addUniqueToColumn(tableName: string, parameters: AddUniqueToColumnInterface<DataSourcePostgres>): string {
-		return `ALTER TABLE ${tableName} ADD CONSTRAINT ${parameters.constraintName} UNIQUE (${parameters.columnName});`;
+		return `ALTER TABLE ${tableName} ${parameters.constraintName ? `ADD CONSTRAINT ${parameters.constraintName}` : ''} UNIQUE (${parameters.columnName});`;
+	}
+
+	addCheckConstraintToColumn(tableName: string, parameters: AddCheckConstraintToColumnInterface): string {
+		let query = `ALTER TABLE ${tableName} ALTER COLUMN ${parameters.columnName}`;
+
+		if (parameters.check && parameters.nameOfCheckConstraint) {
+			query += ` ADD CONSTRAINT ${parameters.nameOfCheckConstraint} CHECK (${parameters.check})`;
+		} else if (parameters.check) {
+			query += ` ADD CHECK (${parameters.check})`;
+		}
+
+		return query;
+	}
+
+	deleteCheckConstraintOfColumn(tableName: string, parameters: DeleteCheckConstraintOfColumnInterface): string {
+		const constraintName = `${tableName}_${parameters.columnName}_check`;
+
+		let query = `
+			SELECT constraint_name as ${constraintName}
+			FROM information_schema.table_constraints
+			WHERE table_name = '${tableName}' 
+			AND constraint_type = 'CHECK';` + '\n';
+
+		query += this.dropConstraint(tableName, { constraintName });
+
+		return query;
+	}
+
+	dropConstraint(tableName: string, parameters: DropConstraintInterface): string {
+		return `
+			ALTER TABLE ${tableName} DROP CONSTRAINT ${parameters.constraintName};
+			` + '\n';
+	}
+
+	deleteUniqueFromColum(tableName: string, parameters: DeleteUniqueFromColumnInterface): string {
+		const constraintName = `${tableName}_${parameters.columnName}_key`;
+
+		let query = `
+			SELECT constraint_name as ${constraintName}
+			FROM information_schema.table_constraints
+			WHERE table_name = '${tableName}' 
+			AND constraint_type = 'UNIQUE';` + '\n';
+
+		query += this.dropConstraint(tableName, { constraintName });
+
+		return query;
 	}
 
 	changeDataTypeOfColumn(tableName: string, parameters: ChangeColumnDatatypeInterface): string {
-		return `ALTER TABLE ${tableName} ALTER COLUMN ${parameters.columnName} TYPE ${parameters.datatype}${parameters.typeParams ? '(' + parameters.typeParams + ')' : ''};`;
+		let query = `ALTER TABLE ${tableName} ALTER COLUMN ${parameters.columnName}`;
+
+		if (parameters.length) {
+			query += ` TYPE ${parameters.dataType}(${parameters.length})`;
+		} else if (parameters.precision !== undefined && parameters.scale !== undefined) {
+			query += ` TYPE ${parameters.dataType}(${parameters.precision}, ${parameters.scale})`;
+		} else if (parameters.precision !== undefined) {
+			query += ` TYPE ${parameters.dataType}(${parameters.precision})`;
+		} else {
+			query += ` TYPE ${parameters.dataType}`;
+		}
+
+		return query + ';';
 	}
 }

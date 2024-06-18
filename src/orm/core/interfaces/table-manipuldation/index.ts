@@ -11,3 +11,7 @@ export * from './add-unique-to-column.interface';
 export * from './drop-table.interface';
 export * from './mysql';
 export * from './postgres';
+export * from './add-check-constraint-to-column.interface';
+export * from './delete-check-constraint-of-column.interface';
+export * from './drop-constraint.interface';
+export * from './delete-unique-from-column.interface';
