@@ -2,7 +2,9 @@ import { Pool, PoolClient } from 'pg';
 import {
 	AddCheckConstraintToColumnInterface,
 	AddColumnInterface,
+	AddForeignKeyInterface,
 	AddNotNullToColumnInterface,
+	AddPrimaryGeneratedColumnInterface,
 	AddUniqueToColumnInterface,
 	ChangeColumnDatatypeInterface,
 	CreateTableOptionsInterface,
@@ -151,6 +153,14 @@ export class DataSourcePostgres extends BaseQueries implements DataSourceInterfa
 
 	changeDataTypeOfColumn(tableName: string, parameters: ChangeColumnDatatypeInterface): string {
 		return this._tableAlterer.changeDataTypeOfColumn(tableName, parameters);
+	}
+
+	addPrimaryGeneratedColumn(tableName: string, parameters: AddPrimaryGeneratedColumnInterface): string {
+		return this._tableAlterer.addPrimaryGeneratedColumn(tableName, parameters);
+	}
+
+	addForeignKey(tableName: string, parameters: AddForeignKeyInterface): string {
+		return this._tableAlterer.addForeignKey(tableName, parameters);
 	}
 
 	//Get current time

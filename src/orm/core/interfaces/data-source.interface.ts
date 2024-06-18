@@ -4,7 +4,9 @@ import { DatabaseIngotInterface } from '@core/interfaces/database-ingot.interfac
 import {
 	AddCheckConstraintToColumnInterface,
 	AddDefaultValueInterface,
+	AddForeignKeyInterface,
 	AddNotNullToColumnInterface,
+	AddPrimaryGeneratedColumnInterface,
 	AddUniqueToColumnInterface,
 	ChangeColumnDatatypeInterface,
 	DeleteCheckConstraintOfColumnInterface,
@@ -50,6 +52,10 @@ export interface DataSourceInterface {
 	dropConstraint(tableName: string, parameters: DropConstraintInterface): string;
 
 	deleteUniqueFromColum(tableName: string, parameters: DeleteUniqueFromColumnInterface): string;
+
+	addPrimaryGeneratedColumn(tableName: string, parameters: AddPrimaryGeneratedColumnInterface): string;
+
+	addForeignKey(tableName: string, parameters: AddForeignKeyInterface): string;
 
 	renameColumn(tableName: string, parameters: RenameColumnInterface): string;
 

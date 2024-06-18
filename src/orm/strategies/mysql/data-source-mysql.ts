@@ -2,7 +2,9 @@ import { Connection, createConnection } from 'mysql2/promise';
 import {
 	AddCheckConstraintToColumnInterface,
 	AddColumnInterface,
+	AddForeignKeyInterface,
 	AddNotNullToColumnInterface,
+	AddPrimaryGeneratedColumnInterface,
 	AddUniqueToColumnInterface,
 	ChangeColumnDatatypeInterface,
 	CreateTableOptionsInterface,
@@ -150,6 +152,14 @@ export class DataSourceMySql extends BaseQueries implements DataSourceInterface 
 
 	changeDataTypeOfColumn(tableName: string, parameters: ChangeColumnDatatypeInterface): string {
 		return this._tableAlterer.changeDataTypeOfColumn(tableName, parameters);
+	}
+
+	addPrimaryGeneratedColumn(tableName: string, parameters: AddPrimaryGeneratedColumnInterface): string {
+		return this._tableAlterer.addPrimaryGeneratedColumn(tableName, parameters);
+	}
+
+	addForeignKey(tableName: string, parameters: AddForeignKeyInterface): string {
+		return this._tableAlterer.addForeignKey(tableName, parameters);
 	}
 
 	//get time

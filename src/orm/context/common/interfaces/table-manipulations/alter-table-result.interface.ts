@@ -2,7 +2,9 @@ import {
 	AddCheckConstraintToColumnInterface,
 	AddColumnInterface,
 	AddDefaultValueInterface,
+	AddForeignKeyInterface,
 	AddNotNullToColumnInterface,
+	AddPrimaryGeneratedColumnInterface,
 	AddUniqueToColumnInterface,
 	ChangeColumnDatatypeInterface,
 	DeleteCheckConstraintOfColumnInterface,
@@ -32,6 +34,8 @@ export interface AlterTableResultInterface<DB, GT extends DatabasesTypes | undef
 	deleteCheckConstraintOfColumn: (parameters: DeleteCheckConstraintOfColumnInterface) => Promise<Object | string>;
 	dropConstraint: (parameters: DropConstraintInterface) => Promise<Object | string>;
 	deleteUniqueFromColumn: (parameters: DeleteUniqueFromColumnInterface) => Promise<Object | string>;
+	addPrimaryGeneratedColumn: (parameters: AddPrimaryGeneratedColumnInterface) => Promise<Object | string>;
+	addForeignKey: (parameters: AddForeignKeyInterface) => Promise<Object | string>;
 	//TODO зробити так, щоб якшо mysql, то показувало б без поля Type в DropTableInterface
 	dropTable: (parameters: DropTableInterface) => Promise<Object | string>;
 }

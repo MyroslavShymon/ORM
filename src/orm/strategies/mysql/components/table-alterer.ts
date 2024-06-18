@@ -2,7 +2,9 @@ import { DataSourceMySql, TableAltererInterface } from '@strategies/mysql';
 import {
 	AddCheckConstraintToColumnInterface,
 	AddColumnInterface,
+	AddForeignKeyInterface,
 	AddNotNullToColumnInterface,
+	AddPrimaryGeneratedColumnInterface,
 	AddUniqueToColumnInterface,
 	ChangeColumnDatatypeInterface,
 	DeleteCheckConstraintOfColumnInterface,
@@ -72,5 +74,13 @@ export class TableAlterer implements TableAltererInterface {
 
 	changeDataTypeOfColumn(tableName: string, parameters: ChangeColumnDatatypeInterface): string {
 		return `ALTER TABLE ${tableName} MODIFY COLUMN ${parameters.columnName} ${parameters.dataType};`;
+	}
+
+	addPrimaryGeneratedColumn(tableName: string, parameters: AddPrimaryGeneratedColumnInterface): string {
+		return '';
+	}
+
+	addForeignKey(tableName: string, parameters: AddForeignKeyInterface): string {
+		return '';
 	}
 }

@@ -3,7 +3,9 @@ import {
 	AddCheckConstraintToColumnInterface,
 	AddColumnInterface,
 	AddDefaultValueInterface,
+	AddForeignKeyInterface,
 	AddNotNullToColumnInterface,
+	AddPrimaryGeneratedColumnInterface,
 	AddUniqueToColumnInterface,
 	ChangeColumnDatatypeInterface,
 	DataSourceInterface,
@@ -41,7 +43,9 @@ export class TableManipulation implements TableManipulationInterface {
 			addCheckConstraintToColumn: this._addCheckConstraintToColumn(tableName, getQueryString),
 			deleteCheckConstraintOfColumn: this._deleteCheckConstraintOfColumn(tableName, getQueryString),
 			deleteUniqueFromColumn: this._deleteUniqueFromColum(tableName, getQueryString),
-			dropConstraint: this._dropConstraint(tableName, getQueryString)
+			dropConstraint: this._dropConstraint(tableName, getQueryString),
+			addPrimaryGeneratedColumn: this._addPrimaryGeneratedColumn(tableName, getQueryString),
+			addForeignKey: this._addForeignKey(tableName, getQueryString)
 		};
 	};
 
@@ -231,6 +235,33 @@ export class TableManipulation implements TableManipulationInterface {
 			}
 		};
 
+	private _addPrimaryGeneratedColumn = (tableName: string, getQueryString: boolean = false) =>
+		async (parameters: AddPrimaryGeneratedColumnInterface): Promise<Object | string> => {
+			try {
+				const addPrimaryGeneratedColumnQuery = this._dataSource.addPrimaryGeneratedColumn(tableName, parameters);
+				if (getQueryString) {
+					return addPrimaryGeneratedColumnQuery;
+				}
+				console.log('Add primary generated to column Sql ', addPrimaryGeneratedColumnQuery);
+				return this._dataSource.client.query(addPrimaryGeneratedColumnQuery);
+			} catch (error) {
+				console.error(`Error while adding primary generated to column: ${error}`);
+			}
+		};
+
+	private _addForeignKey = (tableName: string, getQueryString: boolean = false) =>
+		async (parameters: AddForeignKeyInterface): Promise<Object | string> => {
+			try {
+				const addForeignKey = this._dataSource.addForeignKey(tableName, parameters);
+				if (getQueryString) {
+					return addForeignKey;
+				}
+				console.log('Add foreign key to column Sql ', addForeignKey);
+				return this._dataSource.client.query(addForeignKey);
+			} catch (error) {
+				console.error(`Error while adding foreign key to column: ${error}`);
+			}
+		};
 
 	private _dropTable = (tableName: string, getQueryString: boolean = false) => async (parameters: DropTableInterface): Promise<Object | string> => {
 		try {

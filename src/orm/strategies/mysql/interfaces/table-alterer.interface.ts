@@ -1,7 +1,9 @@
 import {
 	AddCheckConstraintToColumnInterface,
 	AddColumnInterface,
+	AddForeignKeyInterface,
 	AddNotNullToColumnInterface,
+	AddPrimaryGeneratedColumnInterface,
 	AddUniqueToColumnInterface,
 	ChangeColumnDatatypeInterface,
 	DeleteCheckConstraintOfColumnInterface,
@@ -32,4 +34,8 @@ export interface TableAltererInterface {
 	dropConstraint(tableName: string, parameters: DropConstraintInterface): string;
 
 	deleteUniqueFromColum(tableName: string, parameters: DeleteUniqueFromColumnInterface): string;
+
+	addPrimaryGeneratedColumn(tableName: string, parameters: AddPrimaryGeneratedColumnInterface): string;
+
+	addForeignKey(tableName: string, parameters: AddForeignKeyInterface): string;
 }
