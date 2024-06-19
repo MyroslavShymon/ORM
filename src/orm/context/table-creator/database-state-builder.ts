@@ -28,15 +28,15 @@ export class DatabaseStateBuilder implements DatabaseStateBuilderInterface {
 			const metadataComputedColumns: ComputedColumnMetadataInterface[]
 				= Reflect.getMetadata(constants.decoratorsMetadata.computedColumns, model.prototype);
 			const foreignKeys: ForeignKeyInterface[]
-				= Reflect.getMetadata(constants.decoratorsMetadata.foreignKeys, model.prototype);
+				= Reflect.getMetadata(constants.decoratorsMetadata.foreignKeys, model.prototype) || [];
 			const primaryColumn: PrimaryGeneratedColumnInterface
-				= Reflect.getMetadata(constants.decoratorsMetadata.primaryColumn, model.prototype);
+				= Reflect.getMetadata(constants.decoratorsMetadata.primaryColumn, model.prototype) || {};
 			const oneToOne: OneToOneInterface[]
-				= Reflect.getMetadata(constants.decoratorsMetadata.oneToOne, model.prototype);
+				= Reflect.getMetadata(constants.decoratorsMetadata.oneToOne, model.prototype) || [];
 			const oneToMany: OneToManyInterface[]
-				= Reflect.getMetadata(constants.decoratorsMetadata.oneToMany, model.prototype);
+				= Reflect.getMetadata(constants.decoratorsMetadata.oneToMany, model.prototype) || [];
 			const manyToMany: ManyToManyInterface[]
-				= Reflect.getMetadata(constants.decoratorsMetadata.manyToMany, model.prototype);
+				= Reflect.getMetadata(constants.decoratorsMetadata.manyToMany, model.prototype) || [];
 
 			let columns = [];
 			if (metadataColumns) {
@@ -66,7 +66,7 @@ export class DatabaseStateBuilder implements DatabaseStateBuilderInterface {
 				primaryColumn,
 				oneToOne,
 				oneToMany,
-				manyToMany
+				manyToMany: manyToMany.map(m2m => ({ ...m2m, tableName: table.name }))
 			};
 
 			preparedModels.push(potentialModel);

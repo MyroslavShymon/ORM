@@ -1,6 +1,7 @@
 import {
 	DatabaseStateBuilderInterface,
 	DatabaseStateInterface,
+	ManyToManyRelationsOfTablesInterface,
 	TableCreationProcessorInterface,
 	TableCreatorInterface
 } from '@context/common';
@@ -77,35 +78,17 @@ export class TableCreator implements TableCreatorInterface {
 		return tablesIngot;
 	}
 
-	generateCreateTableQuery(ingotsOfTables: TableIngotInterface<DataSourceInterface>[]): string {
-		let createTablesQuery = '';
+	generateCreateTableQueryForManyToManyRelation(manyToManyRelationsOfTables: ManyToManyRelationsOfTablesInterface[]): string {
+		let createTablesQueryForManyToManyRelation = '';
 		const manyToManys: ManyToManyInterface[] = [];
 		const createdManyToManyTables: string[] = [];
 
 		for (const {
-			columns,
-			computedColumns,
-			foreignKeys,
-			primaryColumn,
-			oneToOne,
-			oneToMany,
-			manyToMany,
-			...table
-		} of ingotsOfTables) {
-			if (manyToMany?.length) {
-				manyToManys.push(...manyToMany.map(m2m => ({ ...m2m, tableName: table.name })));
+			manyToManyRelation, tableName
+		} of manyToManyRelationsOfTables) {
+			if (manyToManyRelation?.length) {
+				manyToManys.push(...manyToManyRelation.map(m2m => ({ ...m2m, tableName })));
 			}
-
-			createTablesQuery += this._dataSource.createTable({
-				table,
-				columns,
-				computedColumns,
-				foreignKeys,
-				primaryColumn,
-				oneToOne,
-				oneToMany,
-				manyToMany
-			}) + '\n\n';
 		}
 
 		for (let i = 0; i < manyToManys.length; i++) {
@@ -116,14 +99,14 @@ export class TableCreator implements TableCreatorInterface {
 					manyToManys[i].tableName === manyToManys[j].referencedTable
 				) {
 					const tableName = `${manyToManys[i].referencedTable}_${manyToManys[j].referencedTable}`;
-					
+
 					if (!createdManyToManyTables.some(createdManyToManyTable => createdManyToManyTable ===
 						tableName
 							.split('_')
 							.reverse()
 							.join('_'))
 					) {
-						createTablesQuery += this._dataSource.createTable(
+						createTablesQueryForManyToManyRelation += this._dataSource.createTable(
 							{
 								table: {
 									name: tableName,
@@ -154,6 +137,20 @@ export class TableCreator implements TableCreatorInterface {
 				}
 			}
 		}
+
+		return createTablesQueryForManyToManyRelation;
+	}
+
+	generateCreateTableQuery(ingotsOfTables: TableIngotInterface<DataSourceInterface>[]): string {
+		let createTablesQuery = '';
+
+		for (const ingotsOfTable of ingotsOfTables) {
+			createTablesQuery += this._dataSource.createTable(ingotsOfTable) + '\n\n';
+		}
+
+		createTablesQuery += this.generateCreateTableQueryForManyToManyRelation(
+			ingotsOfTables.map(table => ({ manyToManyRelation: table.manyToMany, tableName: table.name }))
+		);
 
 		console.log('Sql of table create', createTablesQuery);
 		return createTablesQuery;

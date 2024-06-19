@@ -6,3 +6,4 @@ export * from './table-comparator.interface';
 export * from './table-creation-processor.interface';
 export * from './column-percentage.interface';
 export * from './columns-comparator.interface';
+export * from './many-to-many-relations-of-tables.interface';

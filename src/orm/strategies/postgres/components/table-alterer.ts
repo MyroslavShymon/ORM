@@ -133,36 +133,36 @@ export class TableAlterer implements TableAltererInterface {
 	addPrimaryGeneratedColumn(tableName: string, parameters: AddPrimaryGeneratedColumnInterface): string {
 		let query = `ALTER TABLE ${tableName} ADD COLUMN ${parameters.columnName} ${parameters.type}`;
 
-		// Додавання опціональних параметрів
-		if (parameters.startWith !== undefined) {
-			query += ` START WITH ${parameters.startWith}`;
-		}
-		if (parameters.incrementBy !== undefined) {
-			query += ` INCREMENT BY ${parameters.incrementBy}`;
-		}
-		if (parameters.minValue !== undefined) {
-			query += ` MINVALUE ${parameters.minValue}`;
-		}
-		if (parameters.maxValue !== undefined) {
-			query += ` MAXVALUE ${parameters.maxValue}`;
-		}
-		if (parameters.isCycle) {
-			query += ` CYCLE`;
-		} else {
-			query += ` NO CYCLE`;
-		}
-		if (parameters.cache !== undefined) {
-			query += ` CACHE ${parameters.cache}`;
-		}
-		if (parameters.ownedBy) {
-			query += ` OWNED BY ${parameters.ownedBy}`;
-		}
-		if (parameters.restartWith !== undefined) {
-			query += ` RESTART WITH ${parameters.restartWith}`;
-		}
-		if (parameters.noOrder) {
-			query += ` NOORDER`;
-		}
+		// // Додавання опціональних параметрів
+		// if (parameters.startWith !== undefined) {
+		// 	query += ` START WITH ${parameters.startWith}`;
+		// }
+		// if (parameters.incrementBy !== undefined) {
+		// 	query += ` INCREMENT BY ${parameters.incrementBy}`;
+		// }
+		// if (parameters.minValue !== undefined) {
+		// 	query += ` MINVALUE ${parameters.minValue}`;
+		// }
+		// if (parameters.maxValue !== undefined) {
+		// 	query += ` MAXVALUE ${parameters.maxValue}`;
+		// }
+		// if (parameters.isCycle) {
+		// 	query += ` CYCLE`;
+		// } else {
+		// 	query += ` NO CYCLE`;
+		// }
+		// if (parameters.cache !== undefined) {
+		// 	query += ` CACHE ${parameters.cache}`;
+		// }
+		// if (parameters.ownedBy) {
+		// 	query += ` OWNED BY ${parameters.ownedBy}`;
+		// }
+		// if (parameters.restartWith !== undefined) {
+		// 	query += ` RESTART WITH ${parameters.restartWith}`;
+		// }
+		// if (parameters.noOrder) {
+		// 	query += ` NOORDER`;
+		// }
 
 		// Додавання PRIMARY KEY
 		query += ` PRIMARY KEY`;
