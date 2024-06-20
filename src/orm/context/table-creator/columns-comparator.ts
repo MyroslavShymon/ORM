@@ -11,26 +11,31 @@ export class ColumnsComparator implements ColumnsComparatorInterface {
 	): ColumnPercentageInterface[] {
 		const columnsPercentage: ColumnPercentageInterface[] = [];
 
-		const mismatchedColumns = newColumns.filter(newColumn => !oldColumns.find(oldColumn => oldColumn.name === newColumn.name));
+		const mismatchedColumns = newColumns.filter(newColumn => {
+			const hasCorrespondingOldColumn = oldColumns.some(oldColumn => oldColumn.name === newColumn.name);
+			return !hasCorrespondingOldColumn;
+		});
 
 		for (const mismatchedColumn of mismatchedColumns) {
 			for (const oldColumn of oldColumns) {
-				if (mismatchedColumn.name !== oldColumn.name) {
-					let totalFields = 0;
-					let matchingFields = 0;
-					Object.entries(mismatchedColumn.options).forEach(([field, value]) => {
-						totalFields++;
-						if (value === oldColumn.options[field]) {
-							matchingFields++;
-						}
-					});
-					columnsPercentage.push({
-						newColumn: mismatchedColumn,
-						oldColumnName: oldColumn.name,
-						oldColumnId: oldColumn.id,
-						percentage: (matchingFields / totalFields) * 100
-					});
+				if (mismatchedColumn.name === oldColumn.name) {
+					continue;
 				}
+				
+				let totalFields = 0;
+				let matchingFields = 0;
+				Object.entries(mismatchedColumn.options).forEach(([field, value]) => {
+					totalFields++;
+					if (value === oldColumn.options[field]) {
+						matchingFields++;
+					}
+				});
+				columnsPercentage.push({
+					newColumn: mismatchedColumn,
+					oldColumnName: oldColumn.name,
+					oldColumnId: oldColumn.id,
+					percentage: (matchingFields / totalFields) * 100
+				});
 			}
 		}
 

@@ -10,7 +10,7 @@ import {
 } from '@core/interfaces/decorators';
 
 export interface CreateTableOptionsInterface {
-	table?: TableInterface,
+	table: TableInterface,
 	columns?: ColumnInterface[],
 	computedColumns?: ComputedColumnInterface[],
 	foreignKeys?: ForeignKeyInterface[],

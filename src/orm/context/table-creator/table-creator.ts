@@ -144,8 +144,26 @@ export class TableCreator implements TableCreatorInterface {
 	generateCreateTableQuery(ingotsOfTables: TableIngotInterface<DataSourceInterface>[]): string {
 		let createTablesQuery = '';
 
-		for (const ingotsOfTable of ingotsOfTables) {
-			createTablesQuery += this._dataSource.createTable(ingotsOfTable) + '\n\n';
+		for (const {
+			oneToMany,
+			manyToMany,
+			oneToOne,
+			computedColumns,
+			columns,
+			primaryColumn,
+			foreignKeys,
+			...table
+		} of ingotsOfTables) {
+			createTablesQuery += this._dataSource.createTable({
+				oneToMany,
+				manyToMany,
+				oneToOne,
+				columns,
+				computedColumns,
+				primaryColumn,
+				foreignKeys,
+				table
+			}) + '\n\n';
 		}
 
 		createTablesQuery += this.generateCreateTableQueryForManyToManyRelation(
