@@ -157,8 +157,15 @@ export class TableBuilder implements TableBuilderInterface {
 	}
 
 	private _handlePrimaryGeneratedColumns(primaryColumn: PrimaryGeneratedColumnInterface<DatabasesTypes.POSTGRES>) {
-		//TODO опрацювати всі параметри
-		return `\t\t${primaryColumn.columnName || 'id'} ${primaryColumn.type} PRIMARY KEY,\n\t\t`;
+		if (!primaryColumn.columnName) {
+			throw new Error('Please specify name of the primary column!');
+		}
+
+		if (!primaryColumn.type) {
+			throw new Error('Please specify type of the primary column!');
+		}
+
+		return `\t\t${primaryColumn.columnName} ${primaryColumn.type} PRIMARY KEY,\n\t\t`;
 	}
 
 	private _handleOptionsOfTable({ unique, checkConstraint, primaryKeys }: TableOptionsPostgresqlInterface): string {
