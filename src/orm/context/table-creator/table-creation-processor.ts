@@ -8,7 +8,11 @@ import {
 } from '@core/interfaces';
 import { constants } from '@core/constants';
 import { TableComparator } from '@context/table-creator/table-comparator';
-import { TableCreationProcessorInterface } from '@context/common';
+import {
+	ColumnPercentageInterface,
+	ComputedColumnPercentageInterface,
+	TableCreationProcessorInterface
+} from '@context/common';
 import { ColumnsComparator } from '@context/table-creator/columns-comparator';
 
 export class TableCreationProcessor implements TableCreationProcessorInterface {
@@ -158,6 +162,7 @@ export class TableCreationProcessor implements TableCreationProcessorInterface {
 				tableColumns as ColumnInterface[]
 			);
 		}
+		columnsPercentage = this._filterUniquePercentages(columnsPercentage);
 
 		for (const columnPercentage of columnsPercentage) {
 			if (columnPercentage.percentage >= constants.tableComparerAlgorithm.minimumColumnUniquePercentage) {
@@ -186,5 +191,57 @@ export class TableCreationProcessor implements TableCreationProcessorInterface {
 			);
 
 		return [...columns, ...resultModelColumns];
+	}
+
+	private _filterUniquePercentages<T extends ColumnPercentageInterface | ComputedColumnPercentageInterface>
+	(columnsPercentage: T[]): ColumnPercentageInterface[] {
+		// Крок 1: Визначити елементи, які містять newColumn.name, що з'являються більше одного разу
+		const nameCount = new Map();
+		columnsPercentage.forEach(item => {
+			const name = item.newColumn.name;
+			nameCount.set(name, (nameCount.get(name) || 0) + 1);
+		});
+
+		const repeatedNames = new Set();
+		nameCount.forEach((count, name) => {
+			if (count > 1) {
+				repeatedNames.add(name);
+			}
+		});
+
+		// Крок 2: Фільтрувати всі елементи, які мають збіг за oldColumnName
+		const oldNameCount = new Map();
+		columnsPercentage.forEach(item => {
+			const oldName = item.oldColumnName;
+			oldNameCount.set(oldName, (oldNameCount.get(oldName) || 0) + 1);
+		});
+
+		const repeatedOldNames = new Set();
+		oldNameCount.forEach((count, oldName) => {
+			if (count > 1) {
+				repeatedOldNames.add(oldName);
+			}
+		});
+
+		// Крок 3: Вибір елементів, що повторюються
+		const intermediateArray = [];
+		const processedNames = new Set();
+		const processedOldNames = new Set();
+
+		columnsPercentage.forEach(item => {
+			const name = item.newColumn.name;
+			const oldName = item.oldColumnName;
+			if (repeatedNames.has(name) || repeatedOldNames.has(oldName)) {
+				if (!processedNames.has(name) && !processedOldNames.has(oldName)) {
+					intermediateArray.push(item);
+					processedNames.add(name);
+					processedOldNames.add(oldName);
+				}
+			} else {
+				intermediateArray.push(item);
+			}
+		});
+
+		return intermediateArray;
 	}
 }

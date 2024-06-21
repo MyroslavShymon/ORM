@@ -69,7 +69,7 @@ export class ColumnsComparator implements ColumnsComparatorInterface {
 					}
 				});
 				columnsPercentage.push({
-					newColumn: newColumn,
+					newColumn,
 					oldColumnName: oldColumn.name,
 					oldColumnId: oldColumn.id,
 					percentage: (matchingFields / totalFields) * 100
