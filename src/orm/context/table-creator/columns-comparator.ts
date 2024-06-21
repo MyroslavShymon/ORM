@@ -11,27 +11,25 @@ export class ColumnsComparator implements ColumnsComparatorInterface {
 	): ColumnPercentageInterface[] {
 		const columnsPercentage: ColumnPercentageInterface[] = [];
 
-		const mismatchedColumns = newColumns.filter(newColumn => {
-			const hasCorrespondingOldColumn = oldColumns.some(oldColumn => oldColumn.name === newColumn.name);
-			return !hasCorrespondingOldColumn;
-		});
+		const getUniqueColumnsInNewColumns = this._getUniqueColumns(newColumns, oldColumns);
+		const getUniqueColumnsInOldColumns = this._getUniqueColumns(oldColumns, newColumns);
 
-		for (const mismatchedColumn of mismatchedColumns) {
-			for (const oldColumn of oldColumns) {
-				if (mismatchedColumn.name === oldColumn.name) {
-					continue;
-				}
-				
+		if (!getUniqueColumnsInNewColumns.length || !getUniqueColumnsInOldColumns.length) {
+			return [];
+		}
+
+		for (const newColumn of getUniqueColumnsInNewColumns) {
+			for (const oldColumn of getUniqueColumnsInOldColumns) {
 				let totalFields = 0;
 				let matchingFields = 0;
-				Object.entries(mismatchedColumn.options).forEach(([field, value]) => {
+				Object.entries(newColumn.options).forEach(([field, value]) => {
 					totalFields++;
 					if (value === oldColumn.options[field]) {
 						matchingFields++;
 					}
 				});
 				columnsPercentage.push({
-					newColumn: mismatchedColumn,
+					newColumn: newColumn,
 					oldColumnName: oldColumn.name,
 					oldColumnId: oldColumn.id,
 					percentage: (matchingFields / totalFields) * 100
@@ -39,6 +37,19 @@ export class ColumnsComparator implements ColumnsComparatorInterface {
 			}
 		}
 
+		console.log('columnsPercentage', columnsPercentage);
+
 		return columnsPercentage;
+	}
+	
+	private _getUniqueColumns(
+		newColumns: ColumnInterface[],
+		oldColumns: ColumnInterface[]
+	): ColumnInterface[] {
+		const namesSet2 = new Set(oldColumns.map(obj => obj.name));
+
+		const uniqueObjects = newColumns.filter(obj => !namesSet2.has(obj.name));
+
+		return uniqueObjects;
 	}
 }
