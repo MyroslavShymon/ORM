@@ -131,8 +131,9 @@ export class TableCreationProcessor implements TableCreationProcessorInterface {
 	}
 
 	//TODO тут шось дивне з типізацією, треба переглянути цей метод
-	private _handleColumns<T extends BaseColumnInterface[]>
+	private _handleColumns<T extends ComputedColumnInterface[] | ColumnInterface[]>
 	(tableColumns: T, modelColumns: T): ColumnInterface[] | ComputedColumnInterface[] {
+		let columnsPercentage;
 		let columns: (ColumnInterface | ComputedColumnInterface)[] = [];
 
 		if (modelColumns == undefined || modelColumns.length === 0) {
@@ -143,14 +144,27 @@ export class TableCreationProcessor implements TableCreationProcessorInterface {
 			return modelColumns.map(modelColumn => ({ id: uuidv4(), ...modelColumn }));
 		}
 
-		const columnsPercentage = this.columnsComparator.calculatePercentagesOfModifiedColumns(modelColumns, tableColumns);
+		if (
+			(modelColumns[0] as ComputedColumnInterface).calculate ||
+			(modelColumns[0] as ComputedColumnInterface).stored
+		) {
+			columnsPercentage = this.columnsComparator.calculatePercentagesOfModifiedComputedColumns(
+				modelColumns as ComputedColumnInterface[],
+				tableColumns as ComputedColumnInterface[]
+			);
+		} else {
+			columnsPercentage = this.columnsComparator.calculatePercentagesOfModifiedColumns(
+				modelColumns as ColumnInterface[],
+				tableColumns as ColumnInterface[]
+			);
+		}
 
 		for (const columnPercentage of columnsPercentage) {
 			if (columnPercentage.percentage >= constants.tableComparerAlgorithm.minimumColumnUniquePercentage) {
 				columns.push({ id: columnPercentage.oldColumnId, ...columnPercentage.newColumn });
 			}
 		}
-		
+
 		//add columns with same names
 		for (const modelColumn of modelColumns) {
 			for (const tableColumn of tableColumns) {
@@ -162,7 +176,7 @@ export class TableCreationProcessor implements TableCreationProcessorInterface {
 		}
 
 		//add columns which new
-		const resultModelColumns = modelColumns
+		const resultModelColumns = (modelColumns as BaseColumnInterface[])
 			.filter(
 				modelColumn => !columns.some(column =>
 					column.name === modelColumn.name
