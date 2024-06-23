@@ -194,7 +194,7 @@ export class TableCreationProcessor implements TableCreationProcessorInterface {
 	}
 
 	private _filterUniquePercentages<T extends ColumnPercentageInterface | ComputedColumnPercentageInterface>
-	(columnsPercentage: T[]): ColumnPercentageInterface[] {
+	(columnsPercentage: T[]): (ColumnPercentageInterface | ComputedColumnPercentageInterface)[] {
 		// Крок 1: Визначити елементи, які містять newColumn.name, що з'являються більше одного разу
 		const nameCount = new Map();
 		columnsPercentage.forEach(item => {

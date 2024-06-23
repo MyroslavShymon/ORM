@@ -21,6 +21,7 @@ import {
 } from '@core/interfaces/table-manipuldation';
 import { QueryBuilderInterface } from '@context/common';
 import { CreateTableOptionsInterface } from '@core/interfaces/create-table-options.interface';
+import { AddComputedColumnInterface } from '@core/interfaces/table-manipuldation/add-computed-column.interface';
 
 export interface DataSourceInterface {
 	client;//TODO typing
@@ -56,6 +57,8 @@ export interface DataSourceInterface {
 	addPrimaryGeneratedColumn(tableName: string, parameters: AddPrimaryGeneratedColumnInterface): string;
 
 	addForeignKey(tableName: string, parameters: AddForeignKeyInterface): string;
+
+	addComputedColumn(tableName: string, parameters: AddComputedColumnInterface): string;
 
 	renameColumn(tableName: string, parameters: RenameColumnInterface): string;
 

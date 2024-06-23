@@ -18,6 +18,7 @@ import {
 	RenameTableInterface
 } from '@core/interfaces';
 import { DatabasesTypes } from '@core/enums';
+import { AddComputedColumnInterface } from '@core/interfaces/table-manipuldation/add-computed-column.interface';
 
 export interface AlterTableResultInterface<DB, GT extends DatabasesTypes | undefined = undefined> {
 	addColumn: (parameters: AddColumnInterface<GT>) => Promise<Object | string>;
@@ -36,6 +37,7 @@ export interface AlterTableResultInterface<DB, GT extends DatabasesTypes | undef
 	deleteUniqueFromColumn: (parameters: DeleteUniqueFromColumnInterface) => Promise<Object | string>;
 	addPrimaryGeneratedColumn: (parameters: AddPrimaryGeneratedColumnInterface) => Promise<Object | string>;
 	addForeignKey: (parameters: AddForeignKeyInterface) => Promise<Object | string>;
+	addComputedColumn: (parameters: AddComputedColumnInterface) => Promise<Object | string>;
 	//TODO зробити так, щоб якшо mysql, то показувало б без поля Type в DropTableInterface
 	dropTable: (parameters: DropTableInterface) => Promise<Object | string>;
 }

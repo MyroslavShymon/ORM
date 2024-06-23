@@ -38,6 +38,7 @@ import {
 	ViewQueries
 } from '@strategies/mysql/components';
 import { BaseQueries } from '@strategies/base-queries';
+import { AddComputedColumnInterface } from '@core/interfaces/table-manipuldation/add-computed-column.interface';
 
 export class DataSourceMySql extends BaseQueries implements DataSourceInterface {
 	client: Connection;
@@ -160,6 +161,11 @@ export class DataSourceMySql extends BaseQueries implements DataSourceInterface 
 
 	addForeignKey(tableName: string, parameters: AddForeignKeyInterface): string {
 		return this._tableAlterer.addForeignKey(tableName, parameters);
+	}
+
+	//TODO повністю переробити computed column під mysql
+	addComputedColumn(tableName: string, parameters: AddComputedColumnInterface): string {
+		return this._tableAlterer.addComputedColumn(tableName, parameters);
 	}
 
 	//get time

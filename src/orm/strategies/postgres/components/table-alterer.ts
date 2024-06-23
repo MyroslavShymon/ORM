@@ -14,6 +14,7 @@ import {
 	DropNotNullFromColumnInterface
 } from '@core/interfaces';
 import { DatabasesTypes } from '@core/enums';
+import { AddComputedColumnInterface } from '@core/interfaces/table-manipuldation/add-computed-column.interface';
 
 export class TableAlterer implements TableAltererInterface {
 	addColumn(tableName: string, parameters: AddColumnInterface<DatabasesTypes.POSTGRES>): string {
@@ -175,5 +176,15 @@ export class TableAlterer implements TableAltererInterface {
 			ALTER TABLE ${tableName}
 			ADD CONSTRAINT fk_${tableName}_${parameters.referencedTable}
 			FOREIGN KEY (${parameters.foreignKey}) REFERENCES ${parameters.referencedTable}(${parameters.referencedColumn});` + '\n';
+	}
+
+	addComputedColumn(tableName: string, parameters: AddComputedColumnInterface): string {
+		const { dataType, calculate, stored } = parameters;
+		const storageType = stored ? 'STORED' : 'VIRTUAL';
+
+		return `
+        ALTER TABLE ${tableName} 
+        ADD COLUMN new_computed_column ${dataType} AS (${calculate}) ${storageType};
+    `;
 	}
 }

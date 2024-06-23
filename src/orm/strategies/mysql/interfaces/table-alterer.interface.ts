@@ -13,6 +13,7 @@ import {
 	DropNotNullFromColumnInterface
 } from '@core/interfaces';
 import { DataSourceMySql } from '@strategies/mysql';
+import { AddComputedColumnInterface } from '@core/interfaces/table-manipuldation/add-computed-column.interface';
 
 export interface TableAltererInterface {
 	addColumn(tableName: string, parameters: AddColumnInterface): string;
@@ -38,4 +39,6 @@ export interface TableAltererInterface {
 	addPrimaryGeneratedColumn(tableName: string, parameters: AddPrimaryGeneratedColumnInterface): string;
 
 	addForeignKey(tableName: string, parameters: AddForeignKeyInterface): string;
+
+	addComputedColumn(tableName: string, parameters: AddComputedColumnInterface): string;
 }

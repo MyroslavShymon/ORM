@@ -13,6 +13,7 @@ import {
 	DropConstraintInterface,
 	DropNotNullFromColumnInterface
 } from '@core/interfaces';
+import { AddComputedColumnInterface } from '@core/interfaces/table-manipuldation/add-computed-column.interface';
 
 export class TableAlterer implements TableAltererInterface {
 	// addColumn(tableName: string, parameters: AddColumnInterface<DatabasesTypes.MYSQL>): string {
@@ -81,6 +82,10 @@ export class TableAlterer implements TableAltererInterface {
 	}
 
 	addForeignKey(tableName: string, parameters: AddForeignKeyInterface): string {
+		return '';
+	}
+
+	addComputedColumn(tableName: string, parameters: AddComputedColumnInterface): string {
 		return '';
 	}
 }

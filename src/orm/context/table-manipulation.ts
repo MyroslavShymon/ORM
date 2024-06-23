@@ -19,6 +19,7 @@ import {
 	RenameColumnInterface,
 	RenameTableInterface
 } from '@core/interfaces';
+import { AddComputedColumnInterface } from '@core/interfaces/table-manipuldation/add-computed-column.interface';
 
 export class TableManipulation implements TableManipulationInterface {
 	private _dataSource: DataSourceInterface;
@@ -45,7 +46,8 @@ export class TableManipulation implements TableManipulationInterface {
 			deleteUniqueFromColumn: this._deleteUniqueFromColum(tableName, getQueryString),
 			dropConstraint: this._dropConstraint(tableName, getQueryString),
 			addPrimaryGeneratedColumn: this._addPrimaryGeneratedColumn(tableName, getQueryString),
-			addForeignKey: this._addForeignKey(tableName, getQueryString)
+			addForeignKey: this._addForeignKey(tableName, getQueryString),
+			addComputedColumn: this._addComputedColumn(tableName, getQueryString)
 		};
 	};
 
@@ -260,6 +262,20 @@ export class TableManipulation implements TableManipulationInterface {
 				return this._dataSource.client.query(addForeignKey);
 			} catch (error) {
 				console.error(`Error while adding foreign key to column: ${error}`);
+			}
+		};
+
+	private _addComputedColumn = (tableName: string, getQueryString: boolean = false) =>
+		async (parameters: AddComputedColumnInterface): Promise<Object | string> => {
+			try {
+				const addComputedColumn = this._dataSource.addComputedColumn(tableName, parameters);
+				if (getQueryString) {
+					return addComputedColumn;
+				}
+				console.log('Add computed column Sql ', addComputedColumn);
+				return this._dataSource.client.query(addComputedColumn);
+			} catch (error) {
+				console.error(`Error while adding computed column: ${error}`);
 			}
 		};
 

@@ -38,6 +38,7 @@ import {
 	ViewQueries
 } from '@strategies/postgres/components';
 import { BaseQueries } from '@strategies/base-queries';
+import { AddComputedColumnInterface } from '@core/interfaces/table-manipuldation/add-computed-column.interface';
 
 export class DataSourcePostgres extends BaseQueries implements DataSourceInterface {
 	client: PoolClient;
@@ -161,6 +162,10 @@ export class DataSourcePostgres extends BaseQueries implements DataSourceInterfa
 
 	addForeignKey(tableName: string, parameters: AddForeignKeyInterface): string {
 		return this._tableAlterer.addForeignKey(tableName, parameters);
+	}
+
+	addComputedColumn(tableName: string, parameters: AddComputedColumnInterface): string {
+		return this._tableAlterer.addComputedColumn(tableName, parameters);
 	}
 
 	//Get current time

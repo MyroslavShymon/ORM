@@ -14,6 +14,7 @@ import {
 } from '@core/interfaces';
 import { DataSourcePostgres } from '@strategies/postgres';
 import { DatabasesTypes } from '@core/enums';
+import { AddComputedColumnInterface } from '@core/interfaces/table-manipuldation/add-computed-column.interface';
 
 export interface TableAltererInterface {
 	addColumn(tableName: string, parameters: AddColumnInterface<DatabasesTypes.POSTGRES>): string;
@@ -39,5 +40,7 @@ export interface TableAltererInterface {
 	addPrimaryGeneratedColumn(tableName: string, parameters: AddPrimaryGeneratedColumnInterface): string;
 
 	addForeignKey(tableName: string, parameters: AddForeignKeyInterface): string;
+
+	addComputedColumn(tableName: string, parameters: AddComputedColumnInterface): string;
 
 }
