@@ -1,4 +1,3 @@
-import { DataSourceMySql, TableAltererInterface } from '@strategies/mysql';
 import {
 	AddCheckConstraintToColumnInterface,
 	AddColumnInterface,
@@ -14,6 +13,8 @@ import {
 	DropNotNullFromColumnInterface
 } from '@core/interfaces';
 import { AddComputedColumnInterface } from '@core/interfaces/table-manipuldation/add-computed-column.interface';
+import { TableAltererInterface } from '@strategies/mysql';
+import { DatabasesTypes } from '@core/enums';
 
 export class TableAlterer implements TableAltererInterface {
 	// addColumn(tableName: string, parameters: AddColumnInterface<DatabasesTypes.MYSQL>): string {
@@ -21,25 +22,25 @@ export class TableAlterer implements TableAltererInterface {
 		return `ALTER TABLE '${tableName}' ADD '${parameters.columnName}' ${parameters.options.dataType};`;
 	}
 
-	deleteColumn(tableName: string, parameters: DeleteColumnInterface<DataSourceMySql>): string {
+	deleteColumn(tableName: string, parameters: DeleteColumnInterface<DatabasesTypes.MYSQL>): string {
 		return `ALTER TABLE '${tableName}' DROP COLUMN '${parameters}';`;
 	}
 
-	addNotNullToColumn(tableName: string, parameters: AddNotNullToColumnInterface<DataSourceMySql>): string {
+	addNotNullToColumn(tableName: string, parameters: AddNotNullToColumnInterface<DatabasesTypes.MYSQL>): string {
 		if (!parameters.columnType) {
 			throw new Error(`There is no datatype of column`);
 		}
 		return `ALTER TABLE ${tableName} MODIFY COLUMN ${parameters.columnName} ${parameters.columnType}${parameters.typeLength ? `(${parameters.typeLength})` : ''} NOT NULL;`;
 	}
 
-	dropNotNullFromColumn(tableName: string, parameters: DropNotNullFromColumnInterface<DataSourceMySql>): string {
+	dropNotNullFromColumn(tableName: string, parameters: DropNotNullFromColumnInterface<DatabasesTypes.MYSQL>): string {
 		if (!parameters.columnType) {
 			throw new Error(`There is no datatype of column`);
 		}
 		return `ALTER TABLE ${tableName} MODIFY COLUMN ${parameters.columnName} ${parameters.columnType}${parameters.typeLength ? `(${parameters.typeLength})` : ''} NULL;`;
 	}
 
-	addUniqueToColumn(tableName: string, parameters: AddUniqueToColumnInterface<DataSourceMySql>): string {
+	addUniqueToColumn(tableName: string, parameters: AddUniqueToColumnInterface<DatabasesTypes.MYSQL>): string {
 		return `ALTER TABLE ${tableName} ADD UNIQUE (${parameters.columnName});`;
 	}
 

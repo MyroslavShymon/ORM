@@ -39,8 +39,9 @@ import {
 } from '@strategies/mysql/components';
 import { BaseQueries } from '@strategies/base-queries';
 import { AddComputedColumnInterface } from '@core/interfaces/table-manipuldation/add-computed-column.interface';
+import { DatabasesTypes } from '@core/enums';
 
-export class DataSourceMySql extends BaseQueries implements DataSourceInterface {
+export class DataSourceMySql extends BaseQueries implements DataSourceInterface<DatabasesTypes.MYSQL> {
 	client: Connection;
 	private _tableBuilder: TableBuilderInterface;
 	private _tableAlterer: TableAltererInterface;
@@ -67,7 +68,7 @@ export class DataSourceMySql extends BaseQueries implements DataSourceInterface 
 		this.client = await createConnection(dataToConnect);
 	}
 
-	createTable(options: CreateTableOptionsInterface): string {
+	createTable(options: CreateTableOptionsInterface<DatabasesTypes.MYSQL>): string {
 		return this._tableBuilder.createTable(
 			options?.table,
 			options?.columns,
@@ -119,19 +120,19 @@ export class DataSourceMySql extends BaseQueries implements DataSourceInterface 
 		return this._tableAlterer.addColumn(tableName, parameters);
 	}
 
-	deleteColumn(tableName: string, parameters: DeleteColumnInterface<DataSourceMySql>): string {
+	deleteColumn(tableName: string, parameters: DeleteColumnInterface<DatabasesTypes.MYSQL>): string {
 		return this._tableAlterer.deleteColumn(tableName, parameters);
 	}
 
-	addNotNullToColumn(tableName: string, parameters: AddNotNullToColumnInterface<DataSourceMySql>): string {
+	addNotNullToColumn(tableName: string, parameters: AddNotNullToColumnInterface<DatabasesTypes.MYSQL>): string {
 		return this._tableAlterer.addNotNullToColumn(tableName, parameters);
 	}
 
-	dropNotNullFromColumn(tableName: string, parameters: DropNotNullFromColumnInterface<DataSourceMySql>): string {
+	dropNotNullFromColumn(tableName: string, parameters: DropNotNullFromColumnInterface<DatabasesTypes.MYSQL>): string {
 		return this._tableAlterer.dropNotNullFromColumn(tableName, parameters);
 	}
 
-	addUniqueToColumn(tableName: string, parameters: AddUniqueToColumnInterface<DataSourceMySql>): string {
+	addUniqueToColumn(tableName: string, parameters: AddUniqueToColumnInterface<DatabasesTypes.MYSQL>): string {
 		return this._tableAlterer.addUniqueToColumn(tableName, parameters);
 	}
 

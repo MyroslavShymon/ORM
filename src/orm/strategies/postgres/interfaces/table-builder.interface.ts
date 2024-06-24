@@ -13,8 +13,8 @@ import { DatabasesTypes } from '@core/enums';
 export interface TableBuilderInterface {
 	createTable(
 		table?: TableInterface<DatabasesTypes.POSTGRES>,
-		columns?: ColumnInterface[],
-		computedColumns?: ComputedColumnInterface[],
+		columns?: ColumnInterface<DatabasesTypes.POSTGRES>[],
+		computedColumns?: ComputedColumnInterface<DatabasesTypes.POSTGRES>[],
 		foreignKeys?: ForeignKeyInterface[],
 		primaryColumn?: PrimaryGeneratedColumnInterface<DatabasesTypes.POSTGRES>,
 		oneToOne?: OneToOneInterface[],

@@ -1,21 +1,8 @@
-import {
-	ColumnInterface,
-	ComputedColumnInterface,
-	ForeignKeyInterface,
-	ManyToManyInterface,
-	OneToManyInterface,
-	OneToOneInterface,
-	PrimaryGeneratedColumnInterface,
-	TableInterface
-} from '@core/interfaces/decorators';
+import { DatabasesTypes } from '@core/enums';
+import { CreateTableOptionsPostgresInterface } from '@core/interfaces/create-table-options-postgres.interface';
+import { CreateTableOptionsMysqlInterface } from '@core/interfaces/create-table-options-mysql.interface';
 
-export interface CreateTableOptionsInterface {
-	table: TableInterface,
-	columns?: ColumnInterface[],
-	computedColumns?: ComputedColumnInterface[],
-	foreignKeys?: ForeignKeyInterface[],
-	primaryColumn?: PrimaryGeneratedColumnInterface,
-	oneToOne?: OneToOneInterface[],
-	oneToMany?: OneToManyInterface[],
-	manyToMany?: ManyToManyInterface[]
-}
+export type CreateTableOptionsInterface<DT extends DatabasesTypes | undefined = undefined> =
+	DT extends DatabasesTypes.POSTGRES ? CreateTableOptionsPostgresInterface :
+		DT extends DatabasesTypes.MYSQL ? CreateTableOptionsMysqlInterface :
+			never;

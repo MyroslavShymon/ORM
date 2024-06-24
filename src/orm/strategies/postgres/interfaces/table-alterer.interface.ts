@@ -12,20 +12,19 @@ import {
 	DropConstraintInterface,
 	DropNotNullFromColumnInterface
 } from '@core/interfaces';
-import { DataSourcePostgres } from '@strategies/postgres';
 import { DatabasesTypes } from '@core/enums';
 import { AddComputedColumnInterface } from '@core/interfaces/table-manipuldation/add-computed-column.interface';
 
 export interface TableAltererInterface {
 	addColumn(tableName: string, parameters: AddColumnInterface<DatabasesTypes.POSTGRES>): string;
 
-	deleteColumn(tableName: string, parameters: DeleteColumnInterface<DataSourcePostgres>): string;
+	deleteColumn(tableName: string, parameters: DeleteColumnInterface<DatabasesTypes.POSTGRES>): string;
 
-	addNotNullToColumn(tableName: string, parameters: AddNotNullToColumnInterface<DataSourcePostgres>): string;
+	addNotNullToColumn(tableName: string, parameters: AddNotNullToColumnInterface<DatabasesTypes.POSTGRES>): string;
 
-	dropNotNullFromColumn(tableName: string, parameters: DropNotNullFromColumnInterface<DataSourcePostgres>): string;
+	dropNotNullFromColumn(tableName: string, parameters: DropNotNullFromColumnInterface<DatabasesTypes.POSTGRES>): string;
 
-	addUniqueToColumn(tableName: string, parameters: AddUniqueToColumnInterface<DataSourcePostgres>): string;
+	addUniqueToColumn(tableName: string, parameters: AddUniqueToColumnInterface<DatabasesTypes.POSTGRES>): string;
 
 	changeDataTypeOfColumn(tableName: string, parameters: ChangeColumnDatatypeInterface): string;
 

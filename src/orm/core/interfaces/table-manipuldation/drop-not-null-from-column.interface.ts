@@ -1,8 +1,7 @@
-import { DataSourceMySql } from '@strategies/mysql';
-import { MysqlDataTypes } from '@core/types';
+import { DatabasesTypes } from '@core/enums';
+import { DropNotNullFromColumnMysqlInterface, DropNotNullFromColumnPostgresInterface } from '@core/interfaces';
 
-export interface DropNotNullFromColumnInterface<DB> {
-	columnName: string;
-	columnType?: DB extends DataSourceMySql ? MysqlDataTypes : never;
-	typeLength?: DB extends DataSourceMySql ? number : never;
-}
+export type DropNotNullFromColumnInterface<DT extends DatabasesTypes | undefined = undefined> =
+	DT extends DatabasesTypes.POSTGRES ? DropNotNullFromColumnPostgresInterface :
+		DT extends DatabasesTypes.MYSQL ? DropNotNullFromColumnMysqlInterface :
+			never;

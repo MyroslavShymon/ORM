@@ -2,7 +2,7 @@ import { ConnectionClient, ConnectionData } from '@core/types';
 import { QueryBuilderInterface, TableCreatorInterface, TableManipulationInterface } from '@context/common';
 import { DatabasesTypes } from '@core/enums';
 
-export interface DatabaseManagerInterface<DB extends DatabasesTypes | undefined> {
+export interface DatabaseManagerInterface<DT extends DatabasesTypes | undefined> {
 	connectionData: ConnectionData;
 
 	tableCreator: TableCreatorInterface;
@@ -15,5 +15,5 @@ export interface DatabaseManagerInterface<DB extends DatabasesTypes | undefined>
 
 	createOrmConnection(): Promise<ConnectionClient>;
 
-	get tableManipulation(): TableManipulationInterface<DB>;
+	get tableManipulation(): TableManipulationInterface<DT>;
 }

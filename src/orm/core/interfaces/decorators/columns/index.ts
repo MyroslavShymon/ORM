@@ -6,3 +6,5 @@ export * from './column-postgres.interface';
 export * from './column-options-postgres.interface';
 export * from './column-mysql.interface';
 export * from './column-options-mysql.interface';
+export * from './computed-column-mysql.interface';
+export * from './computed-column-postgres.interface';

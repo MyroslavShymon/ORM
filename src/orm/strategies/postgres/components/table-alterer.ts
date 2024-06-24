@@ -1,4 +1,4 @@
-import { DataSourcePostgres, TableAltererInterface } from '@strategies/postgres';
+import { TableAltererInterface } from '@strategies/postgres';
 import {
 	AddCheckConstraintToColumnInterface,
 	AddColumnInterface,
@@ -54,19 +54,19 @@ export class TableAlterer implements TableAltererInterface {
 		return `ALTER TABLE ${tableName} ADD COLUMN ${columnDefinition};`;
 	}
 
-	deleteColumn(tableName: string, parameters: DeleteColumnInterface<DataSourcePostgres>): string {
+	deleteColumn(tableName: string, parameters: DeleteColumnInterface<DatabasesTypes.POSTGRES>): string {
 		return `ALTER TABLE ${tableName} DROP COLUMN ${parameters.columnName} ${parameters.isCascade ? 'CASCADE' : ''};`;
 	}
 
-	addNotNullToColumn(tableName: string, parameters: AddNotNullToColumnInterface<DataSourcePostgres>): string {
+	addNotNullToColumn(tableName: string, parameters: AddNotNullToColumnInterface<DatabasesTypes.POSTGRES>): string {
 		return `ALTER TABLE ${tableName} ALTER COLUMN ${parameters.columnName} SET NOT NULL;`;
 	}
 
-	dropNotNullFromColumn(tableName: string, parameters: DropNotNullFromColumnInterface<DataSourcePostgres>): string {
+	dropNotNullFromColumn(tableName: string, parameters: DropNotNullFromColumnInterface<DatabasesTypes.POSTGRES>): string {
 		return `ALTER TABLE ${tableName} ALTER COLUMN ${parameters.columnName} DROP NOT NULL;`;
 	}
 
-	addUniqueToColumn(tableName: string, parameters: AddUniqueToColumnInterface<DataSourcePostgres>): string {
+	addUniqueToColumn(tableName: string, parameters: AddUniqueToColumnInterface<DatabasesTypes.POSTGRES>): string {
 		return `ALTER TABLE ${tableName} ${parameters.constraintName ? `ADD CONSTRAINT ${parameters.constraintName}` : ''} UNIQUE (${parameters.columnName});`;
 	}
 

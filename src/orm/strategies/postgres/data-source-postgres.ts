@@ -39,8 +39,9 @@ import {
 } from '@strategies/postgres/components';
 import { BaseQueries } from '@strategies/base-queries';
 import { AddComputedColumnInterface } from '@core/interfaces/table-manipuldation/add-computed-column.interface';
+import { DatabasesTypes } from '@core/enums';
 
-export class DataSourcePostgres extends BaseQueries implements DataSourceInterface {
+export class DataSourcePostgres extends BaseQueries implements DataSourceInterface<DatabasesTypes.POSTGRES> {
 	client: PoolClient;
 	private _tableBuilder: TableBuilderInterface;
 	private _tableAlterer: TableAltererInterface;
@@ -68,7 +69,7 @@ export class DataSourcePostgres extends BaseQueries implements DataSourceInterfa
 		this.client = await pool.connect();
 	}
 
-	createTable(options: CreateTableOptionsInterface): string {
+	createTable(options: CreateTableOptionsInterface<DatabasesTypes.POSTGRES>): string {
 		return this._tableBuilder.createTable(
 			options?.table,
 			options?.columns,
@@ -120,19 +121,19 @@ export class DataSourcePostgres extends BaseQueries implements DataSourceInterfa
 		return this._tableAlterer.addColumn(tableName, parameters);
 	}
 
-	deleteColumn(tableName: string, parameters: DeleteColumnInterface<DataSourcePostgres>): string {
+	deleteColumn(tableName: string, parameters: DeleteColumnInterface<DatabasesTypes.POSTGRES>): string {
 		return this._tableAlterer.deleteColumn(tableName, parameters);
 	}
 
-	addNotNullToColumn(tableName: string, parameters: AddNotNullToColumnInterface<DataSourcePostgres>): string {
+	addNotNullToColumn(tableName: string, parameters: AddNotNullToColumnInterface<DatabasesTypes.POSTGRES>): string {
 		return this._tableAlterer.addNotNullToColumn(tableName, parameters);
 	}
 
-	dropNotNullFromColumn(tableName: string, parameters: DropNotNullFromColumnInterface<DataSourcePostgres>): string {
+	dropNotNullFromColumn(tableName: string, parameters: DropNotNullFromColumnInterface<DatabasesTypes.POSTGRES>): string {
 		return this._tableAlterer.dropNotNullFromColumn(tableName, parameters);
 	}
 
-	addUniqueToColumn(tableName: string, parameters: AddUniqueToColumnInterface<DataSourcePostgres>): string {
+	addUniqueToColumn(tableName: string, parameters: AddUniqueToColumnInterface<DatabasesTypes.POSTGRES>): string {
 		return this._tableAlterer.addUniqueToColumn(tableName, parameters);
 	}
 

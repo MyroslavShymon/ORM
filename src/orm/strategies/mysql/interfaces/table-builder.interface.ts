@@ -8,14 +8,15 @@ import {
 	PrimaryGeneratedColumnInterface,
 	TableInterface
 } from '@core/interfaces';
+import { DatabasesTypes } from '@core/enums';
 
 export interface TableBuilderInterface {
 	createTable(
-		table?: TableInterface,
-		columns?: ColumnInterface[],
-		computedColumns?: ComputedColumnInterface[],
+		table?: TableInterface<DatabasesTypes.MYSQL>,
+		columns?: ColumnInterface<DatabasesTypes.MYSQL>[],
+		computedColumns?: ComputedColumnInterface<DatabasesTypes.MYSQL>[],
 		foreignKeys?: ForeignKeyInterface[],
-		primaryColumn?: PrimaryGeneratedColumnInterface,
+		primaryColumn?: PrimaryGeneratedColumnInterface<DatabasesTypes.MYSQL>,
 		oneToOne?: OneToOneInterface[],
 		oneToMany?: OneToManyInterface[],
 		manyToMany?: ManyToManyInterface[]

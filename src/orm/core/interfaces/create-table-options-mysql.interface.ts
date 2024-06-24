@@ -1,0 +1,22 @@
+import {
+	ColumnInterface,
+	ComputedColumnInterface,
+	ForeignKeyInterface,
+	ManyToManyInterface,
+	OneToManyInterface,
+	OneToOneInterface,
+	PrimaryGeneratedColumnInterface,
+	TableInterface
+} from '@core/interfaces/decorators';
+import { DatabasesTypes } from '@core/enums';
+
+export interface CreateTableOptionsMysqlInterface {
+	table: TableInterface<DatabasesTypes.MYSQL>,
+	columns?: ColumnInterface<DatabasesTypes.MYSQL>[],
+	computedColumns?: ComputedColumnInterface<DatabasesTypes.MYSQL>[],
+	foreignKeys?: ForeignKeyInterface[],
+	primaryColumn?: PrimaryGeneratedColumnInterface<DatabasesTypes.MYSQL>,
+	oneToOne?: OneToOneInterface[],
+	oneToMany?: OneToManyInterface[],
+	manyToMany?: ManyToManyInterface[]
+}

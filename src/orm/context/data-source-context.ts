@@ -14,8 +14,9 @@ import {
 	TableCreatorInterface,
 	TableManipulationInterface
 } from '@context/common';
+import { DatabasesTypes } from '@core/enums';
 
-class DataSourceContext implements DataSourceContextInterface {
+class DataSourceContext<DT extends DatabasesTypes | undefined = undefined> implements DataSourceContextInterface<DT> {
 	private _dataSource: DataSourceInterface;
 	private _client: DataSourceInterface extends DataSourcePostgres ? PoolClient : Connection;
 

@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { DatabaseIngotInterface, DatabaseManagerInterface } from '@core/interfaces';
+import { DatabaseIngotInterface, DatabaseManagerInterface, DataSourceInterface } from '@core/interfaces';
 import { ConnectionClient, ConnectionData } from '@core/types';
 import { DatabasesTypes } from '@core/enums';
 import { DataSourcePostgres } from '@strategies/postgres';
@@ -13,20 +13,20 @@ import {
 import { FileStructureManager } from '@context/file-structure-manager';
 import { ErrorHandler } from '@context/error-handler';
 
-class DatabaseManager<DB extends DatabasesTypes> implements DatabaseManagerInterface<DB> {
+class DatabaseManager<DT extends DatabasesTypes> implements DatabaseManagerInterface<DT> {
 	private _connectionData: ConnectionData;
-	private _dataSource: DataSourceContextInterface;
+	private _dataSource: DataSourceContextInterface<DT>;
 
-	constructor(connectionData: ConnectionData, dataSource: DataSourceContextInterface) {
+	constructor(connectionData: ConnectionData, dataSource: DataSourceContextInterface<DT>) {
 		this._connectionData = connectionData;
 		this._dataSource = dataSource;
 
 		if (connectionData.type === DatabasesTypes.POSTGRES) {
-			this._dataSource.setDatabase(new DataSourcePostgres());
+			this._dataSource.setDatabase(new DataSourcePostgres() as DataSourceInterface<DT>);
 		}
 
 		if (this._connectionData.type === DatabasesTypes.MYSQL) {
-			this._dataSource.setDatabase(new DataSourceMySql());
+			this._dataSource.setDatabase(new DataSourceMySql() as DataSourceInterface<DT>);
 		}
 	}
 
@@ -101,7 +101,7 @@ class DatabaseManager<DB extends DatabasesTypes> implements DatabaseManagerInter
 		this._connectionData = connectionData;
 	}
 
-	set dataSource(dataSource: DataSourceContextInterface) {
+	set dataSource(dataSource: DataSourceContextInterface<DT>) {
 		this._dataSource = dataSource;
 	}
 
@@ -109,7 +109,7 @@ class DatabaseManager<DB extends DatabasesTypes> implements DatabaseManagerInter
 		return this._connectionData;
 	}
 
-	get tableManipulation(): TableManipulationInterface<DB> {
+	get tableManipulation(): TableManipulationInterface<DT> {
 		return this._dataSource.tableManipulation;
 	}
 

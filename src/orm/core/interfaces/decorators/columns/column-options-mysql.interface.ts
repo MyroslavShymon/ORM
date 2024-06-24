@@ -12,4 +12,7 @@ export interface ColumnOptionsMysqlInterface {
 	isUnsigned?: boolean;
 	isZerofill?: boolean;
 	isAutoIncrement?: boolean;
+	values?: string[];  // Додано параметр для типів ENUM і SET
+	scale?: number;
+	precision?: number;
 }

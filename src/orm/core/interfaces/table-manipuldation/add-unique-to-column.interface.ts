@@ -1,6 +1,10 @@
-import { DataSourcePostgres } from '@strategies/postgres';
+import { DatabasesTypes } from '@core/enums';
+import { AddUniqueToColumnMysqlInterface } from '@core/interfaces';
+import {
+	AddUniqueToColumnPostgresInterface
+} from '@core/interfaces/table-manipuldation/postgres/add-unique-to-column-postgres.interface';
 
-export interface AddUniqueToColumnInterface<DB> {
-	columnName: string;
-	constraintName?: DB extends DataSourcePostgres ? string : never;
-}
+export type AddUniqueToColumnInterface<DT extends DatabasesTypes | undefined = undefined> =
+	DT extends DatabasesTypes.POSTGRES ? AddUniqueToColumnPostgresInterface :
+		DT extends DatabasesTypes.MYSQL ? AddUniqueToColumnMysqlInterface :
+			never;

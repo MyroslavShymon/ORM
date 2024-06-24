@@ -16,8 +16,8 @@ import { DatabasesTypes } from '@core/enums';
 export class TableBuilder implements TableBuilderInterface {
 	createTable(
 		table?: TableInterface<DatabasesTypes.POSTGRES>,
-		columns?: ColumnInterface[],
-		computedColumns?: ComputedColumnInterface[],
+		columns?: ColumnInterface<DatabasesTypes.POSTGRES>[],
+		computedColumns?: ComputedColumnInterface<DatabasesTypes.POSTGRES>[],
 		foreignKeys?: ForeignKeyInterface[],
 		primaryColumn?: PrimaryGeneratedColumnInterface<DatabasesTypes.POSTGRES>,
 		oneToOne?: OneToOneInterface[],
@@ -25,6 +25,7 @@ export class TableBuilder implements TableBuilderInterface {
 		manyToMany?: ManyToManyInterface[]
 	): string {
 		let createTableQuery;
+
 		createTableQuery = `\n\tCREATE TABLE IF NOT EXISTS "${table.name}" (\n`;
 
 		if (primaryColumn) {
@@ -58,27 +59,6 @@ export class TableBuilder implements TableBuilderInterface {
 		createTableQuery += '\n );';
 
 		return createTableQuery;
-	}
-
-	private _handleOneToMany(oneToManyConnections: OneToManyInterface[]): string {
-		const formattedOneToManyConnectionsStrings = oneToManyConnections.map(o2m => `\n\n\t\t${o2m.foreignKey} INTEGER,
-			\tCONSTRAINT fk_${o2m.tableName}
-			\tFOREIGN KEY(${o2m.foreignKey})
-			\t\tREFERENCES ${o2m.tableName}(${o2m.referenceColumn})
-		`);
-
-		return formattedOneToManyConnectionsStrings.join(',\n\t\t');
-	}
-
-	private _handleOneToOne(oneToOneConnections: OneToOneInterface[]): string {
-		const formattedOneToOneConnectionsStrings = oneToOneConnections.map(o2o => `
-			${o2o.foreignKey} INTEGER UNIQUE,
-			\tCONSTRAINT fk_oo_${o2o.columnName}
-			\tFOREIGN KEY(${o2o.foreignKey})
-			\t\tREFERENCES ${o2o.table}(${o2o.referenceColumn})\n
-		`);
-
-		return formattedOneToOneConnectionsStrings.join(',\n\t\t');
 	}
 
 	private _handleColumns(columns: ColumnInterface<DatabasesTypes.POSTGRES>[]): string {
@@ -166,6 +146,27 @@ export class TableBuilder implements TableBuilderInterface {
 		}
 
 		return `\t\t${primaryColumn.columnName} ${primaryColumn.type} PRIMARY KEY,\n\t\t`;
+	}
+
+	private _handleOneToOne(oneToOneConnections: OneToOneInterface[]): string {
+		const formattedOneToOneConnectionsStrings = oneToOneConnections.map(o2o => `
+			${o2o.foreignKey} INTEGER UNIQUE,
+			\tCONSTRAINT fk_oo_${o2o.columnName}
+			\tFOREIGN KEY(${o2o.foreignKey})
+			\t\tREFERENCES ${o2o.table}(${o2o.referenceColumn})\n
+		`);
+
+		return formattedOneToOneConnectionsStrings.join(',\n\t\t');
+	}
+
+	private _handleOneToMany(oneToManyConnections: OneToManyInterface[]): string {
+		const formattedOneToManyConnectionsStrings = oneToManyConnections.map(o2m => `\n\n\t\t${o2m.foreignKey} INTEGER,
+			\tCONSTRAINT fk_${o2m.tableName}
+			\tFOREIGN KEY(${o2m.foreignKey})
+			\t\tREFERENCES ${o2m.tableName}(${o2m.referenceColumn})
+		`);
+
+		return formattedOneToManyConnectionsStrings.join(',\n\t\t');
 	}
 
 	private _handleOptionsOfTable({ unique, checkConstraint, primaryKeys }: TableOptionsPostgresqlInterface): string {

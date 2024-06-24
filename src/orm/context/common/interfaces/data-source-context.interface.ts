@@ -9,16 +9,17 @@ import {
 	TableCreatorInterface,
 	TableManipulationInterface
 } from '@context/common';
+import { DatabasesTypes } from '@core/enums';
 
-export interface DataSourceContextInterface {
+export interface DataSourceContextInterface<DT extends DatabasesTypes | undefined> {
 	client: DataSourceInterface extends DataSourcePostgres ? PoolClient : Connection;
-	tableManipulation: TableManipulationInterface;
+	tableManipulation: TableManipulationInterface<DT>;
 	tableCreator: TableCreatorInterface;
 	migrationManager: MigrationManagerInterface;
 
 	queryBuilder<T>(): QueryBuilderInterface<T>;
 
-	setDatabase(dataSource: DataSourceInterface): void;
+	setDatabase(dataSource: DataSourceInterface<DT>): void;
 
 	connectDatabase(connectionData: ConnectionData): Promise<void>;
 

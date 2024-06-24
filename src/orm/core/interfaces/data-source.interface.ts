@@ -22,23 +22,24 @@ import {
 import { QueryBuilderInterface } from '@context/common';
 import { CreateTableOptionsInterface } from '@core/interfaces/create-table-options.interface';
 import { AddComputedColumnInterface } from '@core/interfaces/table-manipuldation/add-computed-column.interface';
+import { DatabasesTypes } from '@core/enums';
 
-export interface DataSourceInterface {
+export interface DataSourceInterface<DT extends DatabasesTypes | undefined = undefined> {
 	client;//TODO typing
 
 	connect(dataToConnect: ConnectionData);
 
-	createTable(options: CreateTableOptionsInterface): string;
+	createTable(options: CreateTableOptionsInterface<DT>): string;
 
 	addColumn(tableName: string, parameters: AddColumnInterface): string;
 
-	deleteColumn(tableName: string, parameters: DeleteColumnInterface<DataSourceInterface>): string;
+	deleteColumn(tableName: string, parameters: DeleteColumnInterface<DT>): string;
 
-	addNotNullToColumn(tableName: string, parameters: AddNotNullToColumnInterface<DataSourceInterface>): string;
+	addNotNullToColumn(tableName: string, parameters: AddNotNullToColumnInterface<DT>): string;
 
-	dropNotNullFromColumn(tableName: string, parameters: DropNotNullFromColumnInterface<DataSourceInterface>): string;
+	dropNotNullFromColumn(tableName: string, parameters: DropNotNullFromColumnInterface<DT>): string;
 
-	addUniqueToColumn(tableName: string, parameters: AddUniqueToColumnInterface<DataSourceInterface>): string;
+	addUniqueToColumn(tableName: string, parameters: AddUniqueToColumnInterface<DT>): string;
 
 	changeDataTypeOfColumn(tableName: string, parameters: ChangeColumnDatatypeInterface): string;
 
@@ -69,24 +70,24 @@ export interface DataSourceInterface {
 	// migration service
 	createMigrationTable(tableName: string, tableSchema: string): string;
 
-	checkTableExistence(dataSource: DataSourceInterface, tableName: string, tableSchema: string): Promise<boolean>;
+	checkTableExistence(dataSource: DataSourceInterface<DT>, tableName: string, tableSchema: string): Promise<boolean>;
 
 	initCurrentDatabaseIngot(
-		dataSource: DataSourceInterface,
+		dataSource: DataSourceInterface<DT>,
 		tableName: string,
 		tableSchema: string,
 		databaseIngot: DatabaseIngotInterface
 	): Promise<void>;
 
 	syncDatabaseIngot(
-		dataSource: DataSourceInterface,
+		dataSource: DataSourceInterface<DT>,
 		tableName: string,
 		tableSchema: string,
 		databaseIngot: DatabaseIngotInterface
 	): Promise<void>;
 
 	getCurrentDatabaseIngot(
-		dataSource: DataSourceInterface,
+		dataSource: DataSourceInterface<DT>,
 		tableName: string,
 		tableSchema: string
 	): Promise<DatabaseIngotInterface>;

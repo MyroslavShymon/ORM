@@ -12,19 +12,19 @@ import {
 	DropConstraintInterface,
 	DropNotNullFromColumnInterface
 } from '@core/interfaces';
-import { DataSourceMySql } from '@strategies/mysql';
 import { AddComputedColumnInterface } from '@core/interfaces/table-manipuldation/add-computed-column.interface';
+import { DatabasesTypes } from '@core/enums';
 
 export interface TableAltererInterface {
 	addColumn(tableName: string, parameters: AddColumnInterface): string;
 
-	deleteColumn(tableName: string, parameters: DeleteColumnInterface<DataSourceMySql>): string;
+	deleteColumn(tableName: string, parameters: DeleteColumnInterface<DatabasesTypes.MYSQL>): string;
 
-	addNotNullToColumn(tableName: string, parameters: AddNotNullToColumnInterface<DataSourceMySql>): string;
+	addNotNullToColumn(tableName: string, parameters: AddNotNullToColumnInterface<DatabasesTypes.MYSQL>): string;
 
-	dropNotNullFromColumn(tableName: string, parameters: DropNotNullFromColumnInterface<DataSourceMySql>): string;
+	dropNotNullFromColumn(tableName: string, parameters: DropNotNullFromColumnInterface<DatabasesTypes.MYSQL>): string;
 
-	addUniqueToColumn(tableName: string, parameters: AddUniqueToColumnInterface<DataSourceMySql>): string;
+	addUniqueToColumn(tableName: string, parameters: AddUniqueToColumnInterface<DatabasesTypes.MYSQL>): string;
 
 	changeDataTypeOfColumn(tableName: string, parameters: ChangeColumnDatatypeInterface): string;
 

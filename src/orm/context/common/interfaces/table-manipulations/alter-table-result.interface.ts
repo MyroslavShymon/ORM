@@ -20,15 +20,15 @@ import {
 import { DatabasesTypes } from '@core/enums';
 import { AddComputedColumnInterface } from '@core/interfaces/table-manipuldation/add-computed-column.interface';
 
-export interface AlterTableResultInterface<DB, GT extends DatabasesTypes | undefined = undefined> {
-	addColumn: (parameters: AddColumnInterface<GT>) => Promise<Object | string>;
-	deleteColumn: (parameters: DeleteColumnInterface<DB, GT>) => Promise<Object | string>;
+export interface AlterTableResultInterface<DT extends DatabasesTypes | undefined = undefined> {
+	addColumn: (parameters: AddColumnInterface<DT>) => Promise<Object | string>;
+	deleteColumn: (parameters: DeleteColumnInterface<DT>) => Promise<Object | string>;
 	addDefaultValue: (parameters: AddDefaultValueInterface) => Promise<Object | string>;
 	dropDefaultValue: (parameters: DropDefaultValueInterface) => Promise<Object | string>;
 	changeDataTypeOfColumn: (parameters: ChangeColumnDatatypeInterface) => Promise<Object | string>;
-	addNotNullToColumn: (parameters: AddNotNullToColumnInterface<DB>) => Promise<Object | string>;
-	dropNotNullFromColumn: (parameters: DropNotNullFromColumnInterface<DB>) => Promise<Object | string>;
-	addUniqueToColumn: (parameters: AddUniqueToColumnInterface<DB>) => Promise<Object | string>;
+	addNotNullToColumn: (parameters: AddNotNullToColumnInterface<DT>) => Promise<Object | string>;
+	dropNotNullFromColumn: (parameters: DropNotNullFromColumnInterface<DT>) => Promise<Object | string>;
+	addUniqueToColumn: (parameters: AddUniqueToColumnInterface<DT>) => Promise<Object | string>;
 	renameColumn: (parameters: RenameColumnInterface) => Promise<Object | string>;
 	renameTable: (parameters: RenameTableInterface) => Promise<Object | string>;
 	addCheckConstraintToColumn: (parameters: AddCheckConstraintToColumnInterface) => Promise<Object | string>;
