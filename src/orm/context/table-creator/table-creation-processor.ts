@@ -148,10 +148,7 @@ export class TableCreationProcessor implements TableCreationProcessorInterface {
 			return modelColumns.map(modelColumn => ({ id: uuidv4(), ...modelColumn }));
 		}
 
-		if (
-			(modelColumns[0] as ComputedColumnInterface).calculate ||
-			(modelColumns[0] as ComputedColumnInterface).stored
-		) {
+		if ((modelColumns[0] as ComputedColumnInterface).calculate) {
 			columnsPercentage = this.columnsComparator.calculatePercentagesOfModifiedComputedColumns(
 				modelColumns as ComputedColumnInterface[],
 				tableColumns as ComputedColumnInterface[]

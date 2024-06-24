@@ -136,8 +136,8 @@ export class TableBuilder implements TableBuilderInterface {
 
 	private _handleComputedColumns(computedColumns: ComputedColumnInterface[]): string {
 		const formattedComputedColumns = computedColumns
-			.map(({ name, stored, calculate, dataType }) =>
-				`"${name}" ${dataType} GENERATED ALWAYS AS (${calculate}) ${stored === true ? 'STORED' : ''}`);
+			.map(({ name, calculate, dataType }) =>
+				`"${name}" ${dataType} GENERATED ALWAYS AS (${calculate}) STORED`);
 
 		return `${formattedComputedColumns.length > 0 ? `, \n\t\t${formattedComputedColumns.join(', \n\t\t')}` : ''}`;
 	}

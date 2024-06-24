@@ -1,7 +1,7 @@
 import { ComputedColumnDecoratorInterface, ComputedColumnMetadataInterface } from '@decorators/index';
 import { constants } from '@core/constants';
 
-export function ComputedColumn({ name, stored, calculate, dataType }: ComputedColumnDecoratorInterface) {
+export function ComputedColumn({ name, calculate, dataType }: ComputedColumnDecoratorInterface) {
 	return function(target: any, propertyKey: string) {
 
 		if (!name) {
@@ -9,7 +9,7 @@ export function ComputedColumn({ name, stored, calculate, dataType }: ComputedCo
 		}
 
 		const columns: ComputedColumnMetadataInterface[] = Reflect.getMetadata('computed-columns', target) || [];
-		columns.push({ name, dataType, stored, calculate, propertyKey });
+		columns.push({ name, dataType, calculate, propertyKey });
 		Reflect.defineMetadata(constants.decoratorsMetadata.computedColumns, columns, target);
 	};
 }

@@ -5,5 +5,4 @@ import { DatabasesTypes } from '@core/enums';
 export interface ComputedColumnInterface<DB extends DatabasesTypes | undefined = undefined> extends BaseColumnInterface {
 	dataType: DatabaseTypesMap<DB>;
 	calculate: string;
-	stored: boolean;
 }

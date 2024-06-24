@@ -360,10 +360,6 @@ export class FileStructureManager {
 				{
 					fieldName: 'calculate',
 					fieldType: { type: 'string' }
-				},
-				{
-					fieldName: 'stored',
-					fieldType: { type: 'boolean' }
 				}
 			],
 			[imports]

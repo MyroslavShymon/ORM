@@ -179,12 +179,11 @@ export class TableAlterer implements TableAltererInterface {
 	}
 
 	addComputedColumn(tableName: string, parameters: AddComputedColumnInterface): string {
-		const { dataType, calculate, stored } = parameters;
-		const storageType = stored ? 'STORED' : 'VIRTUAL';
+		const { dataType, calculate } = parameters;
 
 		return `
         ALTER TABLE ${tableName} 
-        ADD COLUMN new_computed_column ${dataType} AS (${calculate}) ${storageType};
+        ADD COLUMN new_computed_column ${dataType} AS (${calculate}) STORED;
     `;
 	}
 }
