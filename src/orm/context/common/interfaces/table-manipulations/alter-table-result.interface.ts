@@ -26,8 +26,8 @@ export interface AlterTableResultInterface<DT extends DatabasesTypes | undefined
 	addDefaultValue: (parameters: AddDefaultValueInterface) => Promise<Object | string>;
 	dropDefaultValue: (parameters: DropDefaultValueInterface) => Promise<Object | string>;
 	changeDataTypeOfColumn: (parameters: ChangeColumnDatatypeInterface) => Promise<Object | string>;
-	addNotNullToColumn: (parameters: AddNotNullToColumnInterface<DT>) => Promise<Object | string>;
-	dropNotNullFromColumn: (parameters: DropNotNullFromColumnInterface<DT>) => Promise<Object | string>;
+	addNotNullToColumn: (parameters: AddNotNullToColumnInterface) => Promise<Object | string>;
+	dropNotNullFromColumn: (parameters: DropNotNullFromColumnInterface) => Promise<Object | string>;
 	addUniqueToColumn: (parameters: AddUniqueToColumnInterface<DT>) => Promise<Object | string>;
 	renameColumn: (parameters: RenameColumnInterface) => Promise<Object | string>;
 	renameTable: (parameters: RenameTableInterface) => Promise<Object | string>;

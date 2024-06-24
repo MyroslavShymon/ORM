@@ -20,9 +20,9 @@ export interface TableAltererInterface {
 
 	deleteColumn(tableName: string, parameters: DeleteColumnInterface<DatabasesTypes.MYSQL>): string;
 
-	addNotNullToColumn(tableName: string, parameters: AddNotNullToColumnInterface<DatabasesTypes.MYSQL>): string;
+	addNotNullToColumn(tableName: string, parameters: AddNotNullToColumnInterface): string;
 
-	dropNotNullFromColumn(tableName: string, parameters: DropNotNullFromColumnInterface<DatabasesTypes.MYSQL>): string;
+	dropNotNullFromColumn(tableName: string, parameters: DropNotNullFromColumnInterface): string;
 
 	addUniqueToColumn(tableName: string, parameters: AddUniqueToColumnInterface<DatabasesTypes.MYSQL>): string;
 
@@ -36,9 +36,9 @@ export interface TableAltererInterface {
 
 	deleteUniqueFromColum(tableName: string, parameters: DeleteUniqueFromColumnInterface): string;
 
-	addPrimaryGeneratedColumn(tableName: string, parameters: AddPrimaryGeneratedColumnInterface): string;
+	addPrimaryGeneratedColumn(tableName: string, parameters: AddPrimaryGeneratedColumnInterface<DatabasesTypes.MYSQL>): string;
 
 	addForeignKey(tableName: string, parameters: AddForeignKeyInterface): string;
 
-	addComputedColumn(tableName: string, parameters: AddComputedColumnInterface): string;
+	addComputedColumn(tableName: string, parameters: AddComputedColumnInterface<DatabasesTypes.MYSQL>): string;
 }

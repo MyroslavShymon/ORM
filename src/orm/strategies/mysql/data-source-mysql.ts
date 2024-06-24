@@ -124,11 +124,11 @@ export class DataSourceMySql extends BaseQueries implements DataSourceInterface<
 		return this._tableAlterer.deleteColumn(tableName, parameters);
 	}
 
-	addNotNullToColumn(tableName: string, parameters: AddNotNullToColumnInterface<DatabasesTypes.MYSQL>): string {
+	addNotNullToColumn(tableName: string, parameters: AddNotNullToColumnInterface): string {
 		return this._tableAlterer.addNotNullToColumn(tableName, parameters);
 	}
 
-	dropNotNullFromColumn(tableName: string, parameters: DropNotNullFromColumnInterface<DatabasesTypes.MYSQL>): string {
+	dropNotNullFromColumn(tableName: string, parameters: DropNotNullFromColumnInterface): string {
 		return this._tableAlterer.dropNotNullFromColumn(tableName, parameters);
 	}
 
@@ -156,7 +156,7 @@ export class DataSourceMySql extends BaseQueries implements DataSourceInterface<
 		return this._tableAlterer.changeDataTypeOfColumn(tableName, parameters);
 	}
 
-	addPrimaryGeneratedColumn(tableName: string, parameters: AddPrimaryGeneratedColumnInterface): string {
+	addPrimaryGeneratedColumn(tableName: string, parameters: AddPrimaryGeneratedColumnInterface<DatabasesTypes.MYSQL>): string {
 		return this._tableAlterer.addPrimaryGeneratedColumn(tableName, parameters);
 	}
 
@@ -165,7 +165,7 @@ export class DataSourceMySql extends BaseQueries implements DataSourceInterface<
 	}
 
 	//TODO повністю переробити computed column під mysql
-	addComputedColumn(tableName: string, parameters: AddComputedColumnInterface): string {
+	addComputedColumn(tableName: string, parameters: AddComputedColumnInterface<DatabasesTypes.MYSQL>): string {
 		return this._tableAlterer.addComputedColumn(tableName, parameters);
 	}
 

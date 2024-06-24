@@ -19,24 +19,34 @@ import { AddComputedColumnInterface } from '@core/interfaces/table-manipuldation
 export class TableAlterer implements TableAltererInterface {
 	addColumn(tableName: string, parameters: AddColumnInterface<DatabasesTypes.POSTGRES>): string {
 		const { columnName, options } = parameters;
+
+		if (!options.dataType) {
+			throw new Error('Ви не вказали тип колонки');
+		}
+
+		if (
+			(options.dataType === 'CHAR' || options.dataType === 'VARCHAR') && !options.length
+		) {
+			throw new Error('Ви не вказали довжину рядка');
+		}
+
 		let columnDefinition = `${columnName} ${options?.dataType}`;
 
-		if (options?.length) {
+		if (options?.length && (options.dataType === 'VARCHAR' || options.dataType === 'CHAR')) {
 			columnDefinition += `(${options.length})`;
 		}
 
-		if (options?.nullable === false) {
-			columnDefinition += ` NOT NULL`;
-		} else if (options?.nullable === true) {
-			columnDefinition += ` NULL`;
-		}
+		columnDefinition += options?.nullable === false ? ' NOT NULL' : ' NULL';
 
 		if (options?.unique) {
-			columnDefinition += ` UNIQUE`;
+			columnDefinition += ' UNIQUE';
 		}
 
 		if (options?.defaultValue !== undefined) {
-			columnDefinition += ` DEFAULT ${typeof options.defaultValue === 'string' ? `'${options.defaultValue}'` : options.defaultValue}`;
+			const defaultValue = typeof options.defaultValue === 'string'
+				? `'${options.defaultValue}'`
+				: options.defaultValue;
+			columnDefinition += ` DEFAULT ${defaultValue}`;
 		}
 
 		if (options?.check) {
@@ -48,7 +58,7 @@ export class TableAlterer implements TableAltererInterface {
 		}
 
 		if (options?.nullsNotDistinct) {
-			columnDefinition += ` NULLS NOT DISTINCT`;
+			columnDefinition += ' NULLS NOT DISTINCT';
 		}
 
 		return `ALTER TABLE ${tableName} ADD COLUMN ${columnDefinition};`;
@@ -58,11 +68,11 @@ export class TableAlterer implements TableAltererInterface {
 		return `ALTER TABLE ${tableName} DROP COLUMN ${parameters.columnName} ${parameters.isCascade ? 'CASCADE' : ''};`;
 	}
 
-	addNotNullToColumn(tableName: string, parameters: AddNotNullToColumnInterface<DatabasesTypes.POSTGRES>): string {
+	addNotNullToColumn(tableName: string, parameters: AddNotNullToColumnInterface): string {
 		return `ALTER TABLE ${tableName} ALTER COLUMN ${parameters.columnName} SET NOT NULL;`;
 	}
 
-	dropNotNullFromColumn(tableName: string, parameters: DropNotNullFromColumnInterface<DatabasesTypes.POSTGRES>): string {
+	dropNotNullFromColumn(tableName: string, parameters: DropNotNullFromColumnInterface): string {
 		return `ALTER TABLE ${tableName} ALTER COLUMN ${parameters.columnName} DROP NOT NULL;`;
 	}
 
@@ -131,39 +141,39 @@ export class TableAlterer implements TableAltererInterface {
 		return query + ';';
 	}
 
-	addPrimaryGeneratedColumn(tableName: string, parameters: AddPrimaryGeneratedColumnInterface): string {
+	addPrimaryGeneratedColumn(tableName: string, parameters: AddPrimaryGeneratedColumnInterface<DatabasesTypes.POSTGRES>): string {
 		let query = `ALTER TABLE ${tableName} ADD COLUMN ${parameters.columnName} ${parameters.type}`;
 
-		// // Додавання опціональних параметрів
-		// if (parameters.startWith !== undefined) {
-		// 	query += ` START WITH ${parameters.startWith}`;
-		// }
-		// if (parameters.incrementBy !== undefined) {
-		// 	query += ` INCREMENT BY ${parameters.incrementBy}`;
-		// }
-		// if (parameters.minValue !== undefined) {
-		// 	query += ` MINVALUE ${parameters.minValue}`;
-		// }
-		// if (parameters.maxValue !== undefined) {
-		// 	query += ` MAXVALUE ${parameters.maxValue}`;
-		// }
-		// if (parameters.isCycle) {
-		// 	query += ` CYCLE`;
-		// } else {
-		// 	query += ` NO CYCLE`;
-		// }
-		// if (parameters.cache !== undefined) {
-		// 	query += ` CACHE ${parameters.cache}`;
-		// }
-		// if (parameters.ownedBy) {
-		// 	query += ` OWNED BY ${parameters.ownedBy}`;
-		// }
-		// if (parameters.restartWith !== undefined) {
-		// 	query += ` RESTART WITH ${parameters.restartWith}`;
-		// }
-		// if (parameters.noOrder) {
-		// 	query += ` NOORDER`;
-		// }
+		// Додавання опціональних параметрів
+		if (parameters.startWith !== undefined) {
+			query += ` START WITH ${parameters.startWith}`;
+		}
+		if (parameters.incrementBy !== undefined) {
+			query += ` INCREMENT BY ${parameters.incrementBy}`;
+		}
+		if (parameters.minValue !== undefined) {
+			query += ` MINVALUE ${parameters.minValue}`;
+		}
+		if (parameters.maxValue !== undefined) {
+			query += ` MAXVALUE ${parameters.maxValue}`;
+		}
+		if (parameters.isCycle) {
+			query += ` CYCLE`;
+		} else {
+			query += ` NO CYCLE`;
+		}
+		if (parameters.cache !== undefined) {
+			query += ` CACHE ${parameters.cache}`;
+		}
+		if (parameters.ownedBy) {
+			query += ` OWNED BY ${parameters.ownedBy}`;
+		}
+		if (parameters.restartWith !== undefined) {
+			query += ` RESTART WITH ${parameters.restartWith}`;
+		}
+		if (parameters.noOrder) {
+			query += ` NOORDER`;
+		}
 
 		// Додавання PRIMARY KEY
 		query += ` PRIMARY KEY`;
@@ -178,12 +188,12 @@ export class TableAlterer implements TableAltererInterface {
 			FOREIGN KEY (${parameters.foreignKey}) REFERENCES ${parameters.referencedTable}(${parameters.referencedColumn});` + '\n';
 	}
 
-	addComputedColumn(tableName: string, parameters: AddComputedColumnInterface): string {
-		const { dataType, calculate } = parameters;
+	addComputedColumn(tableName: string, parameters: AddComputedColumnInterface<DatabasesTypes.POSTGRES>): string {
+		const { dataType, calculate, columnName } = parameters;
 
 		return `
         ALTER TABLE ${tableName} 
-        ADD COLUMN new_computed_column ${dataType} AS (${calculate}) STORED;
+        ADD COLUMN ${columnName} ${dataType} AS (${calculate}) STORED;
     `;
 	}
 }

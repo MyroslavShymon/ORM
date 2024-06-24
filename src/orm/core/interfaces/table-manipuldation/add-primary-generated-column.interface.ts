@@ -1,18 +1,7 @@
-import {
-	AutoIncrementColumnTypesMysqlType,
-	AutoIncrementColumnTypesPostgresType
-} from '@decorators/primary-generated-column';
+import { DatabasesTypes } from '@core/enums';
+import { PrimaryGeneratedColumnMysqlInterface, PrimaryGeneratedColumnPostgresInterface } from '@core/interfaces';
 
-export interface AddPrimaryGeneratedColumnInterface {
-	columnName: string;
-	type: AutoIncrementColumnTypesPostgresType | AutoIncrementColumnTypesMysqlType;
-	// startWith?: number;
-	// incrementBy?: number;
-	// minValue?: number;
-	// maxValue?: number;
-	// isCycle?: boolean;
-	// cache?: number;
-	// ownedBy?: string;
-	// restartWith?: number;
-	// noOrder?: boolean;
-}
+export type  AddPrimaryGeneratedColumnInterface<DT extends DatabasesTypes | undefined = undefined> =
+	DT extends DatabasesTypes.POSTGRES ? PrimaryGeneratedColumnPostgresInterface :
+		DT extends DatabasesTypes.MYSQL ? PrimaryGeneratedColumnMysqlInterface :
+			never;

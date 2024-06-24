@@ -20,9 +20,9 @@ export interface TableAltererInterface {
 
 	deleteColumn(tableName: string, parameters: DeleteColumnInterface<DatabasesTypes.POSTGRES>): string;
 
-	addNotNullToColumn(tableName: string, parameters: AddNotNullToColumnInterface<DatabasesTypes.POSTGRES>): string;
+	addNotNullToColumn(tableName: string, parameters: AddNotNullToColumnInterface): string;
 
-	dropNotNullFromColumn(tableName: string, parameters: DropNotNullFromColumnInterface<DatabasesTypes.POSTGRES>): string;
+	dropNotNullFromColumn(tableName: string, parameters: DropNotNullFromColumnInterface): string;
 
 	addUniqueToColumn(tableName: string, parameters: AddUniqueToColumnInterface<DatabasesTypes.POSTGRES>): string;
 
@@ -36,10 +36,10 @@ export interface TableAltererInterface {
 
 	deleteUniqueFromColum(tableName: string, parameters: DeleteUniqueFromColumnInterface): string;
 
-	addPrimaryGeneratedColumn(tableName: string, parameters: AddPrimaryGeneratedColumnInterface): string;
+	addPrimaryGeneratedColumn(tableName: string, parameters: AddPrimaryGeneratedColumnInterface<DatabasesTypes.POSTGRES>): string;
 
 	addForeignKey(tableName: string, parameters: AddForeignKeyInterface): string;
 
-	addComputedColumn(tableName: string, parameters: AddComputedColumnInterface): string;
+	addComputedColumn(tableName: string, parameters: AddComputedColumnInterface<DatabasesTypes.POSTGRES>): string;
 
 }

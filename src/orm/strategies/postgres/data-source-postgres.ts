@@ -125,11 +125,11 @@ export class DataSourcePostgres extends BaseQueries implements DataSourceInterfa
 		return this._tableAlterer.deleteColumn(tableName, parameters);
 	}
 
-	addNotNullToColumn(tableName: string, parameters: AddNotNullToColumnInterface<DatabasesTypes.POSTGRES>): string {
+	addNotNullToColumn(tableName: string, parameters: AddNotNullToColumnInterface): string {
 		return this._tableAlterer.addNotNullToColumn(tableName, parameters);
 	}
 
-	dropNotNullFromColumn(tableName: string, parameters: DropNotNullFromColumnInterface<DatabasesTypes.POSTGRES>): string {
+	dropNotNullFromColumn(tableName: string, parameters: DropNotNullFromColumnInterface): string {
 		return this._tableAlterer.dropNotNullFromColumn(tableName, parameters);
 	}
 
@@ -157,7 +157,7 @@ export class DataSourcePostgres extends BaseQueries implements DataSourceInterfa
 		return this._tableAlterer.changeDataTypeOfColumn(tableName, parameters);
 	}
 
-	addPrimaryGeneratedColumn(tableName: string, parameters: AddPrimaryGeneratedColumnInterface): string {
+	addPrimaryGeneratedColumn(tableName: string, parameters: AddPrimaryGeneratedColumnInterface<DatabasesTypes.POSTGRES>): string {
 		return this._tableAlterer.addPrimaryGeneratedColumn(tableName, parameters);
 	}
 
@@ -165,7 +165,7 @@ export class DataSourcePostgres extends BaseQueries implements DataSourceInterfa
 		return this._tableAlterer.addForeignKey(tableName, parameters);
 	}
 
-	addComputedColumn(tableName: string, parameters: AddComputedColumnInterface): string {
+	addComputedColumn(tableName: string, parameters: AddComputedColumnInterface<DatabasesTypes.POSTGRES>): string {
 		return this._tableAlterer.addComputedColumn(tableName, parameters);
 	}
 

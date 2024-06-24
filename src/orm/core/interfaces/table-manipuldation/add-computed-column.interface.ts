@@ -1,6 +1,5 @@
-import { MysqlDataTypes, PostgresqlDataTypes } from '@core/types';
+import { DatabasesTypes } from '@core/enums';
+import { ComputedColumnMysqlInterface, ComputedColumnPostgresInterface } from '@core/interfaces';
 
-export interface AddComputedColumnInterface {
-	dataType: PostgresqlDataTypes | MysqlDataTypes;
-	calculate: string;
-}
+export type AddComputedColumnInterface<DB extends DatabasesTypes | undefined = undefined> =
+	DB extends DatabasesTypes.POSTGRES ? ComputedColumnPostgresInterface : ComputedColumnMysqlInterface;

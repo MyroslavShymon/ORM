@@ -3,9 +3,9 @@ import { MysqlDataTypes } from '@core/types';
 export interface ColumnOptionsMysqlInterface {
 	dataType?: MysqlDataTypes;
 	nullable?: boolean;
+	length?: number;
 	check?: string;
 	nameOfCheckConstraint?: string;
-	length?: number;
 	defaultValue?: string | number | boolean;
 	unique?: boolean;
 	displayWidth?: number;

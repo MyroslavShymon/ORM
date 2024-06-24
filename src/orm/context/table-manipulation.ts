@@ -143,7 +143,7 @@ export class TableManipulation<DT extends DatabasesTypes | undefined = undefined
 		}
 	};
 
-	private _addNotNullToColumn = (tableName: string, getQueryString: boolean = false) => async (parameters: AddNotNullToColumnInterface<DT>): Promise<Object | string> => {
+	private _addNotNullToColumn = (tableName: string, getQueryString: boolean = false) => async (parameters: AddNotNullToColumnInterface): Promise<Object | string> => {
 		try {
 			const addNotNullToColumnQuery = this._dataSource.addNotNullToColumn(tableName, parameters);
 			if (getQueryString) {
@@ -156,7 +156,7 @@ export class TableManipulation<DT extends DatabasesTypes | undefined = undefined
 		}
 	};
 
-	private _dropNotNullFromColumn = (tableName: string, getQueryString: boolean = false) => async (parameters: DropNotNullFromColumnInterface<DT>): Promise<Object | string> => {
+	private _dropNotNullFromColumn = (tableName: string, getQueryString: boolean = false) => async (parameters: DropNotNullFromColumnInterface): Promise<Object | string> => {
 		try {
 			const dropNotNullFromColumnQuery = this._dataSource.dropNotNullFromColumn(tableName, parameters);
 			if (getQueryString) {

@@ -35,9 +35,9 @@ export interface DataSourceInterface<DT extends DatabasesTypes | undefined = und
 
 	deleteColumn(tableName: string, parameters: DeleteColumnInterface<DT>): string;
 
-	addNotNullToColumn(tableName: string, parameters: AddNotNullToColumnInterface<DT>): string;
+	addNotNullToColumn(tableName: string, parameters: AddNotNullToColumnInterface): string;
 
-	dropNotNullFromColumn(tableName: string, parameters: DropNotNullFromColumnInterface<DT>): string;
+	dropNotNullFromColumn(tableName: string, parameters: DropNotNullFromColumnInterface): string;
 
 	addUniqueToColumn(tableName: string, parameters: AddUniqueToColumnInterface<DT>): string;
 
@@ -55,11 +55,11 @@ export interface DataSourceInterface<DT extends DatabasesTypes | undefined = und
 
 	deleteUniqueFromColum(tableName: string, parameters: DeleteUniqueFromColumnInterface): string;
 
-	addPrimaryGeneratedColumn(tableName: string, parameters: AddPrimaryGeneratedColumnInterface): string;
+	addPrimaryGeneratedColumn(tableName: string, parameters: AddPrimaryGeneratedColumnInterface<DT>): string;
 
 	addForeignKey(tableName: string, parameters: AddForeignKeyInterface): string;
 
-	addComputedColumn(tableName: string, parameters: AddComputedColumnInterface): string;
+	addComputedColumn(tableName: string, parameters: AddComputedColumnInterface<DT>): string;
 
 	renameColumn(tableName: string, parameters: RenameColumnInterface): string;
 
