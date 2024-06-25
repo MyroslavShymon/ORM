@@ -1,27 +1,28 @@
 import { DatabaseIngotInterface, DataSourceInterface } from '@core/interfaces';
+import { DatabasesTypes } from '@core/enums';
 
-export interface MigrationServiceInterface {
+export interface MigrationServiceInterface<DT extends DatabasesTypes> {
 	createMigrationTable(tableName: string, tableSchema: string): string;
 
-	checkTableExistence(dataSource: DataSourceInterface, tableName: string, tableSchema?: string): Promise<boolean>;
+	checkTableExistence(dataSource: DataSourceInterface<DatabasesTypes.POSTGRES>, tableName: string, tableSchema?: string): Promise<boolean>;
 
 	initCurrentDatabaseIngot(
-		dataSource: DataSourceInterface,
+		dataSource: DataSourceInterface<DatabasesTypes.POSTGRES>,
 		tableName: string,
 		tableSchema: string,
-		databaseIngot: DatabaseIngotInterface
+		databaseIngot: DatabaseIngotInterface<DatabasesTypes.POSTGRES>
 	): Promise<void>;
 
 	syncDatabaseIngot(
-		dataSource: DataSourceInterface,
+		dataSource: DataSourceInterface<DatabasesTypes.POSTGRES>,
 		tableName: string,
 		tableSchema: string,
-		databaseIngot: DatabaseIngotInterface
+		databaseIngot: DatabaseIngotInterface<DatabasesTypes.POSTGRES>
 	): Promise<void>;
 
 	getCurrentDatabaseIngot(
-		dataSource: DataSourceInterface,
+		dataSource: DataSourceInterface<DatabasesTypes.POSTGRES>,
 		tableName: string,
 		tableSchema: string
-	): Promise<DatabaseIngotInterface>;
+	): Promise<DatabaseIngotInterface<DatabasesTypes.POSTGRES>>;
 }

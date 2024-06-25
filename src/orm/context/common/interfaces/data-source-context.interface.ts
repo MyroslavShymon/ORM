@@ -1,6 +1,5 @@
 import { PoolClient } from 'pg';
 import { Connection } from 'mysql2/promise';
-import { DataSourcePostgres } from '@strategies/postgres';
 import { DataSourceInterface } from '@core/interfaces';
 import { ConnectionData } from '@core/types';
 import {
@@ -11,11 +10,11 @@ import {
 } from '@context/common';
 import { DatabasesTypes } from '@core/enums';
 
-export interface DataSourceContextInterface<DT extends DatabasesTypes | undefined> {
-	client: DataSourceInterface extends DataSourcePostgres ? PoolClient : Connection;
+export interface DataSourceContextInterface<DT extends DatabasesTypes> {
+	client: DT extends DatabasesTypes.POSTGRES ? PoolClient : Connection;
 	tableManipulation: TableManipulationInterface<DT>;
-	tableCreator: TableCreatorInterface;
-	migrationManager: MigrationManagerInterface;
+	tableCreator: TableCreatorInterface<DatabasesTypes.POSTGRES>;
+	migrationManager: MigrationManagerInterface<DT>;
 
 	queryBuilder<T>(): QueryBuilderInterface<T>;
 

@@ -7,11 +7,12 @@ import {
 	MigrationManagerInterface,
 	SyncDatabaseIngotInterface
 } from '@context/common';
+import { DatabasesTypes } from '@core/enums';
 
-export class MigrationManager implements MigrationManagerInterface {
-	private readonly _dataSource: DataSourceInterface;
+export class MigrationManager<DT extends DatabasesTypes> implements MigrationManagerInterface<DT> {
+	private readonly _dataSource: DataSourceInterface<DT>;
 
-	constructor(dataSource: DataSourceInterface) {
+	constructor(dataSource: DataSourceInterface<DT>) {
 		this._dataSource = dataSource;
 	}
 
@@ -51,7 +52,7 @@ export class MigrationManager implements MigrationManagerInterface {
 			tableName = constants.migrationsTableName,
 			tableSchema = constants.migrationsTableSchemaName,
 			databaseIngot
-		}: InitIngotOptionsInterface
+		}: InitIngotOptionsInterface<DT>
 	): Promise<void> {
 		try {
 			await this._dataSource.initCurrentDatabaseIngot(this._dataSource, tableName, tableSchema, databaseIngot);
@@ -67,7 +68,7 @@ export class MigrationManager implements MigrationManagerInterface {
 			tableName = constants.migrationsTableName,
 			tableSchema = constants.migrationsTableSchemaName,
 			databaseIngot
-		}: SyncDatabaseIngotInterface
+		}: SyncDatabaseIngotInterface<DT>
 	): Promise<void> {
 		try {
 			await this._dataSource.syncDatabaseIngot(this._dataSource, tableName, tableSchema, databaseIngot);

@@ -1,7 +1,6 @@
 import {
 	AddDefaultValueInterface,
 	DropDefaultValueInterface,
-	DropTableInterface,
 	RenameColumnInterface,
 	RenameTableInterface
 } from '@core/interfaces';
@@ -11,8 +10,6 @@ import { QueryBuilderInterface } from '@context/common';
 export interface BaseQueriesInterface {
 	//base database structure modifier
 	renameTable(tableName: string, parameters: RenameTableInterface): string;
-
-	dropTable(tableName: string, parameters: DropTableInterface): string;
 
 	//base table structure modifier
 	addDefaultValue(tableName: string, parameters: AddDefaultValueInterface): string;

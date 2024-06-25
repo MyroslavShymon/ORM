@@ -15,11 +15,12 @@ import {
 	UpdateQueryBuilderInterface
 } from '@context/common';
 import { Condition, LogicalOperators, OrderOperators } from '@core/types';
+import { DatabasesTypes } from '@core/enums';
 
-export class QueryBuilder<T> implements QueryBuilderInterface<T> {
+export class QueryBuilder<T, DT extends DatabasesTypes> implements QueryBuilderInterface<T> {
 	query: string;
 
-	private readonly _dataSource: DataSourceInterface;
+	private readonly _dataSource: DataSourceInterface<DT>;
 	private readonly queryMethod: (sql: string) => Promise<Object>;
 
 	private selectQueryBuilder: SelectQueryBuilderInterface<T>;
@@ -29,17 +30,17 @@ export class QueryBuilder<T> implements QueryBuilderInterface<T> {
 	private aggregateQueryBuilder: AggregateQueryBuilderInterface;
 	private queryStructureBuilder: QueryStructureBuilderInterface<T>;
 
-	constructor(dataSource: DataSourceInterface, methodForQuery?: (sql: string) => Promise<Object>) {
+	constructor(dataSource: DataSourceInterface<DT>, methodForQuery?: (sql: string) => Promise<Object>) {
 		this.query = '';
 		this._dataSource = dataSource;
 		this.queryMethod = methodForQuery;
 
-		this.selectQueryBuilder = new SelectQueryBuilder<T>(this, this._dataSource);
-		this.insertQueryBuilder = new InsertQueryBuilder<T>(this, this._dataSource);
-		this.updateQueryBuilder = new UpdateQueryBuilder<T>(this, this._dataSource);
-		this.deleteQueryBuilder = new DeleteQueryBuilder<T>(this, this._dataSource);
-		this.aggregateQueryBuilder = new AggregateQueryBuilder<T>(this, this._dataSource);
-		this.queryStructureBuilder = new QueryStructureBuilder<T>(this, this._dataSource);
+		this.selectQueryBuilder = new SelectQueryBuilder<T, DT>(this, this._dataSource);
+		this.insertQueryBuilder = new InsertQueryBuilder<T, DT>(this, this._dataSource);
+		this.updateQueryBuilder = new UpdateQueryBuilder<T, DT>(this, this._dataSource);
+		this.deleteQueryBuilder = new DeleteQueryBuilder<T, DT>(this, this._dataSource);
+		this.aggregateQueryBuilder = new AggregateQueryBuilder<T, DT>(this, this._dataSource);
+		this.queryStructureBuilder = new QueryStructureBuilder<T, DT>(this, this._dataSource);
 	}
 
 	//Select query

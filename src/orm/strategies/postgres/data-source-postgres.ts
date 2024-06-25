@@ -14,7 +14,8 @@ import {
 	DeleteColumnInterface,
 	DeleteUniqueFromColumnInterface,
 	DropConstraintInterface,
-	DropNotNullFromColumnInterface
+	DropNotNullFromColumnInterface,
+	DropTableInterface
 } from '@core/interfaces';
 import { Condition, ConnectionData, LogicalOperators } from '@core/types';
 import {
@@ -38,14 +39,14 @@ import {
 	ViewQueries
 } from '@strategies/postgres/components';
 import { BaseQueries } from '@strategies/base-queries';
-import { AddComputedColumnInterface } from '@core/interfaces/table-manipuldation/add-computed-column.interface';
+import { AddComputedColumnInterface } from '@core/interfaces/table-manipulation/add-computed-column.interface';
 import { DatabasesTypes } from '@core/enums';
 
 export class DataSourcePostgres extends BaseQueries implements DataSourceInterface<DatabasesTypes.POSTGRES> {
 	client: PoolClient;
 	private _tableBuilder: TableBuilderInterface;
 	private _tableAlterer: TableAltererInterface;
-	private _migrationService: MigrationServiceInterface;
+	private _migrationService: MigrationServiceInterface<DatabasesTypes.POSTGRES>;
 	private _selectQueries: SelectQueriesInterface;
 	private _insertQueries: InsertQueriesInterface;
 	private _updateQueries: UpdateQueriesInterface;
@@ -86,38 +87,38 @@ export class DataSourcePostgres extends BaseQueries implements DataSourceInterfa
 		return this._migrationService.createMigrationTable(tableName, tableSchema);
 	}
 
-	checkTableExistence(dataSource: DataSourceInterface, tableName: string, tableSchema?: string): Promise<boolean> {
+	checkTableExistence(dataSource: DataSourceInterface<DatabasesTypes.POSTGRES>, tableName: string, tableSchema?: string): Promise<boolean> {
 		return this._migrationService.checkTableExistence(dataSource, tableName, tableSchema);
 	}
 
 	initCurrentDatabaseIngot(
-		dataSource: DataSourceInterface,
+		dataSource: DataSourceInterface<DatabasesTypes.POSTGRES>,
 		tableName: string,
 		tableSchema: string,
-		databaseIngot: DatabaseIngotInterface
+		databaseIngot: DatabaseIngotInterface<DatabasesTypes.POSTGRES>
 	): Promise<void> {
 		return this._migrationService.initCurrentDatabaseIngot(dataSource, tableName, tableSchema, databaseIngot);
 	}
 
 	syncDatabaseIngot(
-		dataSource: DataSourceInterface,
+		dataSource: DataSourceInterface<DatabasesTypes.POSTGRES>,
 		tableName: string,
 		tableSchema: string,
-		databaseIngot: DatabaseIngotInterface
+		databaseIngot: DatabaseIngotInterface<DatabasesTypes.POSTGRES>
 	): Promise<void> {
 		return this._migrationService.syncDatabaseIngot(dataSource, tableName, tableSchema, databaseIngot);
 	}
 
 	getCurrentDatabaseIngot(
-		dataSource: DataSourceInterface,
+		dataSource: DataSourceInterface<DatabasesTypes.POSTGRES>,
 		tableName: string,
 		tableSchema: string
-	): Promise<DatabaseIngotInterface> {
+	): Promise<DatabaseIngotInterface<DatabasesTypes.POSTGRES>> {
 		return this._migrationService.getCurrentDatabaseIngot(dataSource, tableName, tableSchema);
 	}
 
 	//Base table manipulation queries
-	addColumn(tableName: string, parameters: AddColumnInterface): string {
+	addColumn(tableName: string, parameters: AddColumnInterface<DatabasesTypes.POSTGRES>): string {
 		return this._tableAlterer.addColumn(tableName, parameters);
 	}
 
@@ -167,6 +168,10 @@ export class DataSourcePostgres extends BaseQueries implements DataSourceInterfa
 
 	addComputedColumn(tableName: string, parameters: AddComputedColumnInterface<DatabasesTypes.POSTGRES>): string {
 		return this._tableAlterer.addComputedColumn(tableName, parameters);
+	}
+
+	dropTable(tableName: string, parameters: DropTableInterface<DatabasesTypes.POSTGRES>): string {
+		return this._tableAlterer.dropTable(tableName, parameters);
 	}
 
 	//Get current time

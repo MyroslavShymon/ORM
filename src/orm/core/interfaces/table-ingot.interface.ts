@@ -1,4 +1,3 @@
-import { DataSourcePostgres } from '@strategies/postgres';
 import {
 	ColumnInterface,
 	ComputedColumnInterface,
@@ -7,19 +6,19 @@ import {
 	OneToManyInterface,
 	OneToOneInterface,
 	PrimaryGeneratedColumnInterface,
-	TableOptionsMysqlInterface,
-	TableOptionsPostgresqlInterface
+	TableOptionsInterface
 } from '@core/interfaces/decorators';
+import { DatabasesTypes } from '@core/enums';
 
 //TODO зробити так шоб всі поля в TableIngotInterface<DB> окрім id і name були опціональними і нічого не зламалось
-export interface TableIngotInterface<DB> {
+export interface TableIngotInterface<DT extends DatabasesTypes> {
 	id?: string;
 	name: string;
-	options?: DB extends DataSourcePostgres ? TableOptionsPostgresqlInterface : TableOptionsMysqlInterface;
-	columns: ColumnInterface[];
-	computedColumns: ComputedColumnInterface[];
+	options?: TableOptionsInterface<DT>;
+	columns: ColumnInterface<DT>[];
+	computedColumns: ComputedColumnInterface<DT>[];
 	foreignKeys: ForeignKeyInterface[];
-	primaryColumn: PrimaryGeneratedColumnInterface;
+	primaryColumn: PrimaryGeneratedColumnInterface<DT>;
 	oneToOne: OneToOneInterface[];
 	oneToMany: OneToManyInterface[];
 	manyToMany: ManyToManyInterface[];

@@ -1,12 +1,13 @@
-import { DataSourceInterface, TableIngotInterface } from '@core/interfaces';
+import { TableIngotInterface } from '@core/interfaces';
+import { DatabasesTypes } from '@core/enums';
 
-export interface DatabaseStateInterface {
+export interface DatabaseStateInterface<DT extends DatabasesTypes> {
 	tablesWithOriginalNames: {
-		table: TableIngotInterface<DataSourceInterface>
-		model: TableIngotInterface<DataSourceInterface>
+		table: TableIngotInterface<DatabasesTypes.POSTGRES>
+		model: TableIngotInterface<DatabasesTypes.POSTGRES>
 	}[];
 	tablesWithModifiedState: {
-		potentiallyDeletedTables: TableIngotInterface<DataSourceInterface>[],
-		potentiallyNewTables: TableIngotInterface<DataSourceInterface>[]
+		potentiallyDeletedTables: TableIngotInterface<DatabasesTypes.POSTGRES>[],
+		potentiallyNewTables: TableIngotInterface<DatabasesTypes.POSTGRES>[]
 	};
 }

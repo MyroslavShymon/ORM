@@ -11,10 +11,11 @@ import {
 	DeleteColumnInterface,
 	DeleteUniqueFromColumnInterface,
 	DropConstraintInterface,
-	DropNotNullFromColumnInterface
+	DropNotNullFromColumnInterface,
+	DropTableInterface
 } from '@core/interfaces';
 import { DatabasesTypes } from '@core/enums';
-import { AddComputedColumnInterface } from '@core/interfaces/table-manipuldation/add-computed-column.interface';
+import { AddComputedColumnInterface } from '@core/interfaces/table-manipulation/add-computed-column.interface';
 
 export class TableAlterer implements TableAltererInterface {
 	addColumn(tableName: string, parameters: AddColumnInterface<DatabasesTypes.POSTGRES>): string {
@@ -195,5 +196,9 @@ export class TableAlterer implements TableAltererInterface {
         ALTER TABLE ${tableName} 
         ADD COLUMN ${columnName} ${dataType} AS (${calculate}) STORED;
     `;
+	}
+
+	dropTable(tableName: string, parameters: DropTableInterface<DatabasesTypes.POSTGRES>): string {
+		return `DROP TABLE ${parameters.ifExist ? 'IF EXISTS ' : ''}${tableName} ${parameters.type ? parameters.type : ''};`;
 	}
 }

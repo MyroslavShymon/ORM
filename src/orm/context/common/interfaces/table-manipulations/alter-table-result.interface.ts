@@ -18,9 +18,9 @@ import {
 	RenameTableInterface
 } from '@core/interfaces';
 import { DatabasesTypes } from '@core/enums';
-import { AddComputedColumnInterface } from '@core/interfaces/table-manipuldation/add-computed-column.interface';
+import { AddComputedColumnInterface } from '@core/interfaces/table-manipulation/add-computed-column.interface';
 
-export interface AlterTableResultInterface<DT extends DatabasesTypes | undefined = undefined> {
+export interface AlterTableResultInterface<DT extends DatabasesTypes> {
 	addColumn: (parameters: AddColumnInterface<DT>) => Promise<Object | string>;
 	deleteColumn: (parameters: DeleteColumnInterface<DT>) => Promise<Object | string>;
 	addDefaultValue: (parameters: AddDefaultValueInterface) => Promise<Object | string>;
@@ -35,9 +35,8 @@ export interface AlterTableResultInterface<DT extends DatabasesTypes | undefined
 	deleteCheckConstraintOfColumn: (parameters: DeleteCheckConstraintOfColumnInterface) => Promise<Object | string>;
 	dropConstraint: (parameters: DropConstraintInterface) => Promise<Object | string>;
 	deleteUniqueFromColumn: (parameters: DeleteUniqueFromColumnInterface) => Promise<Object | string>;
-	addPrimaryGeneratedColumn: (parameters: AddPrimaryGeneratedColumnInterface) => Promise<Object | string>;
+	addPrimaryGeneratedColumn: (parameters: AddPrimaryGeneratedColumnInterface<DT>) => Promise<Object | string>;
 	addForeignKey: (parameters: AddForeignKeyInterface) => Promise<Object | string>;
-	addComputedColumn: (parameters: AddComputedColumnInterface) => Promise<Object | string>;
-	//TODO зробити так, щоб якшо mysql, то показувало б без поля Type в DropTableInterface
-	dropTable: (parameters: DropTableInterface) => Promise<Object | string>;
+	addComputedColumn: (parameters: AddComputedColumnInterface<DT>) => Promise<Object | string>;
+	dropTable: (parameters: DropTableInterface<DT>) => Promise<Object | string>;
 }

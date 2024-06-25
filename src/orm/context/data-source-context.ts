@@ -4,7 +4,6 @@ import { TableManipulation } from '@context/table-manipulation';
 import { TableCreator } from '@context/table-creator/table-creator';
 import { DataSourceInterface } from '@core/interfaces';
 import { ConnectionData } from '@core/types';
-import { DataSourcePostgres } from '@strategies/postgres';
 import { MigrationManager } from '@context/migration-manager';
 import { QueryBuilder } from '@context/query-builder';
 import {
@@ -16,11 +15,11 @@ import {
 } from '@context/common';
 import { DatabasesTypes } from '@core/enums';
 
-class DataSourceContext<DT extends DatabasesTypes | undefined = undefined> implements DataSourceContextInterface<DT> {
-	private _dataSource: DataSourceInterface;
-	private _client: DataSourceInterface extends DataSourcePostgres ? PoolClient : Connection;
+class DataSourceContext<DT extends DatabasesTypes> implements DataSourceContextInterface<DT> {
+	private _dataSource: DataSourceInterface<DT>;
+	private _client: DT extends DatabasesTypes.POSTGRES ? PoolClient : Connection;
 
-	setDatabase(dataSource: DataSourceInterface): void {
+	setDatabase(dataSource: DataSourceInterface<DT>): void {
 		this._dataSource = dataSource;
 	}
 
@@ -40,23 +39,23 @@ class DataSourceContext<DT extends DatabasesTypes | undefined = undefined> imple
 		return await this._dataSource.client.query(sql);
 	}
 
-	get client(): DataSourceInterface extends DataSourcePostgres ? PoolClient : Connection {
+	get client(): DT extends DatabasesTypes.POSTGRES ? PoolClient : Connection {
 		return this._client;
 	}
 
 	queryBuilder<T>(): QueryBuilderInterface<T> {
-		return new QueryBuilder<T>(this._dataSource, this.query);
+		return new QueryBuilder<T, DT>(this._dataSource, this.query);
 	}
 
-	get tableManipulation(): TableManipulationInterface {
+	get tableManipulation(): TableManipulationInterface<DT> {
 		return new TableManipulation(this._dataSource);
 	}
 
-	get tableCreator(): TableCreatorInterface {
-		return new TableCreator(this._dataSource);
+	get tableCreator(): TableCreatorInterface<DatabasesTypes.POSTGRES> {
+		return new TableCreator<DatabasesTypes.POSTGRES>(this._dataSource as DataSourceInterface<DatabasesTypes.POSTGRES>);
 	}
 
-	get migrationManager(): MigrationManagerInterface {
+	get migrationManager(): MigrationManagerInterface<DT> {
 		return new MigrationManager(this._dataSource);
 	}
 }

@@ -10,9 +10,10 @@ import {
 	DeleteColumnInterface,
 	DeleteUniqueFromColumnInterface,
 	DropConstraintInterface,
-	DropNotNullFromColumnInterface
+	DropNotNullFromColumnInterface,
+	DropTableInterface
 } from '@core/interfaces';
-import { AddComputedColumnInterface } from '@core/interfaces/table-manipuldation/add-computed-column.interface';
+import { AddComputedColumnInterface } from '@core/interfaces/table-manipulation/add-computed-column.interface';
 import { TableAltererInterface } from '@strategies/mysql';
 import { DatabasesTypes } from '@core/enums';
 
@@ -202,5 +203,9 @@ export class TableAlterer implements TableAltererInterface {
         ALTER TABLE \`${tableName}\`
         ADD COLUMN \`${columnName}\` ${dataType} GENERATED ALWAYS AS (${calculate}) ${stored ? 'STORED' : 'VIRTUAL'};
     `;
+	}
+
+	dropTable(tableName: string, parameters: DropTableInterface<DatabasesTypes.MYSQL>): string {
+		return `DROP TABLE ${parameters.ifExist ? 'IF EXISTS ' : ''}${tableName};`;
 	}
 }

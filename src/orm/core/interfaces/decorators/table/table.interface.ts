@@ -1,7 +1,7 @@
 import { DatabasesTypes } from '@core/enums';
-import { TableOptionsMysqlInterface, TableOptionsPostgresqlInterface } from '@core/interfaces';
+import { TableOptionsInterface } from '@core/interfaces';
 
-export interface TableInterface<DB extends DatabasesTypes | undefined = undefined> {
+export interface TableInterface<DT extends DatabasesTypes | undefined = undefined> {
 	name: string;
-	options?: DB extends DatabasesTypes.POSTGRES ? TableOptionsPostgresqlInterface : TableOptionsMysqlInterface;
+	options?: TableOptionsInterface<DT>;
 }

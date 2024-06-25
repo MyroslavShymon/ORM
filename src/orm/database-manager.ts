@@ -1,6 +1,11 @@
 import 'reflect-metadata';
-import { DatabaseIngotInterface, DatabaseManagerInterface, DataSourceInterface } from '@core/interfaces';
-import { ConnectionClient, ConnectionData } from '@core/types';
+import {
+	DatabaseIngotInterface,
+	DatabaseManagerInterface,
+	DataSourceInterface,
+	TableIngotInterface
+} from '@core/interfaces';
+import { ConnectionData } from '@core/types';
 import { DatabasesTypes } from '@core/enums';
 import { DataSourcePostgres } from '@strategies/postgres';
 import { DataSourceMySql } from '@strategies/mysql';
@@ -38,11 +43,11 @@ class DatabaseManager<DT extends DatabasesTypes> implements DatabaseManagerInter
 		}
 	}
 
-	async createOrmConnection(): Promise<ConnectionClient> {
+	async createOrmConnection(): Promise<void> {
 		try {
 			FileStructureManager.manage(this._connectionData);
 
-			const databaseIngot: DatabaseIngotInterface = { tables: [] };
+			const databaseIngot: DatabaseIngotInterface<DT> = { tables: [] };
 
 			await this._dataSource.connectDatabase(this._connectionData);
 
@@ -69,7 +74,7 @@ class DatabaseManager<DT extends DatabasesTypes> implements DatabaseManagerInter
 				const results = await this._dataSource.getCurrentTime();
 				console.log('Database is work, current timestamp: ', results);
 			}
-			databaseIngot.tables = tablesIngot || [];
+			databaseIngot.tables = tablesIngot as TableIngotInterface<DT>[] || [];
 
 			await this._dataSource.migrationManager.syncDatabaseIngot({
 				tableName: this._connectionData.migrationTable,
@@ -82,11 +87,6 @@ class DatabaseManager<DT extends DatabasesTypes> implements DatabaseManagerInter
 		} finally {
 			// await this._dataSource.client.release();
 		}
-
-		return {
-			dataSource: this._dataSource,
-			connectionData: this._connectionData
-		};
 	}
 
 	async query(sql: string): Promise<Object> {
@@ -113,7 +113,7 @@ class DatabaseManager<DT extends DatabasesTypes> implements DatabaseManagerInter
 		return this._dataSource.tableManipulation;
 	}
 
-	get tableCreator(): TableCreatorInterface {
+	get tableCreator(): TableCreatorInterface<DT> {
 		return this._dataSource.tableCreator;
 	}
 

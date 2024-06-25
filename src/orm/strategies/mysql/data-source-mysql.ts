@@ -14,7 +14,8 @@ import {
 	DeleteColumnInterface,
 	DeleteUniqueFromColumnInterface,
 	DropConstraintInterface,
-	DropNotNullFromColumnInterface
+	DropNotNullFromColumnInterface,
+	DropTableInterface
 } from '@core/interfaces';
 import { Condition, ConnectionData, LogicalOperators } from '@core/types';
 import {
@@ -38,14 +39,14 @@ import {
 	ViewQueries
 } from '@strategies/mysql/components';
 import { BaseQueries } from '@strategies/base-queries';
-import { AddComputedColumnInterface } from '@core/interfaces/table-manipuldation/add-computed-column.interface';
+import { AddComputedColumnInterface } from '@core/interfaces/table-manipulation/add-computed-column.interface';
 import { DatabasesTypes } from '@core/enums';
 
 export class DataSourceMySql extends BaseQueries implements DataSourceInterface<DatabasesTypes.MYSQL> {
 	client: Connection;
 	private _tableBuilder: TableBuilderInterface;
 	private _tableAlterer: TableAltererInterface;
-	private _migrationService: MigrationServiceInterface;
+	private _migrationService: MigrationServiceInterface<DatabasesTypes.MYSQL>;
 	private _insertQueries: InsertQueriesInterface;
 	private _updateQueries: UpdateQueriesInterface;
 	private _deleteQueries: DeleteQueriesInterface;
@@ -81,42 +82,42 @@ export class DataSourceMySql extends BaseQueries implements DataSourceInterface<
 		);
 	}
 
-	checkTableExistence(dataSource: DataSourceInterface, tableName: string, tableSchema?: string): Promise<boolean> {
-		return this._migrationService.checkTableExistence(dataSource, tableName, tableSchema);
-	}
-
 	createMigrationTable(tableName: string, tableSchema: string): string {
 		return this._migrationService.createMigrationTable(tableName, tableSchema);
 	}
 
+	checkTableExistence(dataSource: DataSourceInterface<DatabasesTypes.MYSQL>, tableName: string, tableSchema?: string): Promise<boolean> {
+		return this._migrationService.checkTableExistence(dataSource, tableName, tableSchema);
+	}
+
 	initCurrentDatabaseIngot(
-		dataSource: DataSourceInterface,
+		dataSource: DataSourceInterface<DatabasesTypes.MYSQL>,
 		tableName: string,
 		tableSchema: string,
-		databaseIngot: DatabaseIngotInterface
+		databaseIngot: DatabaseIngotInterface<DatabasesTypes.MYSQL>
 	): Promise<void> {
 		return this._migrationService.initCurrentDatabaseIngot(dataSource, tableName, tableSchema, databaseIngot);
 	}
 
 	syncDatabaseIngot(
-		dataSource: DataSourceInterface,
+		dataSource: DataSourceInterface<DatabasesTypes.MYSQL>,
 		tableName: string,
 		tableSchema: string,
-		databaseIngot: DatabaseIngotInterface
+		databaseIngot: DatabaseIngotInterface<DatabasesTypes.MYSQL>
 	): Promise<void> {
 		return this._migrationService.syncDatabaseIngot(dataSource, tableName, tableSchema, databaseIngot);
 	}
 
 	getCurrentDatabaseIngot(
-		dataSource: DataSourceInterface,
+		dataSource: DataSourceInterface<DatabasesTypes.MYSQL>,
 		tableName: string,
 		tableSchema: string
-	): Promise<DatabaseIngotInterface> {
+	): Promise<DatabaseIngotInterface<DatabasesTypes.MYSQL>> {
 		return this._migrationService.getCurrentDatabaseIngot(dataSource, tableName, tableSchema);
 	}
 
 	//table manipulation
-	addColumn(tableName: string, parameters: AddColumnInterface): string {
+	addColumn(tableName: string, parameters: AddColumnInterface<DatabasesTypes.MYSQL>): string {
 		return this._tableAlterer.addColumn(tableName, parameters);
 	}
 
@@ -164,9 +165,12 @@ export class DataSourceMySql extends BaseQueries implements DataSourceInterface<
 		return this._tableAlterer.addForeignKey(tableName, parameters);
 	}
 
-	//TODO повністю переробити computed column під mysql
 	addComputedColumn(tableName: string, parameters: AddComputedColumnInterface<DatabasesTypes.MYSQL>): string {
 		return this._tableAlterer.addComputedColumn(tableName, parameters);
+	}
+
+	dropTable(tableName: string, parameters: DropTableInterface<DatabasesTypes.MYSQL>): string {
+		return this._tableAlterer.dropTable(tableName, parameters);
 	}
 
 	//get time

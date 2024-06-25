@@ -1,12 +1,13 @@
 import { DataSourceInterface } from '@core/interfaces';
 import { QueryBuilderInterface, SelectQueryBuilderInterface } from '@context/common';
 import { Condition, LogicalOperators, OrderOperators } from '@core/types';
+import { DatabasesTypes } from '@core/enums';
 
-export class SelectQueryBuilder<T> implements SelectQueryBuilderInterface<T> {
+export class SelectQueryBuilder<T, DT extends DatabasesTypes> implements SelectQueryBuilderInterface<T> {
 	private _queryBuilder: QueryBuilderInterface<T>;
-	private _dataSource: DataSourceInterface;
+	private _dataSource: DataSourceInterface<DT>;
 
-	constructor(queryBuilder: QueryBuilderInterface<T>, dataSource: DataSourceInterface) {
+	constructor(queryBuilder: QueryBuilderInterface<T>, dataSource: DataSourceInterface<DT>) {
 		this._queryBuilder = queryBuilder;
 		this._dataSource = dataSource;
 	}

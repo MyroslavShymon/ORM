@@ -1,16 +1,17 @@
-import { DataSourceInterface, TableIngotInterface } from '@core/interfaces';
+import { TableIngotInterface } from '@core/interfaces';
+import { DatabasesTypes } from '@core/enums';
 
-export interface TableCreationProcessorInterface {
+export interface TableCreationProcessorInterface<DT extends DatabasesTypes> {
 	processingTablesWithModifiedState(
-		potentiallyNewTables: TableIngotInterface<DataSourceInterface>[],
-		potentiallyDeletedTables: TableIngotInterface<DataSourceInterface>[]
-	): TableIngotInterface<DataSourceInterface>[];
+		potentiallyNewTables: TableIngotInterface<DatabasesTypes.POSTGRES>[],
+		potentiallyDeletedTables: TableIngotInterface<DatabasesTypes.POSTGRES>[]
+	): TableIngotInterface<DatabasesTypes.POSTGRES>[];
 
-	processingNewTables(newTables: TableIngotInterface<DataSourceInterface>[])
-		: TableIngotInterface<DataSourceInterface>[];
+	processingNewTables(newTables: TableIngotInterface<DatabasesTypes.POSTGRES>[])
+		: TableIngotInterface<DatabasesTypes.POSTGRES>[];
 
 	processingOriginalTables(potentialTables: {
-		table: TableIngotInterface<DataSourceInterface>
-		model: TableIngotInterface<DataSourceInterface>
-	}[]): TableIngotInterface<DataSourceInterface>[];
+		table: TableIngotInterface<DatabasesTypes.POSTGRES>
+		model: TableIngotInterface<DatabasesTypes.POSTGRES>
+	}[]): TableIngotInterface<DatabasesTypes.POSTGRES>[];
 }

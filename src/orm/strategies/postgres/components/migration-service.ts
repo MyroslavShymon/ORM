@@ -1,13 +1,14 @@
 import { MigrationServiceInterface } from '@strategies/postgres/interfaces/migration-service.interface';
 import { DatabaseIngotInterface, DataSourceInterface } from '@core/interfaces';
 import { constants } from '@core/constants';
+import { DatabasesTypes } from '@core/enums';
 
-export class MigrationService implements MigrationServiceInterface {
+export class MigrationService<DT extends DatabasesTypes> implements MigrationServiceInterface<DT> {
 	async getCurrentDatabaseIngot(
-		dataSource: DataSourceInterface,
+		dataSource: DataSourceInterface<DatabasesTypes.POSTGRES>,
 		tableName: string,
 		tableSchema: string
-	): Promise<DatabaseIngotInterface> {
+	): Promise<DatabaseIngotInterface<DatabasesTypes.POSTGRES>> {
 		const getCurrentDatabaseIngotQuery = `SELECT ingot FROM ${tableSchema}.${tableName} WHERE name = 'current_database_ingot'`;
 		const ingot = await dataSource.client.query(getCurrentDatabaseIngotQuery);
 		return ingot.rows[0].ingot;
@@ -44,10 +45,10 @@ export class MigrationService implements MigrationServiceInterface {
 	}
 
 	async initCurrentDatabaseIngot(
-		dataSource: DataSourceInterface,
+		dataSource: DataSourceInterface<DatabasesTypes.POSTGRES>,
 		tableName: string,
 		tableSchema: string,
-		databaseIngot: DatabaseIngotInterface
+		databaseIngot: DatabaseIngotInterface<DatabasesTypes.POSTGRES>
 	): Promise<void> {
 		const initCurrentDatabaseIngotQuery = `
 						INSERT INTO ${tableSchema}.${tableName} (name, ingot)
@@ -59,10 +60,10 @@ export class MigrationService implements MigrationServiceInterface {
 	}
 
 	async syncDatabaseIngot(
-		dataSource: DataSourceInterface,
+		dataSource: DataSourceInterface<DatabasesTypes.POSTGRES>,
 		tableName: string,
 		tableSchema: string,
-		databaseIngot: DatabaseIngotInterface
+		databaseIngot: DatabaseIngotInterface<DatabasesTypes.POSTGRES>
 	): Promise<void> {
 		const syncDatabaseIngotQuery = `
 						UPDATE ${tableSchema}.${tableName}
@@ -73,7 +74,7 @@ export class MigrationService implements MigrationServiceInterface {
 		await dataSource.client.query(syncDatabaseIngotQuery);
 	}
 
-	async checkTableExistence(dataSource: DataSourceInterface, tableName: string, tableSchema?: string): Promise<boolean> {
+	async checkTableExistence(dataSource: DataSourceInterface<DatabasesTypes.POSTGRES>, tableName: string, tableSchema?: string): Promise<boolean> {
 		const checkTableExistenceQuery = `SELECT EXISTS (
 							SELECT 1
 							FROM information_schema.tables
@@ -87,5 +88,4 @@ export class MigrationService implements MigrationServiceInterface {
 
 		return tableExistence.rows[0].table_existence;
 	}
-
 }

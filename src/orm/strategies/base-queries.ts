@@ -16,7 +16,6 @@ import {
 import {
 	AddDefaultValueInterface,
 	DropDefaultValueInterface,
-	DropTableInterface,
 	RenameColumnInterface,
 	RenameTableInterface
 } from '@core/interfaces';
@@ -35,10 +34,6 @@ export class BaseQueries implements BaseQueriesInterface {
 	//Base database structure modifier
 	renameTable(tableName: string, parameters: RenameTableInterface): string {
 		return this._baseDatabaseStructureModifierQueries.renameTable(tableName, parameters);
-	}
-
-	dropTable(tableName: string, parameters: DropTableInterface): string {
-		return this._baseDatabaseStructureModifierQueries.dropTable(tableName, parameters);
 	}
 
 	//Base table structure modifier

@@ -1,8 +1,9 @@
 import { DatabaseIngotInterface } from '@core/interfaces';
+import { DatabasesTypes } from '@core/enums';
 
-export interface InitIngotOptionsInterface {
+export interface InitIngotOptionsInterface<DT extends DatabasesTypes> {
 	tableName?: string;
 	tableSchema?: string;
-	databaseIngot: DatabaseIngotInterface;
+	databaseIngot: DatabaseIngotInterface<DT>;
 	nameOfCurrentDatabaseIngot?: string;
 }

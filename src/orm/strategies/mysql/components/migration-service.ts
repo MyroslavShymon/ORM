@@ -1,12 +1,13 @@
 import { DatabaseIngotInterface, DataSourceInterface } from '@core/interfaces';
 import { MigrationServiceInterface } from '@strategies/mysql';
 import { constants } from '@core/constants';
+import { DatabasesTypes } from '@core/enums';
 
-export class MigrationService implements MigrationServiceInterface {
+export class MigrationService<DT extends DatabasesTypes> implements MigrationServiceInterface<DT> {
 	async getCurrentDatabaseIngot(
-		dataSource: DataSourceInterface,
+		dataSource: DataSourceInterface<DatabasesTypes.MYSQL>,
 		tableName: string
-	): Promise<DatabaseIngotInterface> {
+	): Promise<DatabaseIngotInterface<DatabasesTypes.MYSQL>> {
 		const getCurrentDatabaseIngotQuery = `SELECT ingot FROM ${tableName} WHERE name = 'current_database_ingot'`;
 		const ingot = await dataSource.client.query(getCurrentDatabaseIngotQuery);
 		return ingot;
@@ -36,12 +37,11 @@ export class MigrationService implements MigrationServiceInterface {
 			END;`;
 	}
 
-
 	async initCurrentDatabaseIngot(
-		dataSource: DataSourceInterface,
+		dataSource: DataSourceInterface<DatabasesTypes.MYSQL>,
 		tableName: string,
 		tableSchema: string,
-		databaseIngot: DatabaseIngotInterface
+		databaseIngot: DatabaseIngotInterface<DatabasesTypes.MYSQL>
 	): Promise<void> {
 		const initCurrentDatabaseIngotQuery = `
 						INSERT INTO ${tableName} (name, ingot)
@@ -53,10 +53,10 @@ export class MigrationService implements MigrationServiceInterface {
 	}
 
 	async syncDatabaseIngot(
-		dataSource: DataSourceInterface,
+		dataSource: DataSourceInterface<DatabasesTypes.MYSQL>,
 		tableName: string,
 		tableSchema: string,
-		databaseIngot: DatabaseIngotInterface
+		databaseIngot: DatabaseIngotInterface<DatabasesTypes.MYSQL>
 	): Promise<void> {
 		const syncDatabaseIngotQuery = `
 						UPDATE ${tableName}
@@ -67,7 +67,7 @@ export class MigrationService implements MigrationServiceInterface {
 		await dataSource.client.query(syncDatabaseIngotQuery);
 	}
 
-	async checkTableExistence(dataSource: DataSourceInterface, tableName: string, tableSchema?: string): Promise<boolean> {
+	async checkTableExistence(dataSource: DataSourceInterface<DatabasesTypes.MYSQL>, tableName: string, tableSchema?: string): Promise<boolean> {
 		const checkTableExistenceQuery = `SELECT EXISTS (
 							SELECT 1
 							FROM information_schema.tables
@@ -77,8 +77,6 @@ export class MigrationService implements MigrationServiceInterface {
 						`;
 
 		const tableExistence = await dataSource.client.query(checkTableExistenceQuery);
-
-		console.log('tableExistence', tableExistence);
 
 		return !!tableExistence[0][0].table_existence;
 	}

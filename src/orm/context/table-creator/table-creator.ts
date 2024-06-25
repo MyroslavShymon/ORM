@@ -11,13 +11,14 @@ import { constants } from '@core/constants';
 import { ConnectionData } from '@core/types';
 import { TableCreationProcessor } from '@context/table-creator/table-creation-processor';
 import { DatabaseStateBuilder } from '@context/table-creator/database-state-builder';
+import { DatabasesTypes } from '@core/enums';
 
-export class TableCreator implements TableCreatorInterface {
-	private readonly _dataSource: DataSourceInterface;
-	private readonly _tableCreationProcessor: TableCreationProcessorInterface = new TableCreationProcessor();
-	private readonly _databaseStateBuilder: DatabaseStateBuilderInterface = new DatabaseStateBuilder();
+export class TableCreator<DT extends DatabasesTypes> implements TableCreatorInterface<DT> {
+	private readonly _dataSource: DataSourceInterface<DatabasesTypes.POSTGRES>;
+	private readonly _tableCreationProcessor: TableCreationProcessorInterface<DatabasesTypes.POSTGRES> = new TableCreationProcessor<DatabasesTypes.POSTGRES>();
+	private readonly _databaseStateBuilder: DatabaseStateBuilderInterface<DatabasesTypes.POSTGRES> = new DatabaseStateBuilder();
 
-	constructor(dataSource: DataSourceInterface) {
+	constructor(dataSource: DataSourceInterface<DatabasesTypes.POSTGRES>) {
 		this._dataSource = dataSource;
 	}
 
@@ -25,21 +26,21 @@ export class TableCreator implements TableCreatorInterface {
 								  models,
 								  migrationTable = constants.migrationsTableName,
 								  migrationTableSchema = constants.migrationsTableSchemaName
-							  }: ConnectionData): Promise<TableIngotInterface<DataSourceInterface>[] | undefined> {
+							  }: ConnectionData): Promise<TableIngotInterface<DatabasesTypes.POSTGRES>[] | undefined> {
 		if (!models || models.length === 0) {
 			return [];
 		}
 
-		let { tables: currentTablesIngot }: DatabaseIngotInterface =
+		let { tables: currentTablesIngot }: DatabaseIngotInterface<DatabasesTypes.POSTGRES> =
 			await this._dataSource.getCurrentDatabaseIngot(
 				this._dataSource,
 				migrationTable,
 				migrationTableSchema
 			);
 
-		let preparedModels: TableIngotInterface<DataSourceInterface>[] = this._databaseStateBuilder.getPreparedModels(models);
+		let preparedModels: TableIngotInterface<DatabasesTypes.POSTGRES>[] = this._databaseStateBuilder.getPreparedModels(models);
 
-		const databaseState: DatabaseStateInterface = this._databaseStateBuilder.formationOfDatabaseState(preparedModels, currentTablesIngot);
+		const databaseState: DatabaseStateInterface<DatabasesTypes.POSTGRES> = this._databaseStateBuilder.formationOfDatabaseState(preparedModels, currentTablesIngot);
 		//якщо нема жодних збігів потенційної структури таблиць і теперішньої то перевіряємо чи всі таблиці не перейменовані і обробляємо їх
 		if (databaseState.tablesWithOriginalNames.length === 0) {
 			return this._tableCreationProcessor.processingTablesWithModifiedState(preparedModels, currentTablesIngot);
@@ -49,9 +50,9 @@ export class TableCreator implements TableCreatorInterface {
 	}
 
 	private _formationOfTableIngot(
-		databaseState: DatabaseStateInterface
-	): TableIngotInterface<DataSourceInterface>[] {
-		let tablesIngot: TableIngotInterface<DataSourceInterface>[] = [];
+		databaseState: DatabaseStateInterface<DatabasesTypes.POSTGRES>
+	): TableIngotInterface<DatabasesTypes.POSTGRES>[] {
+		let tablesIngot: TableIngotInterface<DatabasesTypes.POSTGRES>[] = [];
 
 		if (
 			databaseState.tablesWithModifiedState.potentiallyDeletedTables.length === 0 &&
@@ -141,7 +142,7 @@ export class TableCreator implements TableCreatorInterface {
 		return createTablesQueryForManyToManyRelation;
 	}
 
-	generateCreateTableQuery(ingotsOfTables: TableIngotInterface<DataSourceInterface>[]): string {
+	generateCreateTableQuery(ingotsOfTables: TableIngotInterface<DatabasesTypes.POSTGRES>[]): string {
 		let createTablesQuery = '';
 
 		for (const {

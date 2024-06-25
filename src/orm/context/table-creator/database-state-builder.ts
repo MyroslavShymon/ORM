@@ -1,5 +1,4 @@
 import {
-	DataSourceInterface,
 	ForeignKeyInterface,
 	ManyToManyInterface,
 	ModelInterface,
@@ -12,13 +11,14 @@ import {
 import { ComputedColumnMetadataInterface } from '@decorators/index';
 import { DatabaseStateBuilderInterface, DatabaseStateInterface } from '@context/common';
 import { constants } from '@core/constants';
+import { DatabasesTypes } from '@core/enums';
 
-export class DatabaseStateBuilder implements DatabaseStateBuilderInterface {
+export class DatabaseStateBuilder<DT extends DatabasesTypes> implements DatabaseStateBuilderInterface<DT> {
 	constructor() {
 	}
 
-	getPreparedModels(models: ModelInterface[]): TableIngotInterface<DataSourceInterface>[] {
-		const preparedModels: TableIngotInterface<DataSourceInterface>[] = [];
+	getPreparedModels(models: ModelInterface[]): TableIngotInterface<DatabasesTypes.POSTGRES>[] {
+		const preparedModels: TableIngotInterface<DatabasesTypes.POSTGRES>[] = [];
 
 		for (let model of models) {
 			const table: TableInterface
@@ -58,7 +58,7 @@ export class DatabaseStateBuilder implements DatabaseStateBuilderInterface {
 				computedColumns = computedColumns.map(computedColumn => ({ ...computedColumn }));
 			}
 
-			const potentialModel: TableIngotInterface<DataSourceInterface> = {
+			const potentialModel: TableIngotInterface<DatabasesTypes.POSTGRES> = {
 				...table,
 				columns,
 				computedColumns,
@@ -76,10 +76,10 @@ export class DatabaseStateBuilder implements DatabaseStateBuilderInterface {
 	}
 
 	formationOfDatabaseState(
-		preparedModels: TableIngotInterface<DataSourceInterface>[],
-		currentTablesIngot: TableIngotInterface<DataSourceInterface>[]
-	): DatabaseStateInterface {
-		const databaseState: DatabaseStateInterface = {
+		preparedModels: TableIngotInterface<DatabasesTypes.POSTGRES>[],
+		currentTablesIngot: TableIngotInterface<DatabasesTypes.POSTGRES>[]
+	): DatabaseStateInterface<DatabasesTypes.POSTGRES> {
+		const databaseState: DatabaseStateInterface<DatabasesTypes.POSTGRES> = {
 			tablesWithOriginalNames: [],
 			tablesWithModifiedState: {
 				potentiallyDeletedTables: [],

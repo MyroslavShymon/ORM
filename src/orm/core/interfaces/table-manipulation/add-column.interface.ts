@@ -1,7 +1,7 @@
 import { DatabasesTypes } from '@core/enums';
 import { ColumnOptionsInterface } from '@core/interfaces';
 
-export interface AddColumnInterface<DB extends DatabasesTypes | undefined = undefined> {
+export interface AddColumnInterface<DT extends DatabasesTypes> {
 	columnName: string;
-	options?: ColumnOptionsInterface<DB>;
+	options?: ColumnOptionsInterface<DT>;
 }

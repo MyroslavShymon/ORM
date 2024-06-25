@@ -1,11 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import {
-	BaseColumnInterface,
-	ColumnInterface,
-	ComputedColumnInterface,
-	DataSourceInterface,
-	TableIngotInterface
-} from '@core/interfaces';
+import { BaseColumnInterface, ColumnInterface, ComputedColumnInterface, TableIngotInterface } from '@core/interfaces';
 import { constants } from '@core/constants';
 import { TableComparator } from '@context/table-creator/table-comparator';
 import {
@@ -14,8 +8,9 @@ import {
 	TableCreationProcessorInterface
 } from '@context/common';
 import { ColumnsComparator } from '@context/table-creator/columns-comparator';
+import { DatabasesTypes } from '@core/enums';
 
-export class TableCreationProcessor implements TableCreationProcessorInterface {
+export class TableCreationProcessor<DT extends DatabasesTypes> implements TableCreationProcessorInterface<DT> {
 	private readonly tableComparator = new TableComparator();
 	private readonly columnsComparator = new ColumnsComparator();
 
@@ -23,15 +18,14 @@ export class TableCreationProcessor implements TableCreationProcessorInterface {
 	}
 
 	processingTablesWithModifiedState(
-		potentiallyNewTables: TableIngotInterface<DataSourceInterface>[],
-		potentiallyDeletedTables: TableIngotInterface<DataSourceInterface>[]
-	): TableIngotInterface<DataSourceInterface>[] {
+		potentiallyNewTables: TableIngotInterface<DatabasesTypes.POSTGRES>[],
+		potentiallyDeletedTables: TableIngotInterface<DatabasesTypes.POSTGRES>[]
+	): TableIngotInterface<DatabasesTypes.POSTGRES>[] {
 		const renamedTables: {
-			table: TableIngotInterface<DataSourceInterface>
-			model: TableIngotInterface<DataSourceInterface>
+			table: TableIngotInterface<DatabasesTypes.POSTGRES>
+			model: TableIngotInterface<DatabasesTypes.POSTGRES>
 		}[] = [];
 		const tablesWithPercentage = this.tableComparator.calculatePercentagesOfTablesWithModifiedState(potentiallyNewTables, potentiallyDeletedTables);
-		console.log('tablesWithPercentatablesWithPercentagetablesWithPercentagege', tablesWithPercentage);
 
 		for (const tableWithPercentage of tablesWithPercentage) {
 			if (!tableWithPercentage.percentages.columnsPercentage) {
@@ -81,8 +75,8 @@ export class TableCreationProcessor implements TableCreationProcessorInterface {
 		];
 	}
 
-	processingNewTables(newTables: TableIngotInterface<DataSourceInterface>[])
-		: TableIngotInterface<DataSourceInterface>[] {
+	processingNewTables(newTables: TableIngotInterface<DatabasesTypes.POSTGRES>[])
+		: TableIngotInterface<DatabasesTypes.POSTGRES>[] {
 		return newTables.map(newTable => {
 			const { columns, computedColumns, ...otherTableParams } = newTable;
 
@@ -99,9 +93,9 @@ export class TableCreationProcessor implements TableCreationProcessorInterface {
 	}
 
 	processingOriginalTables(potentialTables: {
-		table: TableIngotInterface<DataSourceInterface>
-		model: TableIngotInterface<DataSourceInterface>
-	}[]): TableIngotInterface<DataSourceInterface>[] {
+		table: TableIngotInterface<DatabasesTypes.POSTGRES>
+		model: TableIngotInterface<DatabasesTypes.POSTGRES>
+	}[]): TableIngotInterface<DatabasesTypes.POSTGRES>[] {
 		const tablesForIngot = [];
 
 		//processing tables with original names

@@ -5,7 +5,7 @@ export * from './database-manager.interface';
 export * from './table-ingot.interface';
 export * from './database-ingot.interface';
 export * from './migration.interface';
-export * from './table-manipuldation';
+export * from './table-manipulation';
 export * from './create-table-options.interface';
 export * from './create-table-options-mysql.interface';
 export * from './create-table-options-postgres.interface';

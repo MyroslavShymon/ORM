@@ -1,9 +1,9 @@
 import { TableIngotInterface } from '@core/interfaces';
-import { DataSourcePostgres } from '@strategies/postgres';
+import { DatabasesTypes } from '@core/enums';
 
-export interface TablePercentageInterface {
-	newTable: TableIngotInterface<DataSourcePostgres>,
-	deletedTable: TableIngotInterface<DataSourcePostgres>,
+export interface TablePercentageInterface<DT extends DatabasesTypes> {
+	newTable: TableIngotInterface<DatabasesTypes.POSTGRES>,
+	deletedTable: TableIngotInterface<DatabasesTypes.POSTGRES>,
 	percentages: {
 		columnsPercentage?: number
 		computedColumnPercentage?: number

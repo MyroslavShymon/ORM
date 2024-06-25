@@ -10,10 +10,11 @@ import {
 	DeleteColumnInterface,
 	DeleteUniqueFromColumnInterface,
 	DropConstraintInterface,
-	DropNotNullFromColumnInterface
+	DropNotNullFromColumnInterface,
+	DropTableInterface
 } from '@core/interfaces';
 import { DatabasesTypes } from '@core/enums';
-import { AddComputedColumnInterface } from '@core/interfaces/table-manipuldation/add-computed-column.interface';
+import { AddComputedColumnInterface } from '@core/interfaces/table-manipulation/add-computed-column.interface';
 
 export interface TableAltererInterface {
 	addColumn(tableName: string, parameters: AddColumnInterface<DatabasesTypes.POSTGRES>): string;
@@ -41,5 +42,7 @@ export interface TableAltererInterface {
 	addForeignKey(tableName: string, parameters: AddForeignKeyInterface): string;
 
 	addComputedColumn(tableName: string, parameters: AddComputedColumnInterface<DatabasesTypes.POSTGRES>): string;
+
+	dropTable(tableName: string, parameters: DropTableInterface<DatabasesTypes.POSTGRES>): string;
 
 }

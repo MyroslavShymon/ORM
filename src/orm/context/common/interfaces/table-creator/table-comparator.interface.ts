@@ -1,10 +1,10 @@
 import { TableIngotInterface } from '@core/interfaces';
-import { DataSourcePostgres } from '@strategies/postgres';
 import { TablePercentageInterface } from '@context/common';
+import { DatabasesTypes } from '@core/enums';
 
-export interface TableComparatorInterface {
+export interface TableComparatorInterface<DT extends DatabasesTypes> {
 	calculatePercentagesOfTablesWithModifiedState(
-		newTables: TableIngotInterface<DataSourcePostgres>[],
-		deletedTables: TableIngotInterface<DataSourcePostgres>[]
-	): TablePercentageInterface[];
+		newTables: TableIngotInterface<DatabasesTypes.POSTGRES>[],
+		deletedTables: TableIngotInterface<DatabasesTypes.POSTGRES>[]
+	): TablePercentageInterface<DatabasesTypes.POSTGRES>[];
 }

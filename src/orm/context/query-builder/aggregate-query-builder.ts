@@ -1,11 +1,12 @@
 import { AggregateQueryBuilderInterface, QueryBuilderInterface } from '@context/common/interfaces';
 import { DataSourceInterface } from '@core/interfaces';
+import { DatabasesTypes } from '@core/enums';
 
-export class AggregateQueryBuilder<T> implements AggregateQueryBuilderInterface {
+export class AggregateQueryBuilder<T, DT extends DatabasesTypes> implements AggregateQueryBuilderInterface {
 	private _queryBuilder: QueryBuilderInterface<T>;
-	private _dataSource: DataSourceInterface;
+	private _dataSource: DataSourceInterface<DT>;
 
-	constructor(queryBuilder: QueryBuilderInterface<T>, dataSource: DataSourceInterface) {
+	constructor(queryBuilder: QueryBuilderInterface<T>, dataSource: DataSourceInterface<DT>) {
 		this._queryBuilder = queryBuilder;
 		this._dataSource = dataSource;
 	}

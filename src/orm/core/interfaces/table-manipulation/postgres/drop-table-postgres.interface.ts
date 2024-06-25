@@ -1,4 +1,4 @@
-export interface DropTableInterface {
+export interface DropTablePostgresInterface {
 	type?: 'CASCADE' | 'RESTRICT';
 	ifExist?: boolean;
 }

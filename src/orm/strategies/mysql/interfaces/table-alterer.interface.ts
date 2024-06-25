@@ -10,13 +10,14 @@ import {
 	DeleteColumnInterface,
 	DeleteUniqueFromColumnInterface,
 	DropConstraintInterface,
-	DropNotNullFromColumnInterface
+	DropNotNullFromColumnInterface,
+	DropTableInterface
 } from '@core/interfaces';
-import { AddComputedColumnInterface } from '@core/interfaces/table-manipuldation/add-computed-column.interface';
+import { AddComputedColumnInterface } from '@core/interfaces/table-manipulation/add-computed-column.interface';
 import { DatabasesTypes } from '@core/enums';
 
 export interface TableAltererInterface {
-	addColumn(tableName: string, parameters: AddColumnInterface): string;
+	addColumn(tableName: string, parameters: AddColumnInterface<DatabasesTypes.MYSQL>): string;
 
 	deleteColumn(tableName: string, parameters: DeleteColumnInterface<DatabasesTypes.MYSQL>): string;
 
@@ -41,4 +42,6 @@ export interface TableAltererInterface {
 	addForeignKey(tableName: string, parameters: AddForeignKeyInterface): string;
 
 	addComputedColumn(tableName: string, parameters: AddComputedColumnInterface<DatabasesTypes.MYSQL>): string;
+
+	dropTable(tableName: string, parameters: DropTableInterface<DatabasesTypes.MYSQL>): string;
 }

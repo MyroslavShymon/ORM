@@ -1,5 +1,5 @@
 import { Condition, ConnectionData, LogicalOperators, OrderOperators } from '@core/types';
-import { AddColumnInterface } from '@core/interfaces/table-manipuldation/add-column.interface';
+import { AddColumnInterface } from '@core/interfaces/table-manipulation/add-column.interface';
 import { DatabaseIngotInterface } from '@core/interfaces/database-ingot.interface';
 import {
 	AddCheckConstraintToColumnInterface,
@@ -18,20 +18,20 @@ import {
 	DropTableInterface,
 	RenameColumnInterface,
 	RenameTableInterface
-} from '@core/interfaces/table-manipuldation';
+} from '@core/interfaces/table-manipulation';
 import { QueryBuilderInterface } from '@context/common';
 import { CreateTableOptionsInterface } from '@core/interfaces/create-table-options.interface';
-import { AddComputedColumnInterface } from '@core/interfaces/table-manipuldation/add-computed-column.interface';
+import { AddComputedColumnInterface } from '@core/interfaces/table-manipulation/add-computed-column.interface';
 import { DatabasesTypes } from '@core/enums';
 
-export interface DataSourceInterface<DT extends DatabasesTypes | undefined = undefined> {
+export interface DataSourceInterface<DT extends DatabasesTypes> {
 	client;//TODO typing
 
 	connect(dataToConnect: ConnectionData);
 
 	createTable(options: CreateTableOptionsInterface<DT>): string;
 
-	addColumn(tableName: string, parameters: AddColumnInterface): string;
+	addColumn(tableName: string, parameters: AddColumnInterface<DT>): string;
 
 	deleteColumn(tableName: string, parameters: DeleteColumnInterface<DT>): string;
 
@@ -65,7 +65,7 @@ export interface DataSourceInterface<DT extends DatabasesTypes | undefined = und
 
 	renameTable(tableName: string, parameters: RenameTableInterface): string;
 
-	dropTable(tableName: string, parameters: DropTableInterface): string;
+	dropTable(tableName: string, parameters: DropTableInterface<DT>): string;
 
 	// migration service
 	createMigrationTable(tableName: string, tableSchema: string): string;
@@ -76,21 +76,21 @@ export interface DataSourceInterface<DT extends DatabasesTypes | undefined = und
 		dataSource: DataSourceInterface<DT>,
 		tableName: string,
 		tableSchema: string,
-		databaseIngot: DatabaseIngotInterface
+		databaseIngot: DatabaseIngotInterface<DT>
 	): Promise<void>;
 
 	syncDatabaseIngot(
 		dataSource: DataSourceInterface<DT>,
 		tableName: string,
 		tableSchema: string,
-		databaseIngot: DatabaseIngotInterface
+		databaseIngot: DatabaseIngotInterface<DT>
 	): Promise<void>;
 
 	getCurrentDatabaseIngot(
 		dataSource: DataSourceInterface<DT>,
 		tableName: string,
 		tableSchema: string
-	): Promise<DatabaseIngotInterface>;
+	): Promise<DatabaseIngotInterface<DT>>;
 
 	//get time
 	getCurrentTimestamp(): string;
