@@ -4,9 +4,9 @@ import { ManyToManyRelationsOfTablesInterface } from '@context/common';
 import { DatabasesTypes } from '@core/enums';
 
 export interface TableCreatorInterface<DT extends DatabasesTypes> {
-	createIngotOfTables(connectionData: ConnectionData): Promise<TableIngotInterface<DatabasesTypes.POSTGRES>[] | undefined>;
+	createIngotOfTables(connectionData: ConnectionData): Promise<TableIngotInterface<DT>[] | undefined>;
 
-	generateCreateTableQuery(ingotsOfTables: TableIngotInterface<DatabasesTypes.POSTGRES>[]): string;
+	generateCreateTableQuery(ingotsOfTables: TableIngotInterface<DT>[]): string;
 
 	generateCreateTableQueryForManyToManyRelation(manyToManyRelationsOfTables: ManyToManyRelationsOfTablesInterface[]): string;
 }

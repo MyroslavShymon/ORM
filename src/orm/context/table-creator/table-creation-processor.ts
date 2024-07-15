@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { BaseColumnInterface, ColumnInterface, ComputedColumnInterface, TableIngotInterface } from '@core/interfaces';
+import { ColumnInterface, ComputedColumnInterface, TableIngotInterface } from '@core/interfaces';
 import { constants } from '@core/constants';
 import { TableComparator } from '@context/table-creator/table-comparator';
 import {
@@ -18,12 +18,12 @@ export class TableCreationProcessor<DT extends DatabasesTypes> implements TableC
 	}
 
 	processingTablesWithModifiedState(
-		potentiallyNewTables: TableIngotInterface<DatabasesTypes.POSTGRES>[],
-		potentiallyDeletedTables: TableIngotInterface<DatabasesTypes.POSTGRES>[]
-	): TableIngotInterface<DatabasesTypes.POSTGRES>[] {
+		potentiallyNewTables: TableIngotInterface<DT>[],
+		potentiallyDeletedTables: TableIngotInterface<DT>[]
+	): TableIngotInterface<DT>[] {
 		const renamedTables: {
-			table: TableIngotInterface<DatabasesTypes.POSTGRES>
-			model: TableIngotInterface<DatabasesTypes.POSTGRES>
+			table: TableIngotInterface<DT>
+			model: TableIngotInterface<DT>
 		}[] = [];
 		const tablesWithPercentage = this.tableComparator.calculatePercentagesOfTablesWithModifiedState(potentiallyNewTables, potentiallyDeletedTables);
 
@@ -75,8 +75,8 @@ export class TableCreationProcessor<DT extends DatabasesTypes> implements TableC
 		];
 	}
 
-	processingNewTables(newTables: TableIngotInterface<DatabasesTypes.POSTGRES>[])
-		: TableIngotInterface<DatabasesTypes.POSTGRES>[] {
+	processingNewTables(newTables: TableIngotInterface<DT>[])
+		: TableIngotInterface<DT>[] {
 		return newTables.map(newTable => {
 			const { columns, computedColumns, ...otherTableParams } = newTable;
 
@@ -93,9 +93,9 @@ export class TableCreationProcessor<DT extends DatabasesTypes> implements TableC
 	}
 
 	processingOriginalTables(potentialTables: {
-		table: TableIngotInterface<DatabasesTypes.POSTGRES>
-		model: TableIngotInterface<DatabasesTypes.POSTGRES>
-	}[]): TableIngotInterface<DatabasesTypes.POSTGRES>[] {
+		table: TableIngotInterface<DT>
+		model: TableIngotInterface<DT>
+	}[]): TableIngotInterface<DT>[] {
 		const tablesForIngot = [];
 
 		//processing tables with original names
@@ -103,8 +103,8 @@ export class TableCreationProcessor<DT extends DatabasesTypes> implements TableC
 			const id = table.id ? table.id : uuidv4();
 			const name = model.name;
 			const options = model.options;//TODO можливо потім будемо рефакторити options в table(якісь цікаві нові штуки туда добавим)
-			const columns = this._handleColumns<ColumnInterface[]>(table.columns, model.columns);
-			const computedColumns = this._handleColumns<ComputedColumnInterface[]>(table.computedColumns, model.computedColumns);
+			const columns = this._handleColumns(table.columns, model.columns, this.columnsComparator.calculatePercentagesOfModifiedColumns.bind(this.columnsComparator));
+			const computedColumns = this._handleColumns(table.computedColumns, model.computedColumns, this.columnsComparator.calculatePercentagesOfModifiedComputedColumns.bind(this.columnsComparator));
 			const foreignKeys = model.foreignKeys;//TODO подумати над тим чи foreignKeys мають бути з Id чи ні\
 			const oneToOne = model.oneToOne;
 			const oneToMany = model.oneToMany;
@@ -128,11 +128,13 @@ export class TableCreationProcessor<DT extends DatabasesTypes> implements TableC
 		return tablesForIngot;
 	}
 
-	//TODO тут шось дивне з типізацією, треба переглянути цей метод
-	private _handleColumns<T extends ComputedColumnInterface[] | ColumnInterface[]>
-	(tableColumns: T, modelColumns: T): ColumnInterface[] | ComputedColumnInterface[] {
+	private _handleColumns<T extends ColumnInterface<DT> | ComputedColumnInterface<DT>>(
+		tableColumns: T[],
+		modelColumns: T[],
+		calculatePercentagesOfModifiedColumns: (modelColumns: T[], tableColumns: T[]) => ColumnPercentageInterface<DT>[]
+	): T[] {
 		let columnsPercentage;
-		let columns: (ColumnInterface | ComputedColumnInterface)[] = [];
+		let columns: T[] = [];
 
 		if (modelColumns == undefined || modelColumns.length === 0) {
 			return columns;
@@ -142,26 +144,7 @@ export class TableCreationProcessor<DT extends DatabasesTypes> implements TableC
 			return modelColumns.map(modelColumn => ({ id: uuidv4(), ...modelColumn }));
 		}
 
-		if ((modelColumns[0] as ComputedColumnInterface).calculate) {
-			columnsPercentage = this.columnsComparator.calculatePercentagesOfModifiedComputedColumns(
-				modelColumns as ComputedColumnInterface[],
-				tableColumns as ComputedColumnInterface[]
-			);
-		} else {
-			columnsPercentage = this.columnsComparator.calculatePercentagesOfModifiedColumns(
-				modelColumns as ColumnInterface[],
-				tableColumns as ColumnInterface[]
-			);
-		}
-		columnsPercentage = this._filterUniquePercentages(columnsPercentage);
-
-		for (const columnPercentage of columnsPercentage) {
-			if (columnPercentage.percentage >= constants.tableComparerAlgorithm.minimumColumnUniquePercentage) {
-				columns.push({ id: columnPercentage.oldColumnId, ...columnPercentage.newColumn });
-			}
-		}
-
-		//add columns with same names
+		// Додаємо колонки з однаковими іменами
 		for (const modelColumn of modelColumns) {
 			for (const tableColumn of tableColumns) {
 				if (tableColumn.name === modelColumn.name) {
@@ -171,8 +154,18 @@ export class TableCreationProcessor<DT extends DatabasesTypes> implements TableC
 			}
 		}
 
-		//add columns which new
-		const resultModelColumns = (modelColumns as BaseColumnInterface[])
+		columnsPercentage = calculatePercentagesOfModifiedColumns(modelColumns, tableColumns);
+
+		columnsPercentage = this._filterUniquePercentages(columnsPercentage);
+
+		for (const columnPercentage of columnsPercentage) {
+			if (columnPercentage.percentage >= constants.tableComparerAlgorithm.minimumColumnUniquePercentage) {
+				columns.push({ id: columnPercentage.oldColumnId, ...columnPercentage.newColumn });
+			}
+		}
+
+		// Додаємо нові колонки
+		const resultModelColumns = modelColumns
 			.filter(
 				modelColumn => !columns.some(column =>
 					column.name === modelColumn.name
@@ -184,8 +177,8 @@ export class TableCreationProcessor<DT extends DatabasesTypes> implements TableC
 		return [...columns, ...resultModelColumns];
 	}
 
-	private _filterUniquePercentages<T extends ColumnPercentageInterface | ComputedColumnPercentageInterface>
-	(columnsPercentage: T[]): (ColumnPercentageInterface | ComputedColumnPercentageInterface)[] {
+	private _filterUniquePercentages<T extends ColumnPercentageInterface<DT> | ComputedColumnPercentageInterface<DT>>
+	(columnsPercentage: T[]): (ColumnPercentageInterface<DT> | ComputedColumnPercentageInterface<DT>)[] {
 		// Крок 1: Визначити елементи, які містять newColumn.name, що з'являються більше одного разу
 		const nameCount = new Map();
 		columnsPercentage.forEach(item => {

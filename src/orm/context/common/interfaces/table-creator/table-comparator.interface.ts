@@ -4,7 +4,7 @@ import { DatabasesTypes } from '@core/enums';
 
 export interface TableComparatorInterface<DT extends DatabasesTypes> {
 	calculatePercentagesOfTablesWithModifiedState(
-		newTables: TableIngotInterface<DatabasesTypes.POSTGRES>[],
-		deletedTables: TableIngotInterface<DatabasesTypes.POSTGRES>[]
-	): TablePercentageInterface<DatabasesTypes.POSTGRES>[];
+		newTables: TableIngotInterface<DT>[],
+		deletedTables: TableIngotInterface<DT>[]
+	): TablePercentageInterface<DT>[];
 }

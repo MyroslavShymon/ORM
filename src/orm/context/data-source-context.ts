@@ -51,8 +51,8 @@ class DataSourceContext<DT extends DatabasesTypes> implements DataSourceContextI
 		return new TableManipulation(this._dataSource);
 	}
 
-	get tableCreator(): TableCreatorInterface<DatabasesTypes.POSTGRES> {
-		return new TableCreator<DatabasesTypes.POSTGRES>(this._dataSource as DataSourceInterface<DatabasesTypes.POSTGRES>);
+	get tableCreator(): TableCreatorInterface<DT> {
+		return new TableCreator<DT>(this._dataSource);
 	}
 
 	get migrationManager(): MigrationManagerInterface<DT> {

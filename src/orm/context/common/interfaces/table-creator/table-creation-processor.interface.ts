@@ -3,15 +3,15 @@ import { DatabasesTypes } from '@core/enums';
 
 export interface TableCreationProcessorInterface<DT extends DatabasesTypes> {
 	processingTablesWithModifiedState(
-		potentiallyNewTables: TableIngotInterface<DatabasesTypes.POSTGRES>[],
-		potentiallyDeletedTables: TableIngotInterface<DatabasesTypes.POSTGRES>[]
-	): TableIngotInterface<DatabasesTypes.POSTGRES>[];
+		potentiallyNewTables: TableIngotInterface<DT>[],
+		potentiallyDeletedTables: TableIngotInterface<DT>[]
+	): TableIngotInterface<DT>[];
 
-	processingNewTables(newTables: TableIngotInterface<DatabasesTypes.POSTGRES>[])
-		: TableIngotInterface<DatabasesTypes.POSTGRES>[];
+	processingNewTables(newTables: TableIngotInterface<DT>[])
+		: TableIngotInterface<DT>[];
 
 	processingOriginalTables(potentialTables: {
-		table: TableIngotInterface<DatabasesTypes.POSTGRES>
-		model: TableIngotInterface<DatabasesTypes.POSTGRES>
-	}[]): TableIngotInterface<DatabasesTypes.POSTGRES>[];
+		table: TableIngotInterface<DT>
+		model: TableIngotInterface<DT>
+	}[]): TableIngotInterface<DT>[];
 }

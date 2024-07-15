@@ -1,7 +1,8 @@
 import { ColumnOptionsDecoratorInterface } from './column-options-decorator.interface';
+import { DatabasesTypes } from '@core/enums';
 
-export interface ColumnMetadataInterface {
+export interface ColumnMetadataInterface<DT extends DatabasesTypes | undefined = undefined> {
 	name: string;
 	propertyKey: string;
-	options?: ColumnOptionsDecoratorInterface;
+	options?: ColumnOptionsDecoratorInterface<DT>;
 }

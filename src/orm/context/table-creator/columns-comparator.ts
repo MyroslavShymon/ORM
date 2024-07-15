@@ -4,19 +4,20 @@ import {
 	ColumnsComparatorInterface,
 	ComputedColumnPercentageInterface
 } from '@context/common';
+import { DatabasesTypes } from '@core/enums';
 
-export class ColumnsComparator implements ColumnsComparatorInterface {
+export class ColumnsComparator<DT extends DatabasesTypes> implements ColumnsComparatorInterface<DT> {
 	constructor() {
 	}
 
 	calculatePercentagesOfModifiedComputedColumns(
-		newComputedColumns: ComputedColumnInterface[],
-		oldComputedColumns: ComputedColumnInterface[]
-	): ComputedColumnPercentageInterface[] {
-		const computedColumnsPercentage: ComputedColumnPercentageInterface[] = [];
+		newComputedColumns: ComputedColumnInterface<DT>[],
+		oldComputedColumns: ComputedColumnInterface<DT>[]
+	): ComputedColumnPercentageInterface<DT>[] {
+		const computedColumnsPercentage: ComputedColumnPercentageInterface<DT>[] = [];
 
-		const getUniqueComputedColumnsInNewColumns = this._getUniqueColumns<ComputedColumnInterface>(newComputedColumns, oldComputedColumns);
-		const getUniqueComputedColumnsInOldColumns = this._getUniqueColumns<ComputedColumnInterface>(oldComputedColumns, newComputedColumns);
+		const getUniqueComputedColumnsInNewColumns = this._getUniqueColumns<ComputedColumnInterface<DT>>(newComputedColumns, oldComputedColumns);
+		const getUniqueComputedColumnsInOldColumns = this._getUniqueColumns<ComputedColumnInterface<DT>>(oldComputedColumns, newComputedColumns);
 
 		if (!getUniqueComputedColumnsInNewColumns.length || !getUniqueComputedColumnsInOldColumns.length) {
 			return [];
@@ -46,13 +47,13 @@ export class ColumnsComparator implements ColumnsComparatorInterface {
 	}
 
 	calculatePercentagesOfModifiedColumns(
-		newColumns: ColumnInterface[],
-		oldColumns: ColumnInterface[]
-	): ColumnPercentageInterface[] {
-		const columnsPercentage: ColumnPercentageInterface[] = [];
+		newColumns: ColumnInterface<DT>[],
+		oldColumns: ColumnInterface<DT>[]
+	): ColumnPercentageInterface<DT>[] {
+		const columnsPercentage: ColumnPercentageInterface<DT>[] = [];
 
-		const getUniqueColumnsInNewColumns = this._getUniqueColumns<ColumnInterface>(newColumns, oldColumns);
-		const getUniqueColumnsInOldColumns = this._getUniqueColumns<ColumnInterface>(oldColumns, newColumns);
+		const getUniqueColumnsInNewColumns = this._getUniqueColumns<ColumnInterface<DT>>(newColumns, oldColumns);
+		const getUniqueColumnsInOldColumns = this._getUniqueColumns<ColumnInterface<DT>>(oldColumns, newColumns);
 
 		if (!getUniqueColumnsInNewColumns.length || !getUniqueColumnsInOldColumns.length) {
 			return [];
@@ -80,7 +81,7 @@ export class ColumnsComparator implements ColumnsComparatorInterface {
 		return columnsPercentage;
 	}
 
-	private _getUniqueColumns<T extends ColumnInterface | ComputedColumnInterface>
+	private _getUniqueColumns<T extends ColumnInterface<DT> | ComputedColumnInterface<DT>>
 	(newColumns: T[], oldColumns: T[]): T[] {
 		const namesSet2 = new Set(oldColumns.map(obj => obj.name));
 

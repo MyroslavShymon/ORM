@@ -8,7 +8,7 @@ import {
 	TableIngotInterface,
 	TableInterface
 } from '@core/interfaces';
-import { ComputedColumnMetadataInterface } from '@decorators/index';
+import { ColumnMetadataInterface, ComputedColumnMetadataInterface } from '@decorators/index';
 import { DatabaseStateBuilderInterface, DatabaseStateInterface } from '@context/common';
 import { constants } from '@core/constants';
 import { DatabasesTypes } from '@core/enums';
@@ -17,19 +17,19 @@ export class DatabaseStateBuilder<DT extends DatabasesTypes> implements Database
 	constructor() {
 	}
 
-	getPreparedModels(models: ModelInterface[]): TableIngotInterface<DatabasesTypes.POSTGRES>[] {
-		const preparedModels: TableIngotInterface<DatabasesTypes.POSTGRES>[] = [];
+	getPreparedModels(models: ModelInterface[]): TableIngotInterface<DT>[] {
+		const preparedModels: TableIngotInterface<DT>[] = [];
 
 		for (let model of models) {
-			const table: TableInterface
+			const table: TableInterface<DT>
 				= Reflect.getMetadata(constants.decoratorsMetadata.table, model.prototype);
-			const metadataColumns
+			const metadataColumns: ColumnMetadataInterface<DT>[]
 				= Reflect.getMetadata(constants.decoratorsMetadata.columns, model.prototype);
-			const metadataComputedColumns: ComputedColumnMetadataInterface[]
+			const metadataComputedColumns: ComputedColumnMetadataInterface<DT>[]
 				= Reflect.getMetadata(constants.decoratorsMetadata.computedColumns, model.prototype);
 			const foreignKeys: ForeignKeyInterface[]
 				= Reflect.getMetadata(constants.decoratorsMetadata.foreignKeys, model.prototype) || [];
-			const primaryColumn: PrimaryGeneratedColumnInterface
+			const primaryColumn: PrimaryGeneratedColumnInterface<DT>
 				= Reflect.getMetadata(constants.decoratorsMetadata.primaryColumn, model.prototype) || {};
 			const oneToOne: OneToOneInterface[]
 				= Reflect.getMetadata(constants.decoratorsMetadata.oneToOne, model.prototype) || [];
@@ -58,7 +58,7 @@ export class DatabaseStateBuilder<DT extends DatabasesTypes> implements Database
 				computedColumns = computedColumns.map(computedColumn => ({ ...computedColumn }));
 			}
 
-			const potentialModel: TableIngotInterface<DatabasesTypes.POSTGRES> = {
+			const potentialModel: TableIngotInterface<DT> = {
 				...table,
 				columns,
 				computedColumns,
@@ -76,10 +76,10 @@ export class DatabaseStateBuilder<DT extends DatabasesTypes> implements Database
 	}
 
 	formationOfDatabaseState(
-		preparedModels: TableIngotInterface<DatabasesTypes.POSTGRES>[],
-		currentTablesIngot: TableIngotInterface<DatabasesTypes.POSTGRES>[]
-	): DatabaseStateInterface<DatabasesTypes.POSTGRES> {
-		const databaseState: DatabaseStateInterface<DatabasesTypes.POSTGRES> = {
+		preparedModels: TableIngotInterface<DT>[],
+		currentTablesIngot: TableIngotInterface<DT>[]
+	): DatabaseStateInterface<DT> {
+		const databaseState: DatabaseStateInterface<DT> = {
 			tablesWithOriginalNames: [],
 			tablesWithModifiedState: {
 				potentiallyDeletedTables: [],

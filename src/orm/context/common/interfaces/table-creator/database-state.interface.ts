@@ -3,11 +3,11 @@ import { DatabasesTypes } from '@core/enums';
 
 export interface DatabaseStateInterface<DT extends DatabasesTypes> {
 	tablesWithOriginalNames: {
-		table: TableIngotInterface<DatabasesTypes.POSTGRES>
-		model: TableIngotInterface<DatabasesTypes.POSTGRES>
+		table: TableIngotInterface<DT>
+		model: TableIngotInterface<DT>
 	}[];
 	tablesWithModifiedState: {
-		potentiallyDeletedTables: TableIngotInterface<DatabasesTypes.POSTGRES>[],
-		potentiallyNewTables: TableIngotInterface<DatabasesTypes.POSTGRES>[]
+		potentiallyDeletedTables: TableIngotInterface<DT>[],
+		potentiallyNewTables: TableIngotInterface<DT>[]
 	};
 }

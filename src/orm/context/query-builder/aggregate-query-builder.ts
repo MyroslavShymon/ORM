@@ -26,5 +26,4 @@ export class AggregateQueryBuilder<T, DT extends DatabasesTypes> implements Aggr
 	groupBy(columns: string[]): void {
 		this._queryBuilder.query += this._dataSource.groupBy(columns);
 	}
-
 }

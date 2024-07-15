@@ -13,7 +13,7 @@ import { DatabasesTypes } from '@core/enums';
 export interface DataSourceContextInterface<DT extends DatabasesTypes> {
 	client: DT extends DatabasesTypes.POSTGRES ? PoolClient : Connection;
 	tableManipulation: TableManipulationInterface<DT>;
-	tableCreator: TableCreatorInterface<DatabasesTypes.POSTGRES>;
+	tableCreator: TableCreatorInterface<DT>;
 	migrationManager: MigrationManagerInterface<DT>;
 
 	queryBuilder<T>(): QueryBuilderInterface<T>;

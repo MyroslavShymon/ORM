@@ -5,7 +5,12 @@ import {
 	TableCreationProcessorInterface,
 	TableCreatorInterface
 } from '@context/common';
-import { DatabaseIngotInterface, DataSourceInterface, ManyToManyInterface } from '@core/interfaces';
+import {
+	CreateTableOptionsInterface,
+	DatabaseIngotInterface,
+	DataSourceInterface,
+	ManyToManyInterface
+} from '@core/interfaces';
 import { TableIngotInterface } from '@core/interfaces/table-ingot.interface';
 import { constants } from '@core/constants';
 import { ConnectionData } from '@core/types';
@@ -14,11 +19,11 @@ import { DatabaseStateBuilder } from '@context/table-creator/database-state-buil
 import { DatabasesTypes } from '@core/enums';
 
 export class TableCreator<DT extends DatabasesTypes> implements TableCreatorInterface<DT> {
-	private readonly _dataSource: DataSourceInterface<DatabasesTypes.POSTGRES>;
-	private readonly _tableCreationProcessor: TableCreationProcessorInterface<DatabasesTypes.POSTGRES> = new TableCreationProcessor<DatabasesTypes.POSTGRES>();
-	private readonly _databaseStateBuilder: DatabaseStateBuilderInterface<DatabasesTypes.POSTGRES> = new DatabaseStateBuilder();
+	private readonly _dataSource: DataSourceInterface<DT>;
+	private readonly _tableCreationProcessor: TableCreationProcessorInterface<DT> = new TableCreationProcessor<DT>();
+	private readonly _databaseStateBuilder: DatabaseStateBuilderInterface<DT> = new DatabaseStateBuilder();
 
-	constructor(dataSource: DataSourceInterface<DatabasesTypes.POSTGRES>) {
+	constructor(dataSource: DataSourceInterface<DT>) {
 		this._dataSource = dataSource;
 	}
 
@@ -26,21 +31,21 @@ export class TableCreator<DT extends DatabasesTypes> implements TableCreatorInte
 								  models,
 								  migrationTable = constants.migrationsTableName,
 								  migrationTableSchema = constants.migrationsTableSchemaName
-							  }: ConnectionData): Promise<TableIngotInterface<DatabasesTypes.POSTGRES>[] | undefined> {
+							  }: ConnectionData): Promise<TableIngotInterface<DT>[] | undefined> {
 		if (!models || models.length === 0) {
 			return [];
 		}
 
-		let { tables: currentTablesIngot }: DatabaseIngotInterface<DatabasesTypes.POSTGRES> =
+		let { tables: currentTablesIngot }: DatabaseIngotInterface<DT> =
 			await this._dataSource.getCurrentDatabaseIngot(
 				this._dataSource,
 				migrationTable,
 				migrationTableSchema
 			);
 
-		let preparedModels: TableIngotInterface<DatabasesTypes.POSTGRES>[] = this._databaseStateBuilder.getPreparedModels(models);
+		let preparedModels: TableIngotInterface<DT>[] = this._databaseStateBuilder.getPreparedModels(models);
 
-		const databaseState: DatabaseStateInterface<DatabasesTypes.POSTGRES> = this._databaseStateBuilder.formationOfDatabaseState(preparedModels, currentTablesIngot);
+		const databaseState: DatabaseStateInterface<DT> = this._databaseStateBuilder.formationOfDatabaseState(preparedModels, currentTablesIngot);
 		//якщо нема жодних збігів потенційної структури таблиць і теперішньої то перевіряємо чи всі таблиці не перейменовані і обробляємо їх
 		if (databaseState.tablesWithOriginalNames.length === 0) {
 			return this._tableCreationProcessor.processingTablesWithModifiedState(preparedModels, currentTablesIngot);
@@ -50,9 +55,9 @@ export class TableCreator<DT extends DatabasesTypes> implements TableCreatorInte
 	}
 
 	private _formationOfTableIngot(
-		databaseState: DatabaseStateInterface<DatabasesTypes.POSTGRES>
-	): TableIngotInterface<DatabasesTypes.POSTGRES>[] {
-		let tablesIngot: TableIngotInterface<DatabasesTypes.POSTGRES>[] = [];
+		databaseState: DatabaseStateInterface<DT>
+	): TableIngotInterface<DT>[] {
+		let tablesIngot: TableIngotInterface<DT>[] = [];
 
 		if (
 			databaseState.tablesWithModifiedState.potentiallyDeletedTables.length === 0 &&
@@ -107,32 +112,31 @@ export class TableCreator<DT extends DatabasesTypes> implements TableCreatorInte
 							.reverse()
 							.join('_'))
 					) {
-						createTablesQueryForManyToManyRelation += this._dataSource.createTable(
-							{
-								table: {
-									name: tableName,
-									options:
-										{
-											primaryKeys: [
-												manyToManys[i].foreignKey,
-												manyToManys[j].foreignKey
-											]
-										}
+						const options: CreateTableOptionsInterface<DT> = {
+							table: {
+								name: tableName,
+								options: {
+									primaryKeys: [
+										manyToManys[i].foreignKey,
+										manyToManys[j].foreignKey
+									]
+								}
+							},
+							oneToMany: [
+								{
+									tableName: manyToManys[i].referencedTable,
+									referenceColumn: manyToManys[i].referencedColumn,
+									foreignKey: manyToManys[i].foreignKey
 								},
-								oneToMany: [
-									{
-										tableName: manyToManys[i].referencedTable,
-										referenceColumn: manyToManys[i].referencedColumn,
-										foreignKey: manyToManys[i].foreignKey
-									},
-									{
-										tableName: manyToManys[j].referencedTable,
-										referenceColumn: manyToManys[j].referencedColumn,
-										foreignKey: manyToManys[j].foreignKey
-									}
-								]
-							}
-						) + '\n\n';
+								{
+									tableName: manyToManys[j].referencedTable,
+									referenceColumn: manyToManys[j].referencedColumn,
+									foreignKey: manyToManys[j].foreignKey
+								}
+							]
+						} as CreateTableOptionsInterface<DT>;
+
+						createTablesQueryForManyToManyRelation += this._dataSource.createTable(options) + '\n\n';
 						createdManyToManyTables.push(tableName);
 					}
 				}
@@ -142,7 +146,7 @@ export class TableCreator<DT extends DatabasesTypes> implements TableCreatorInte
 		return createTablesQueryForManyToManyRelation;
 	}
 
-	generateCreateTableQuery(ingotsOfTables: TableIngotInterface<DatabasesTypes.POSTGRES>[]): string {
+	generateCreateTableQuery(ingotsOfTables: TableIngotInterface<DT>[]): string {
 		let createTablesQuery = '';
 
 		for (const {
@@ -155,7 +159,7 @@ export class TableCreator<DT extends DatabasesTypes> implements TableCreatorInte
 			foreignKeys,
 			...table
 		} of ingotsOfTables) {
-			createTablesQuery += this._dataSource.createTable({
+			const options: CreateTableOptionsInterface<DT> = {
 				oneToMany,
 				manyToMany,
 				oneToOne,
@@ -164,7 +168,9 @@ export class TableCreator<DT extends DatabasesTypes> implements TableCreatorInte
 				primaryColumn,
 				foreignKeys,
 				table
-			}) + '\n\n';
+			} as unknown as CreateTableOptionsInterface<DT>;
+
+			createTablesQuery += this._dataSource.createTable(options) + '\n\n';
 		}
 
 		createTablesQuery += this.generateCreateTableQueryForManyToManyRelation(

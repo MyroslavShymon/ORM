@@ -90,7 +90,8 @@ export class TableAlterer implements TableAltererInterface {
 			columnDefinition += ` CONSTRAINT ${options.nameOfCheckConstraint}`;
 		}
 
-		return `ALTER TABLE \`${tableName}\` ADD COLUMN ${columnDefinition};`;
+		return `ALTER TABLE \`${tableName}\`
+            ADD COLUMN ${columnDefinition};`;
 	}
 
 	deleteColumn(tableName: string, parameters: DeleteColumnInterface<DatabasesTypes.MYSQL>): string {
@@ -106,7 +107,8 @@ export class TableAlterer implements TableAltererInterface {
 	}
 
 	addUniqueToColumn(tableName: string, parameters: AddUniqueToColumnInterface<DatabasesTypes.MYSQL>): string {
-		return `ALTER TABLE \`${tableName}\` ADD UNIQUE (\`${parameters.columnName}\`);`;
+		return `ALTER TABLE \`${tableName}\`
+            ADD UNIQUE (\`${parameters.columnName}\`);`;
 	}
 
 	deleteUniqueFromColum(tableName: string, parameters: DeleteUniqueFromColumnInterface): string {
@@ -156,7 +158,8 @@ export class TableAlterer implements TableAltererInterface {
 	}
 
 	addPrimaryGeneratedColumn(tableName: string, parameters: AddPrimaryGeneratedColumnInterface<DatabasesTypes.MYSQL>): string {
-		let query = `ALTER TABLE \`${tableName}\` ADD COLUMN \`${parameters.columnName}\` ${parameters.type} AUTO_INCREMENT`;
+		let query = `ALTER TABLE \`${tableName}\`
+            ADD COLUMN \`${parameters.columnName}\` ${parameters.type} AUTO_INCREMENT`;
 
 		// Додавання опціональних параметрів
 		if (parameters.startWith !== undefined) {
@@ -191,18 +194,18 @@ export class TableAlterer implements TableAltererInterface {
 
 	addForeignKey(tableName: string, parameters: AddForeignKeyInterface): string {
 		return `
-			ALTER TABLE \`${tableName}\`
-			ADD CONSTRAINT fk_${tableName}_${parameters.referencedTable}
-			FOREIGN KEY  (\`${parameters.foreignKey}\`) REFERENCES \`${parameters.referencedTable}\`(\`${parameters.referencedColumn}\`);` + '\n';
+            ALTER TABLE \`${tableName}\`
+                ADD CONSTRAINT fk_${tableName}_${parameters.referencedTable}
+                FOREIGN KEY (\`${parameters.foreignKey}\`) REFERENCES \`${parameters.referencedTable}\`(\`${parameters.referencedColumn}\`);` + '\n';
 	}
 
 	addComputedColumn(tableName: string, parameters: AddComputedColumnInterface<DatabasesTypes.MYSQL>): string {
-		const { dataType, calculate, columnName, stored } = parameters;
+		const { dataType, calculate, name, stored } = parameters;
 
 		return `
-        ALTER TABLE \`${tableName}\`
-        ADD COLUMN \`${columnName}\` ${dataType} GENERATED ALWAYS AS (${calculate}) ${stored ? 'STORED' : 'VIRTUAL'};
-    `;
+            ALTER TABLE \`${tableName}\`
+                ADD COLUMN \`${name}\` ${dataType} GENERATED ALWAYS AS (${calculate}) ${stored ? 'STORED' : 'VIRTUAL'};
+		`;
 	}
 
 	dropTable(tableName: string, parameters: DropTableInterface<DatabasesTypes.MYSQL>): string {

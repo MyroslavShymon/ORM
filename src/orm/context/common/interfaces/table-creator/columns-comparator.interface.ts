@@ -1,14 +1,15 @@
 import { ColumnInterface, ComputedColumnInterface } from '@core/interfaces';
 import { ColumnPercentageInterface, ComputedColumnPercentageInterface } from '@context/common';
+import { DatabasesTypes } from '@core/enums';
 
-export interface ColumnsComparatorInterface {
+export interface ColumnsComparatorInterface<DT extends DatabasesTypes> {
 	calculatePercentagesOfModifiedColumns(
-		newColumns: ColumnInterface[],
-		oldColumns: ColumnInterface[]
-	): ColumnPercentageInterface[];
+		newColumns: ColumnInterface<DT>[],
+		oldColumns: ColumnInterface<DT>[]
+	): ColumnPercentageInterface<DT>[];
 
 	calculatePercentagesOfModifiedComputedColumns(
-		newComputedColumns: ComputedColumnInterface[],
-		oldComputedColumns: ComputedColumnInterface[]
-	): ComputedColumnPercentageInterface[];
+		newComputedColumns: ComputedColumnInterface<DT>[],
+		oldComputedColumns: ComputedColumnInterface<DT>[]
+	): ComputedColumnPercentageInterface<DT>[];
 }

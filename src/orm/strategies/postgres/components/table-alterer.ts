@@ -62,7 +62,8 @@ export class TableAlterer implements TableAltererInterface {
 			columnDefinition += ' NULLS NOT DISTINCT';
 		}
 
-		return `ALTER TABLE ${tableName} ADD COLUMN ${columnDefinition};`;
+		return `ALTER TABLE ${tableName}
+            ADD COLUMN ${columnDefinition};`;
 	}
 
 	deleteColumn(tableName: string, parameters: DeleteColumnInterface<DatabasesTypes.POSTGRES>): string {
@@ -70,11 +71,13 @@ export class TableAlterer implements TableAltererInterface {
 	}
 
 	addNotNullToColumn(tableName: string, parameters: AddNotNullToColumnInterface): string {
-		return `ALTER TABLE ${tableName} ALTER COLUMN ${parameters.columnName} SET NOT NULL;`;
+		return `ALTER TABLE ${tableName}
+            ALTER COLUMN ${parameters.columnName} SET NOT NULL;`;
 	}
 
 	dropNotNullFromColumn(tableName: string, parameters: DropNotNullFromColumnInterface): string {
-		return `ALTER TABLE ${tableName} ALTER COLUMN ${parameters.columnName} DROP NOT NULL;`;
+		return `ALTER TABLE ${tableName}
+            ALTER COLUMN ${parameters.columnName} DROP NOT NULL;`;
 	}
 
 	addUniqueToColumn(tableName: string, parameters: AddUniqueToColumnInterface<DatabasesTypes.POSTGRES>): string {
@@ -85,10 +88,10 @@ export class TableAlterer implements TableAltererInterface {
 		const constraintName = `${tableName}_${parameters.columnName}_key`;
 
 		let query = `
-			SELECT constraint_name as ${constraintName}
-			FROM information_schema.table_constraints
-			WHERE table_name = '${tableName}' 
-			AND constraint_type = 'UNIQUE';` + '\n';
+            SELECT constraint_name as ${constraintName}
+            FROM information_schema.table_constraints
+            WHERE table_name = '${tableName}'
+              AND constraint_type = 'UNIQUE';` + '\n';
 
 		query += this.dropConstraint(tableName, { constraintName });
 
@@ -111,10 +114,10 @@ export class TableAlterer implements TableAltererInterface {
 		const constraintName = `${tableName}_${parameters.columnName}_check`;
 
 		let query = `
-			SELECT constraint_name as ${constraintName}
-			FROM information_schema.table_constraints
-			WHERE table_name = '${tableName}' 
-			AND constraint_type = 'CHECK';` + '\n';
+            SELECT constraint_name as ${constraintName}
+            FROM information_schema.table_constraints
+            WHERE table_name = '${tableName}'
+              AND constraint_type = 'CHECK';` + '\n';
 
 		query += this.dropConstraint(tableName, { constraintName });
 
@@ -123,7 +126,7 @@ export class TableAlterer implements TableAltererInterface {
 
 	dropConstraint(tableName: string, parameters: DropConstraintInterface): string {
 		return `
-			ALTER TABLE ${tableName} DROP CONSTRAINT ${parameters.constraintName};`;
+            ALTER TABLE ${tableName} DROP CONSTRAINT ${parameters.constraintName};`;
 	}
 
 	changeDataTypeOfColumn(tableName: string, parameters: ChangeColumnDatatypeInterface): string {
@@ -143,7 +146,8 @@ export class TableAlterer implements TableAltererInterface {
 	}
 
 	addPrimaryGeneratedColumn(tableName: string, parameters: AddPrimaryGeneratedColumnInterface<DatabasesTypes.POSTGRES>): string {
-		let query = `ALTER TABLE ${tableName} ADD COLUMN ${parameters.columnName} ${parameters.type}`;
+		let query = `ALTER TABLE ${tableName}
+            ADD COLUMN ${parameters.columnName} ${parameters.type}`;
 
 		// Додавання опціональних параметрів
 		if (parameters.startWith !== undefined) {
@@ -184,18 +188,18 @@ export class TableAlterer implements TableAltererInterface {
 
 	addForeignKey(tableName: string, parameters: AddForeignKeyInterface): string {
 		return `
-			ALTER TABLE ${tableName}
-			ADD CONSTRAINT fk_${tableName}_${parameters.referencedTable}
-			FOREIGN KEY (${parameters.foreignKey}) REFERENCES ${parameters.referencedTable}(${parameters.referencedColumn});` + '\n';
+            ALTER TABLE ${tableName}
+                ADD CONSTRAINT fk_${tableName}_${parameters.referencedTable}
+                FOREIGN KEY (${parameters.foreignKey}) REFERENCES ${parameters.referencedTable}(${parameters.referencedColumn});` + '\n';
 	}
 
 	addComputedColumn(tableName: string, parameters: AddComputedColumnInterface<DatabasesTypes.POSTGRES>): string {
-		const { dataType, calculate, columnName } = parameters;
+		const { dataType, calculate, name } = parameters;
 
 		return `
-        ALTER TABLE ${tableName} 
-        ADD COLUMN ${columnName} ${dataType} AS (${calculate}) STORED;
-    `;
+            ALTER TABLE ${tableName}
+                ADD COLUMN ${name} ${dataType} AS (${calculate}) STORED;
+		`;
 	}
 
 	dropTable(tableName: string, parameters: DropTableInterface<DatabasesTypes.POSTGRES>): string {

@@ -2,8 +2,8 @@ import { TableIngotInterface } from '@core/interfaces';
 import { DatabasesTypes } from '@core/enums';
 
 export interface TablePercentageInterface<DT extends DatabasesTypes> {
-	newTable: TableIngotInterface<DatabasesTypes.POSTGRES>,
-	deletedTable: TableIngotInterface<DatabasesTypes.POSTGRES>,
+	newTable: TableIngotInterface<DT>,
+	deletedTable: TableIngotInterface<DT>,
 	percentages: {
 		columnsPercentage?: number
 		computedColumnPercentage?: number

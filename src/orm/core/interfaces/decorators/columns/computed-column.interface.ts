@@ -2,4 +2,6 @@ import { ComputedColumnMysqlInterface, ComputedColumnPostgresInterface } from '@
 import { DatabasesTypes } from '@core/enums';
 
 export type ComputedColumnInterface<DT extends DatabasesTypes | undefined = undefined> =
-	DT extends DatabasesTypes.POSTGRES ? ComputedColumnPostgresInterface : ComputedColumnMysqlInterface;
+	DT extends DatabasesTypes.POSTGRES ? ComputedColumnPostgresInterface :
+		DT extends DatabasesTypes.MYSQL ? ComputedColumnMysqlInterface :
+			never;

@@ -7,8 +7,7 @@ import {
 	OneToManyInterface,
 	OneToOneInterface,
 	TableIngotInterface,
-	TableOptionsMysqlInterface,
-	TableOptionsPostgresqlInterface
+	TableOptionsInterface
 } from '@core/interfaces';
 import { TableComparatorInterface, TablePercentageInterface } from '@context/common';
 import { DatabasesTypes } from '@core/enums';
@@ -19,14 +18,14 @@ export class TableComparator<DT extends DatabasesTypes> implements TableComparat
 
 	//TODO тут вказано чітко postgres, треба буде погратися з типами
 	calculatePercentagesOfTablesWithModifiedState(
-		newTables: TableIngotInterface<DatabasesTypes.POSTGRES>[],
-		deletedTables: TableIngotInterface<DatabasesTypes.POSTGRES>[]
-	): TablePercentageInterface<DatabasesTypes.POSTGRES>[] {
+		newTables: TableIngotInterface<DT>[],
+		deletedTables: TableIngotInterface<DT>[]
+	): TablePercentageInterface<DT>[] {
 		const tablesPercentage = [];
 
 		for (const newTable of newTables) {
 			for (const deletedTable of deletedTables) {
-				const tablePercentage: TablePercentageInterface<DatabasesTypes.POSTGRES> = {
+				const tablePercentage: TablePercentageInterface<DT> = {
 					newTable,
 					deletedTable,
 					percentages: {}
@@ -55,7 +54,10 @@ export class TableComparator<DT extends DatabasesTypes> implements TableComparat
 					);
 				}
 
-				if (newTable?.options?.checkConstraint && deletedTable?.options?.checkConstraint) {
+				if (
+					'checkConstraint' in newTable?.options &&
+					'checkConstraint' in deletedTable?.options
+				) {
 					tablePercentage.percentages.constraintsPercentage = this._calculateConstraintsPercentage(
 						newTable.options.checkConstraint,
 						deletedTable.options.checkConstraint
@@ -104,8 +106,8 @@ export class TableComparator<DT extends DatabasesTypes> implements TableComparat
 	}
 
 	private _calculateOptionsPercentage(
-		newTableOptions: DT extends DatabasesTypes.POSTGRES ? TableOptionsPostgresqlInterface : TableOptionsMysqlInterface,
-		deletedTableOptions: DT extends DatabasesTypes.POSTGRES ? TableOptionsPostgresqlInterface : TableOptionsMysqlInterface
+		newTableOptions: TableOptionsInterface<DT>,
+		deletedTableOptions: TableOptionsInterface<DT>
 	): number {
 		const flatten = (arr: string[] | string[][]): string[] => {
 			if (Array.isArray(arr[0])) {
@@ -127,8 +129,8 @@ export class TableComparator<DT extends DatabasesTypes> implements TableComparat
 	}
 
 	private _calculateColumnPercentage(
-		newTableColumns: ColumnInterface<DatabasesTypes.POSTGRES>[] | ComputedColumnInterface<DatabasesTypes.POSTGRES>[],
-		deletedTableColumns: ColumnInterface<DatabasesTypes.POSTGRES>[] | ComputedColumnInterface<DatabasesTypes.POSTGRES>[],
+		newTableColumns: ColumnInterface<DT>[] | ComputedColumnInterface<DT>[],
+		deletedTableColumns: ColumnInterface<DT>[] | ComputedColumnInterface<DT>[],
 		newTablePrimaryColumnName?: string,
 		deletedTablePrimaryColumnName?: string
 	): number {
