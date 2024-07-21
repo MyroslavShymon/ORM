@@ -18,3 +18,4 @@ export * from './delete-unique-from-column.interface';
 export * from './add-primary-generated-column.interface';
 export * from './add-foreign-key.interface';
 export * from './add-computed-column.interface';
+export * from './common';

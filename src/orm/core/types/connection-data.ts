@@ -11,4 +11,5 @@ export type ConnectionData = PoolConfig & ConnectionOptions & {
 	migrations?: string[];
 	migrationTable?: string;
 	migrationTableSchema?: string;
+	databaseName?: string;
 }

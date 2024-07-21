@@ -1,4 +1,5 @@
 export interface CreateMigrationTableOptionsInterface {
-	tableName?: string;
+	tableName: string;
 	tableSchema?: string;
+	databaseName?: string;
 }

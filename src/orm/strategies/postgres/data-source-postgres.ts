@@ -7,6 +7,8 @@ import {
 	AddPrimaryGeneratedColumnInterface,
 	AddUniqueToColumnInterface,
 	ChangeColumnDatatypeInterface,
+	CheckTableExistenceOptionsInterface,
+	CreateMigrationTableOptionsInterface,
 	CreateTableOptionsInterface,
 	DatabaseIngotInterface,
 	DataSourceInterface,
@@ -15,7 +17,10 @@ import {
 	DeleteUniqueFromColumnInterface,
 	DropConstraintInterface,
 	DropNotNullFromColumnInterface,
-	DropTableInterface
+	DropTableInterface,
+	GetCurrentDatabaseIngotOptionsInterface,
+	InitCurrentDatabaseIngotOptionsInterface,
+	SyncDatabaseIngotOptionsInterface
 } from '@core/interfaces';
 import { Condition, ConnectionData, LogicalOperators } from '@core/types';
 import {
@@ -46,7 +51,7 @@ export class DataSourcePostgres extends BaseQueries implements DataSourceInterfa
 	client: PoolClient;
 	private _tableBuilder: TableBuilderInterface;
 	private _tableAlterer: TableAltererInterface;
-	private _migrationService: MigrationServiceInterface<DatabasesTypes.POSTGRES>;
+	private _migrationService: MigrationServiceInterface;
 	private _selectQueries: SelectQueriesInterface;
 	private _insertQueries: InsertQueriesInterface;
 	private _updateQueries: UpdateQueriesInterface;
@@ -83,38 +88,24 @@ export class DataSourcePostgres extends BaseQueries implements DataSourceInterfa
 		);
 	}
 
-	createMigrationTable(tableName: string, tableSchema: string): string {
-		return this._migrationService.createMigrationTable(tableName, tableSchema);
+	createMigrationTable(options: CreateMigrationTableOptionsInterface): string {
+		return this._migrationService.createMigrationTable(options);
 	}
 
-	checkTableExistence(dataSource: DataSourceInterface<DatabasesTypes.POSTGRES>, tableName: string, tableSchema?: string): Promise<boolean> {
-		return this._migrationService.checkTableExistence(dataSource, tableName, tableSchema);
+	checkTableExistence(options: CheckTableExistenceOptionsInterface<DatabasesTypes.POSTGRES>): Promise<boolean> {
+		return this._migrationService.checkTableExistence(options);
 	}
 
-	initCurrentDatabaseIngot(
-		dataSource: DataSourceInterface<DatabasesTypes.POSTGRES>,
-		tableName: string,
-		tableSchema: string,
-		databaseIngot: DatabaseIngotInterface<DatabasesTypes.POSTGRES>
-	): Promise<void> {
-		return this._migrationService.initCurrentDatabaseIngot(dataSource, tableName, tableSchema, databaseIngot);
+	initCurrentDatabaseIngot(options: InitCurrentDatabaseIngotOptionsInterface<DatabasesTypes.POSTGRES>): Promise<void> {
+		return this._migrationService.initCurrentDatabaseIngot(options);
 	}
 
-	syncDatabaseIngot(
-		dataSource: DataSourceInterface<DatabasesTypes.POSTGRES>,
-		tableName: string,
-		tableSchema: string,
-		databaseIngot: DatabaseIngotInterface<DatabasesTypes.POSTGRES>
-	): Promise<void> {
-		return this._migrationService.syncDatabaseIngot(dataSource, tableName, tableSchema, databaseIngot);
+	syncDatabaseIngot(options: SyncDatabaseIngotOptionsInterface<DatabasesTypes.POSTGRES>): Promise<void> {
+		return this._migrationService.syncDatabaseIngot(options);
 	}
 
-	getCurrentDatabaseIngot(
-		dataSource: DataSourceInterface<DatabasesTypes.POSTGRES>,
-		tableName: string,
-		tableSchema: string
-	): Promise<DatabaseIngotInterface<DatabasesTypes.POSTGRES>> {
-		return this._migrationService.getCurrentDatabaseIngot(dataSource, tableName, tableSchema);
+	getCurrentDatabaseIngot(options: GetCurrentDatabaseIngotOptionsInterface<DatabasesTypes.POSTGRES>): Promise<DatabaseIngotInterface<DatabasesTypes.POSTGRES>> {
+		return this._migrationService.getCurrentDatabaseIngot(options);
 	}
 
 	//Base table manipulation queries

@@ -1,17 +1,17 @@
-import {
-	CheckTableExistenceOptionsInterface,
-	CreateMigrationTableOptionsInterface,
-	InitIngotOptionsInterface,
-	SyncDatabaseIngotInterface
-} from '@context/common';
 import { DatabasesTypes } from '@core/enums';
+import {
+	CheckTableExistenceManagersOptionsInterface,
+	CreateMigrationTableManagersOptionsInterface,
+	InitDatabaseIngotManagersOptionsInterface,
+	SyncIngotManagersOptionsInterface
+} from '@context/common';
 
 export interface MigrationManagerInterface<DT extends DatabasesTypes> {
-	createMigrationTable(options?: CreateMigrationTableOptionsInterface): Promise<void>;
+	createMigrationTable(options?: CreateMigrationTableManagersOptionsInterface): Promise<void>;
 
-	checkTableExistence(options?: CheckTableExistenceOptionsInterface): Promise<boolean>;
+	checkTableExistence(options?: CheckTableExistenceManagersOptionsInterface): Promise<boolean>;
 
-	initCurrentDatabaseIngot(options: InitIngotOptionsInterface<DT>): Promise<void>;
+	initCurrentDatabaseIngot(options: InitDatabaseIngotManagersOptionsInterface<DT>): Promise<void>;
 
-	syncDatabaseIngot(options: SyncDatabaseIngotInterface<DT>): Promise<void>;
+	syncDatabaseIngot(options: SyncIngotManagersOptionsInterface<DT>): Promise<void>;
 }

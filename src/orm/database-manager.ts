@@ -59,10 +59,12 @@ class DatabaseManager<DT extends DatabasesTypes> implements DatabaseManagerInter
 			if (!isMigrationTableExist) {
 				await this._dataSource.migrationManager.createMigrationTable({
 					tableName: this._connectionData.migrationTable,
-					tableSchema: this._connectionData.migrationTableSchema
+					tableSchema: this._connectionData.migrationTableSchema,
+					databaseName: this._connectionData.databaseName
 				});
 
 				await this._dataSource.migrationManager.initCurrentDatabaseIngot({
+					databaseName: this._connectionData.databaseName,
 					tableName: this._connectionData.migrationTable,
 					tableSchema: this._connectionData.migrationTableSchema,
 					databaseIngot
@@ -77,6 +79,7 @@ class DatabaseManager<DT extends DatabasesTypes> implements DatabaseManagerInter
 			databaseIngot.tables = tablesIngot as TableIngotInterface<DT>[] || [];
 
 			await this._dataSource.migrationManager.syncDatabaseIngot({
+				databaseName: this._connectionData.databaseName,
 				tableName: this._connectionData.migrationTable,
 				tableSchema: this._connectionData.migrationTableSchema,
 				databaseIngot

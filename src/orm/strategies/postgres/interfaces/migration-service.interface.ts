@@ -1,28 +1,22 @@
-import { DatabaseIngotInterface, DataSourceInterface } from '@core/interfaces';
+import {
+	CheckTableExistenceOptionsInterface,
+	CreateMigrationTableOptionsInterface,
+	DatabaseIngotInterface,
+	GetCurrentDatabaseIngotOptionsInterface,
+	InitCurrentDatabaseIngotOptionsInterface,
+	SyncDatabaseIngotOptionsInterface
+} from '@core/interfaces';
 import { DatabasesTypes } from '@core/enums';
 
-export interface MigrationServiceInterface<DT extends DatabasesTypes> {
-	createMigrationTable(tableName: string, tableSchema: string): string;
+export interface MigrationServiceInterface {
+	createMigrationTable(options: CreateMigrationTableOptionsInterface): string;
 
-	checkTableExistence(dataSource: DataSourceInterface<DatabasesTypes.POSTGRES>, tableName: string, tableSchema?: string): Promise<boolean>;
+	checkTableExistence(options: CheckTableExistenceOptionsInterface<DatabasesTypes.POSTGRES>): Promise<boolean>;
 
-	initCurrentDatabaseIngot(
-		dataSource: DataSourceInterface<DatabasesTypes.POSTGRES>,
-		tableName: string,
-		tableSchema: string,
-		databaseIngot: DatabaseIngotInterface<DatabasesTypes.POSTGRES>
-	): Promise<void>;
+	initCurrentDatabaseIngot(options: InitCurrentDatabaseIngotOptionsInterface<DatabasesTypes.POSTGRES>): Promise<void>;
 
-	syncDatabaseIngot(
-		dataSource: DataSourceInterface<DatabasesTypes.POSTGRES>,
-		tableName: string,
-		tableSchema: string,
-		databaseIngot: DatabaseIngotInterface<DatabasesTypes.POSTGRES>
-	): Promise<void>;
+	syncDatabaseIngot(options: SyncDatabaseIngotOptionsInterface<DatabasesTypes.POSTGRES>): Promise<void>;
 
-	getCurrentDatabaseIngot(
-		dataSource: DataSourceInterface<DatabasesTypes.POSTGRES>,
-		tableName: string,
-		tableSchema: string
-	): Promise<DatabaseIngotInterface<DatabasesTypes.POSTGRES>>;
+	getCurrentDatabaseIngot(options: GetCurrentDatabaseIngotOptionsInterface<DatabasesTypes.POSTGRES>): Promise<DatabaseIngotInterface<DatabasesTypes.POSTGRES>>;
+
 }

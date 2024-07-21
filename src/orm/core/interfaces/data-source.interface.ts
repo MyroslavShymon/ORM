@@ -23,6 +23,13 @@ import { QueryBuilderInterface } from '@context/common';
 import { CreateTableOptionsInterface } from '@core/interfaces/create-table-options.interface';
 import { AddComputedColumnInterface } from '@core/interfaces/table-manipulation/add-computed-column.interface';
 import { DatabasesTypes } from '@core/enums';
+import {
+	CheckTableExistenceOptionsInterface,
+	CreateMigrationTableOptionsInterface,
+	GetCurrentDatabaseIngotOptionsInterface,
+	InitCurrentDatabaseIngotOptionsInterface,
+	SyncDatabaseIngotOptionsInterface
+} from '@core/interfaces/migration-service';
 
 export interface DataSourceInterface<DT extends DatabasesTypes> {
 	client;//TODO typing
@@ -68,29 +75,15 @@ export interface DataSourceInterface<DT extends DatabasesTypes> {
 	dropTable(tableName: string, parameters: DropTableInterface<DT>): string;
 
 	// migration service
-	createMigrationTable(tableName: string, tableSchema: string): string;
+	createMigrationTable(options: CreateMigrationTableOptionsInterface): string;
 
-	checkTableExistence(dataSource: DataSourceInterface<DT>, tableName: string, tableSchema: string): Promise<boolean>;
+	checkTableExistence(options: CheckTableExistenceOptionsInterface<DT>): Promise<boolean>;
 
-	initCurrentDatabaseIngot(
-		dataSource: DataSourceInterface<DT>,
-		tableName: string,
-		tableSchema: string,
-		databaseIngot: DatabaseIngotInterface<DT>
-	): Promise<void>;
+	initCurrentDatabaseIngot(options: InitCurrentDatabaseIngotOptionsInterface<DT>): Promise<void>;
 
-	syncDatabaseIngot(
-		dataSource: DataSourceInterface<DT>,
-		tableName: string,
-		tableSchema: string,
-		databaseIngot: DatabaseIngotInterface<DT>
-	): Promise<void>;
+	syncDatabaseIngot(options: SyncDatabaseIngotOptionsInterface<DT>): Promise<void>;
 
-	getCurrentDatabaseIngot(
-		dataSource: DataSourceInterface<DT>,
-		tableName: string,
-		tableSchema: string
-	): Promise<DatabaseIngotInterface<DT>>;
+	getCurrentDatabaseIngot(options: GetCurrentDatabaseIngotOptionsInterface<DT>): Promise<DatabaseIngotInterface<DT>>;
 
 	//get time
 	getCurrentTimestamp(): string;

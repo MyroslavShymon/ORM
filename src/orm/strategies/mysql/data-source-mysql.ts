@@ -7,6 +7,8 @@ import {
 	AddPrimaryGeneratedColumnInterface,
 	AddUniqueToColumnInterface,
 	ChangeColumnDatatypeInterface,
+	CheckTableExistenceOptionsInterface,
+	CreateMigrationTableOptionsInterface,
 	CreateTableOptionsInterface,
 	DatabaseIngotInterface,
 	DataSourceInterface,
@@ -15,7 +17,10 @@ import {
 	DeleteUniqueFromColumnInterface,
 	DropConstraintInterface,
 	DropNotNullFromColumnInterface,
-	DropTableInterface
+	DropTableInterface,
+	GetCurrentDatabaseIngotOptionsInterface,
+	InitCurrentDatabaseIngotOptionsInterface,
+	SyncDatabaseIngotOptionsInterface
 } from '@core/interfaces';
 import { Condition, ConnectionData, LogicalOperators } from '@core/types';
 import {
@@ -46,7 +51,7 @@ export class DataSourceMySql extends BaseQueries implements DataSourceInterface<
 	client: Connection;
 	private _tableBuilder: TableBuilderInterface;
 	private _tableAlterer: TableAltererInterface;
-	private _migrationService: MigrationServiceInterface<DatabasesTypes.MYSQL>;
+	private _migrationService: MigrationServiceInterface;
 	private _insertQueries: InsertQueriesInterface;
 	private _updateQueries: UpdateQueriesInterface;
 	private _deleteQueries: DeleteQueriesInterface;
@@ -82,38 +87,24 @@ export class DataSourceMySql extends BaseQueries implements DataSourceInterface<
 		);
 	}
 
-	createMigrationTable(tableName: string, tableSchema: string): string {
-		return this._migrationService.createMigrationTable(tableName, tableSchema);
+	createMigrationTable(options: CreateMigrationTableOptionsInterface): string {
+		return this._migrationService.createMigrationTable(options);
 	}
 
-	checkTableExistence(dataSource: DataSourceInterface<DatabasesTypes.MYSQL>, tableName: string, tableSchema?: string): Promise<boolean> {
-		return this._migrationService.checkTableExistence(dataSource, tableName, tableSchema);
+	checkTableExistence(options: CheckTableExistenceOptionsInterface<DatabasesTypes.MYSQL>): Promise<boolean> {
+		return this._migrationService.checkTableExistence(options);
 	}
 
-	initCurrentDatabaseIngot(
-		dataSource: DataSourceInterface<DatabasesTypes.MYSQL>,
-		tableName: string,
-		tableSchema: string,
-		databaseIngot: DatabaseIngotInterface<DatabasesTypes.MYSQL>
-	): Promise<void> {
-		return this._migrationService.initCurrentDatabaseIngot(dataSource, tableName, tableSchema, databaseIngot);
+	initCurrentDatabaseIngot(options: InitCurrentDatabaseIngotOptionsInterface<DatabasesTypes.MYSQL>): Promise<void> {
+		return this._migrationService.initCurrentDatabaseIngot(options);
 	}
 
-	syncDatabaseIngot(
-		dataSource: DataSourceInterface<DatabasesTypes.MYSQL>,
-		tableName: string,
-		tableSchema: string,
-		databaseIngot: DatabaseIngotInterface<DatabasesTypes.MYSQL>
-	): Promise<void> {
-		return this._migrationService.syncDatabaseIngot(dataSource, tableName, tableSchema, databaseIngot);
+	syncDatabaseIngot(options: SyncDatabaseIngotOptionsInterface<DatabasesTypes.MYSQL>): Promise<void> {
+		return this._migrationService.syncDatabaseIngot(options);
 	}
 
-	getCurrentDatabaseIngot(
-		dataSource: DataSourceInterface<DatabasesTypes.MYSQL>,
-		tableName: string,
-		tableSchema: string
-	): Promise<DatabaseIngotInterface<DatabasesTypes.MYSQL>> {
-		return this._migrationService.getCurrentDatabaseIngot(dataSource, tableName, tableSchema);
+	getCurrentDatabaseIngot(options: GetCurrentDatabaseIngotOptionsInterface<DatabasesTypes.MYSQL>): Promise<DatabaseIngotInterface<DatabasesTypes.MYSQL>> {
+		return this._migrationService.getCurrentDatabaseIngot(options);
 	}
 
 	//table manipulation

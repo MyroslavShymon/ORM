@@ -1,31 +1,29 @@
 import { MigrationServiceInterface } from '@strategies/postgres/interfaces/migration-service.interface';
-import { DatabaseIngotInterface, DataSourceInterface } from '@core/interfaces';
+import {
+	CheckTableExistenceOptionsInterface,
+	CreateMigrationTableOptionsInterface,
+	DatabaseIngotInterface,
+	GetCurrentDatabaseIngotOptionsInterface,
+	InitCurrentDatabaseIngotOptionsInterface,
+	SyncDatabaseIngotOptionsInterface
+} from '@core/interfaces';
 import { constants } from '@core/constants';
 import { DatabasesTypes } from '@core/enums';
 
-export class MigrationService<DT extends DatabasesTypes> implements MigrationServiceInterface<DT> {
-	async getCurrentDatabaseIngot(
-		dataSource: DataSourceInterface<DatabasesTypes.POSTGRES>,
-		tableName: string,
-		tableSchema: string
-	): Promise<DatabaseIngotInterface<DatabasesTypes.POSTGRES>> {
-		const getCurrentDatabaseIngotQuery = `SELECT ingot FROM ${tableSchema}.${tableName} WHERE name = 'current_database_ingot'`;
-		const ingot = await dataSource.client.query(getCurrentDatabaseIngotQuery);
-		return ingot.rows[0].ingot;
+export class MigrationService implements MigrationServiceInterface {
+	createMigrationTable({ tableName, tableSchema }: CreateMigrationTableOptionsInterface): string {
+		return `CREATE TABLE ${tableSchema}.${tableName}
+                (
+                    id         SERIAL PRIMARY KEY,
+                    name       VARCHAR(256),
+                    is_up      BOOLEAN   DEFAULT FALSE,
+                    ingot      JSON NOT NULL,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                );` + '\n' + this._preventUpdateName(tableName, tableSchema);
 	}
 
-	createMigrationTable(tableName: string, tableSchema: string): string {
-		return `CREATE TABLE ${tableSchema}.${tableName} (
-				id SERIAL PRIMARY KEY,
-				name VARCHAR(256),
-				is_up BOOLEAN DEFAULT FALSE,
-				ingot JSON NOT NULL,
-				created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-				updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-			);` + '\n' + this.preventUpdateName(tableName, tableSchema);
-	}
-
-	preventUpdateName(tableName: string, tableSchema: string) {
+	private _preventUpdateName(tableName: string, tableSchema: string) {
 		return `
 						CREATE OR REPLACE FUNCTION prevent_name_update()
 						RETURNS TRIGGER AS $$
@@ -44,48 +42,65 @@ export class MigrationService<DT extends DatabasesTypes> implements MigrationSer
 						`;
 	}
 
+	async checkTableExistence({
+								  tableName,
+								  tableSchema,
+								  dataSource
+							  }: CheckTableExistenceOptionsInterface<DatabasesTypes.POSTGRES>): Promise<boolean> {
+		const checkTableExistenceQuery = `SELECT EXISTS (SELECT 1
+                                                         FROM information_schema.tables
+                                                         WHERE ${tableSchema ? `table_schema = '${tableSchema}' AND` : ''}
+            table_name = '${tableName}') AS table_existence;
+		`;
+
+		const tableExistence = await dataSource.client.query(checkTableExistenceQuery);
+
+		return tableExistence.rows[0].table_existence;
+	}
+
 	async initCurrentDatabaseIngot(
-		dataSource: DataSourceInterface<DatabasesTypes.POSTGRES>,
-		tableName: string,
-		tableSchema: string,
-		databaseIngot: DatabaseIngotInterface<DatabasesTypes.POSTGRES>
+		{
+			tableName,
+			tableSchema,
+			databaseIngot,
+			dataSource
+		}: InitCurrentDatabaseIngotOptionsInterface<DatabasesTypes.POSTGRES>
 	): Promise<void> {
 		const initCurrentDatabaseIngotQuery = `
-						INSERT INTO ${tableSchema}.${tableName} (name, ingot)
-					  	VALUES 
-					    	('${constants.currentDatabaseIngot}', '${JSON.stringify(databaseIngot)}');
-						`;
+            INSERT INTO ${tableSchema}.${tableName} (name, ingot)
+            VALUES ('${constants.currentDatabaseIngot}', '${JSON.stringify(databaseIngot)}');
+		`;
 
 		await dataSource.client.query(initCurrentDatabaseIngotQuery);
 	}
 
 	async syncDatabaseIngot(
-		dataSource: DataSourceInterface<DatabasesTypes.POSTGRES>,
-		tableName: string,
-		tableSchema: string,
-		databaseIngot: DatabaseIngotInterface<DatabasesTypes.POSTGRES>
+		{
+			databaseIngot,
+			tableName,
+			tableSchema,
+			dataSource
+		}: SyncDatabaseIngotOptionsInterface<DatabasesTypes.POSTGRES>
 	): Promise<void> {
 		const syncDatabaseIngotQuery = `
-						UPDATE ${tableSchema}.${tableName}
-						SET ingot = '${JSON.stringify(databaseIngot)}'
-						WHERE name = '${constants.currentDatabaseIngot}';
-						`;
+            UPDATE ${tableSchema}.${tableName}
+            SET ingot = '${JSON.stringify(databaseIngot)}'
+            WHERE name = '${constants.currentDatabaseIngot}';
+		`;
 
 		await dataSource.client.query(syncDatabaseIngotQuery);
 	}
 
-	async checkTableExistence(dataSource: DataSourceInterface<DatabasesTypes.POSTGRES>, tableName: string, tableSchema?: string): Promise<boolean> {
-		const checkTableExistenceQuery = `SELECT EXISTS (
-							SELECT 1
-							FROM information_schema.tables
-							WHERE
-							${tableSchema ? `table_schema = '${tableSchema}' AND` : ''}
-							table_name = '${tableName}'
-						) AS table_existence;
-						`;
-
-		const tableExistence = await dataSource.client.query(checkTableExistenceQuery);
-
-		return tableExistence.rows[0].table_existence;
+	async getCurrentDatabaseIngot(
+		{
+			tableName,
+			dataSource,
+			tableSchema
+		}: GetCurrentDatabaseIngotOptionsInterface<DatabasesTypes.POSTGRES>): Promise<DatabaseIngotInterface<DatabasesTypes.POSTGRES>> {
+		const getCurrentDatabaseIngotQuery = `SELECT ingot
+                                              FROM ${tableSchema}.${tableName}
+                                              WHERE name = 'current_database_ingot'`;
+		const ingot = await dataSource.client.query(getCurrentDatabaseIngotQuery);
+		return ingot.rows[0].ingot;
 	}
 }

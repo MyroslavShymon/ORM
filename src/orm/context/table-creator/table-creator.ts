@@ -30,18 +30,20 @@ export class TableCreator<DT extends DatabasesTypes> implements TableCreatorInte
 	async createIngotOfTables({
 								  models,
 								  migrationTable = constants.migrationsTableName,
-								  migrationTableSchema = constants.migrationsTableSchemaName
+								  migrationTableSchema = constants.migrationsTableSchemaName,
+								  databaseName
 							  }: ConnectionData): Promise<TableIngotInterface<DT>[] | undefined> {
 		if (!models || models.length === 0) {
 			return [];
 		}
 
 		let { tables: currentTablesIngot }: DatabaseIngotInterface<DT> =
-			await this._dataSource.getCurrentDatabaseIngot(
-				this._dataSource,
-				migrationTable,
-				migrationTableSchema
-			);
+			await this._dataSource.getCurrentDatabaseIngot({
+				dataSource: this._dataSource,
+				tableName: migrationTable,
+				tableSchema: migrationTableSchema,
+				databaseName
+			});
 
 		let preparedModels: TableIngotInterface<DT>[] = this._databaseStateBuilder.getPreparedModels(models);
 
