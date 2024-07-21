@@ -8,11 +8,9 @@ import {
 	MigrationManagerInterface,
 	SyncIngotManagersOptionsInterface
 } from '@context/common/interfaces/migration-manager';
-import { ConnectionData } from '@core/types';
 
 export class MigrationManager<DT extends DatabasesTypes> implements MigrationManagerInterface<DT> {
 	private readonly _dataSource: DataSourceInterface<DT>;
-	private readonly _connectionData: ConnectionData;
 
 	constructor(dataSource: DataSourceInterface<DT>) {
 		this._dataSource = dataSource;
@@ -30,9 +28,20 @@ export class MigrationManager<DT extends DatabasesTypes> implements MigrationMan
 				tableName,
 				tableSchema, ...options
 			});
+
+			const createPreventUpdateNameSubroutineQuery = this._dataSource.createPreventUpdateNameSubroutine({
+				tableName,
+				tableSchema
+			});
+
+			const createPreventUpdateNameTriggerQuery = this._dataSource.createPreventUpdateNameTrigger({ tableName });
 			console.log('Create migration table Sql query', createMigrationTableQuery);
+			console.log('Create prevent update name trigger Sql query', createPreventUpdateNameSubroutineQuery + '\n' + createPreventUpdateNameTriggerQuery);
 			await this._dataSource.client.query(createMigrationTableQuery);
+			await this._dataSource.client.query(createPreventUpdateNameSubroutineQuery);
+			await this._dataSource.client.query(createPreventUpdateNameTriggerQuery);
 			console.log(`Migration table with name ${tableName} and schema ${tableSchema} successfully created`);
+			console.log(`Trigger and subroutine successfully created`);
 		} catch (error) {
 			console.error('Error when creating the migration table:', error);
 			throw error;

@@ -17,13 +17,14 @@ import {
 } from '@context/common';
 import { FileStructureManager } from '@context/file-structure-manager';
 import { ErrorHandler } from '@context/error-handler';
+import { constants } from '@core/constants';
 
 class DatabaseManager<DT extends DatabasesTypes> implements DatabaseManagerInterface<DT> {
 	private _connectionData: ConnectionData;
 	private _dataSource: DataSourceContextInterface<DT>;
 
 	constructor(connectionData: ConnectionData, dataSource: DataSourceContextInterface<DT>) {
-		this._connectionData = connectionData;
+		this._connectionData = this._handleConnectionData(connectionData);
 		this._dataSource = dataSource;
 
 		if (connectionData.type === DatabasesTypes.POSTGRES) {
@@ -57,14 +58,15 @@ class DatabaseManager<DT extends DatabasesTypes> implements DatabaseManagerInter
 			});
 
 			if (!isMigrationTableExist) {
+				// await this._dataSource.query('use first');
 				await this._dataSource.migrationManager.createMigrationTable({
 					tableName: this._connectionData.migrationTable,
 					tableSchema: this._connectionData.migrationTableSchema,
-					databaseName: this._connectionData.databaseName
+					databaseName: this._connectionData.database
 				});
 
 				await this._dataSource.migrationManager.initCurrentDatabaseIngot({
-					databaseName: this._connectionData.databaseName,
+					databaseName: this._connectionData.database,
 					tableName: this._connectionData.migrationTable,
 					tableSchema: this._connectionData.migrationTableSchema,
 					databaseIngot
@@ -79,7 +81,7 @@ class DatabaseManager<DT extends DatabasesTypes> implements DatabaseManagerInter
 			databaseIngot.tables = tablesIngot as TableIngotInterface<DT>[] || [];
 
 			await this._dataSource.migrationManager.syncDatabaseIngot({
-				databaseName: this._connectionData.databaseName,
+				databaseName: this._connectionData.database,
 				tableName: this._connectionData.migrationTable,
 				tableSchema: this._connectionData.migrationTableSchema,
 				databaseIngot
@@ -90,6 +92,13 @@ class DatabaseManager<DT extends DatabasesTypes> implements DatabaseManagerInter
 		} finally {
 			// await this._dataSource.client.release();
 		}
+	}
+
+	private _handleConnectionData(connectionData: ConnectionData) {
+		connectionData.migrationTable = connectionData.migrationTable || constants.migrationsTableName;
+		connectionData.migrationTableSchema = connectionData.migrationTableSchema || constants.migrationsTableSchemaName;
+
+		return connectionData;
 	}
 
 	async query(sql: string): Promise<Object> {

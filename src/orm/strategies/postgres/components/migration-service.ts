@@ -2,6 +2,7 @@ import { MigrationServiceInterface } from '@strategies/postgres/interfaces/migra
 import {
 	CheckTableExistenceOptionsInterface,
 	CreateMigrationTableOptionsInterface,
+	CreatePreventUpdateNameSubroutineOptionsInterface,
 	DatabaseIngotInterface,
 	GetCurrentDatabaseIngotOptionsInterface,
 	InitCurrentDatabaseIngotOptionsInterface,
@@ -12,6 +13,10 @@ import { DatabasesTypes } from '@core/enums';
 
 export class MigrationService implements MigrationServiceInterface {
 	createMigrationTable({ tableName, tableSchema }: CreateMigrationTableOptionsInterface): string {
+		if (!tableSchema) {
+			throw new Error('Не вказано ім\'я схеми');
+		}
+
 		return `CREATE TABLE ${tableSchema}.${tableName}
                 (
                     id         SERIAL PRIMARY KEY,
@@ -20,10 +25,14 @@ export class MigrationService implements MigrationServiceInterface {
                     ingot      JSON NOT NULL,
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                );` + '\n' + this._preventUpdateName(tableName, tableSchema);
+                );`;
 	}
 
-	private _preventUpdateName(tableName: string, tableSchema: string) {
+	createPreventUpdateNameSubroutine({ tableName, tableSchema }: CreatePreventUpdateNameSubroutineOptionsInterface) {
+		if (!tableName && !tableSchema) {
+			throw new Error('Не вказано ім\'я таблиці або схема');
+		}
+
 		return `
 						CREATE OR REPLACE FUNCTION prevent_name_update()
 						RETURNS TRIGGER AS $$
@@ -34,7 +43,11 @@ export class MigrationService implements MigrationServiceInterface {
 						  RETURN NEW;
 						END;
 						$$ LANGUAGE plpgsql;
-						
+						`;
+	}
+
+	createPreventUpdateNameTrigger() {
+		return `
 						CREATE TRIGGER prevent_name_update_trigger
 						BEFORE UPDATE ON public.migrations
 						FOR EACH ROW
@@ -66,6 +79,10 @@ export class MigrationService implements MigrationServiceInterface {
 			dataSource
 		}: InitCurrentDatabaseIngotOptionsInterface<DatabasesTypes.POSTGRES>
 	): Promise<void> {
+		if (!tableSchema) {
+			throw new Error('Не вказано ім\'я схеми');
+		}
+
 		const initCurrentDatabaseIngotQuery = `
             INSERT INTO ${tableSchema}.${tableName} (name, ingot)
             VALUES ('${constants.currentDatabaseIngot}', '${JSON.stringify(databaseIngot)}');
@@ -82,6 +99,10 @@ export class MigrationService implements MigrationServiceInterface {
 			dataSource
 		}: SyncDatabaseIngotOptionsInterface<DatabasesTypes.POSTGRES>
 	): Promise<void> {
+		if (!tableSchema) {
+			throw new Error('Не вказано ім\'я схеми');
+		}
+
 		const syncDatabaseIngotQuery = `
             UPDATE ${tableSchema}.${tableName}
             SET ingot = '${JSON.stringify(databaseIngot)}'
@@ -97,6 +118,10 @@ export class MigrationService implements MigrationServiceInterface {
 			dataSource,
 			tableSchema
 		}: GetCurrentDatabaseIngotOptionsInterface<DatabasesTypes.POSTGRES>): Promise<DatabaseIngotInterface<DatabasesTypes.POSTGRES>> {
+		if (!tableSchema) {
+			throw new Error('Не вказано ім\'я схеми');
+		}
+
 		const getCurrentDatabaseIngotQuery = `SELECT ingot
                                               FROM ${tableSchema}.${tableName}
                                               WHERE name = 'current_database_ingot'`;

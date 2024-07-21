@@ -26,6 +26,8 @@ import { DatabasesTypes } from '@core/enums';
 import {
 	CheckTableExistenceOptionsInterface,
 	CreateMigrationTableOptionsInterface,
+	CreatePreventUpdateNameSubroutineOptionsInterface,
+	CreatePreventUpdateNameTriggerOptions,
 	GetCurrentDatabaseIngotOptionsInterface,
 	InitCurrentDatabaseIngotOptionsInterface,
 	SyncDatabaseIngotOptionsInterface
@@ -76,6 +78,10 @@ export interface DataSourceInterface<DT extends DatabasesTypes> {
 
 	// migration service
 	createMigrationTable(options: CreateMigrationTableOptionsInterface): string;
+
+	createPreventUpdateNameSubroutine(options: CreatePreventUpdateNameSubroutineOptionsInterface): string;
+
+	createPreventUpdateNameTrigger(options: CreatePreventUpdateNameTriggerOptions): string;
 
 	checkTableExistence(options: CheckTableExistenceOptionsInterface<DT>): Promise<boolean>;
 

@@ -9,6 +9,8 @@ import {
 	ChangeColumnDatatypeInterface,
 	CheckTableExistenceOptionsInterface,
 	CreateMigrationTableOptionsInterface,
+	CreatePreventUpdateNameSubroutineOptionsInterface,
+	CreatePreventUpdateNameTriggerOptions,
 	CreateTableOptionsInterface,
 	DatabaseIngotInterface,
 	DataSourceInterface,
@@ -89,6 +91,14 @@ export class DataSourceMySql extends BaseQueries implements DataSourceInterface<
 
 	createMigrationTable(options: CreateMigrationTableOptionsInterface): string {
 		return this._migrationService.createMigrationTable(options);
+	}
+
+	createPreventUpdateNameSubroutine(options: CreatePreventUpdateNameSubroutineOptionsInterface): string {
+		return this._migrationService.createPreventUpdateNameSubroutine(options);
+	}
+
+	createPreventUpdateNameTrigger(options: CreatePreventUpdateNameTriggerOptions): string {
+		return this._migrationService.createPreventUpdateNameTrigger(options);
 	}
 
 	checkTableExistence(options: CheckTableExistenceOptionsInterface<DatabasesTypes.MYSQL>): Promise<boolean> {

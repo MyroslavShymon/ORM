@@ -1,6 +1,8 @@
 import {
 	CheckTableExistenceOptionsInterface,
 	CreateMigrationTableOptionsInterface,
+	CreatePreventUpdateNameSubroutineOptionsInterface,
+	CreatePreventUpdateNameTriggerOptions,
 	DatabaseIngotInterface,
 	GetCurrentDatabaseIngotOptionsInterface,
 	InitCurrentDatabaseIngotOptionsInterface,
@@ -18,4 +20,8 @@ export interface MigrationServiceInterface {
 	syncDatabaseIngot(options: SyncDatabaseIngotOptionsInterface<DatabasesTypes.MYSQL>): Promise<void>;
 
 	getCurrentDatabaseIngot(options: GetCurrentDatabaseIngotOptionsInterface<DatabasesTypes.MYSQL>): Promise<DatabaseIngotInterface<DatabasesTypes.MYSQL>>;
+
+	createPreventUpdateNameSubroutine(options: CreatePreventUpdateNameSubroutineOptionsInterface): string;
+
+	createPreventUpdateNameTrigger(options: CreatePreventUpdateNameTriggerOptions): string;
 }

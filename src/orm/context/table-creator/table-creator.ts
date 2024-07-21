@@ -31,7 +31,7 @@ export class TableCreator<DT extends DatabasesTypes> implements TableCreatorInte
 								  models,
 								  migrationTable = constants.migrationsTableName,
 								  migrationTableSchema = constants.migrationsTableSchemaName,
-								  databaseName
+								  database
 							  }: ConnectionData): Promise<TableIngotInterface<DT>[] | undefined> {
 		if (!models || models.length === 0) {
 			return [];
@@ -42,7 +42,7 @@ export class TableCreator<DT extends DatabasesTypes> implements TableCreatorInte
 				dataSource: this._dataSource,
 				tableName: migrationTable,
 				tableSchema: migrationTableSchema,
-				databaseName
+				databaseName: database
 			});
 
 		let preparedModels: TableIngotInterface<DT>[] = this._databaseStateBuilder.getPreparedModels(models);

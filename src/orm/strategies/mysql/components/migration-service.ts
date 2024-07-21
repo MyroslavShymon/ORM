@@ -1,6 +1,7 @@
 import {
 	CheckTableExistenceOptionsInterface,
 	CreateMigrationTableOptionsInterface,
+	CreatePreventUpdateNameTriggerOptions,
 	DatabaseIngotInterface,
 	GetCurrentDatabaseIngotOptionsInterface,
 	InitCurrentDatabaseIngotOptionsInterface,
@@ -12,30 +13,33 @@ import { DatabasesTypes } from '@core/enums';
 
 export class MigrationService implements MigrationServiceInterface {
 	createMigrationTable({ tableName, databaseName }: CreateMigrationTableOptionsInterface): string {
+		if (!databaseName) {
+			throw new Error('Не вказано ім\'я бази даних');
+		}
+
 		return `
-use ${databaseName}
-CREATE TABLE IF NOT EXISTS ${databaseName}.${tableName}
-        (
-            id
-            INT
-            AUTO_INCREMENT
-            PRIMARY
-            KEY,
-            name
-            VARCHAR
-                (
-            256
-                ),
-            is_up BOOLEAN DEFAULT FALSE,
-            ingot JSON NOT NULL,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-            );` + this._preventUpdateName(tableName);
+            CREATE TABLE IF NOT EXISTS ${databaseName}.${tableName}
+            (
+                id
+                INT
+                AUTO_INCREMENT
+                PRIMARY
+                KEY,
+                name
+                VARCHAR
+            (
+                256
+            ),
+                is_up BOOLEAN DEFAULT FALSE,
+                ingot JSON NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+                );`;
 	}
 
-	private _preventUpdateName(tableName: string) {
+	createPreventUpdateNameSubroutine() {
 		return `
-		CREATE PROCEDURE IF NOT EXISTS prevent_name_update(IN old_name VARCHAR(255), IN new_name VARCHAR(255))
+				CREATE PROCEDURE IF NOT EXISTS prevent_name_update(IN old_name VARCHAR(255), IN new_name VARCHAR(255))
 BEGIN
     DECLARE msg VARCHAR(255);
     IF old_name <> new_name THEN
@@ -43,6 +47,15 @@ BEGIN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
     END IF;
 END;
+		`;
+	}
+
+	createPreventUpdateNameTrigger({ tableName }: CreatePreventUpdateNameTriggerOptions) {
+		if (!tableName) {
+			throw new Error('Не вказано ім\'я таблиці міграції');
+		}
+
+		return `
     CREATE TRIGGER IF NOT EXISTS prevent_name_update_trigger BEFORE UPDATE ON ${tableName} FOR EACH ROW
 BEGIN
     CALL prevent_name_update(OLD.name, NEW.name);
@@ -71,6 +84,10 @@ END;
 									   tableName,
 									   dataSource
 								   }: InitCurrentDatabaseIngotOptionsInterface<DatabasesTypes.MYSQL>): Promise<void> {
+		if (!databaseName) {
+			throw new Error('Не вказано ім\'я бази даних');
+		}
+
 		const initCurrentDatabaseIngotQuery = `
             INSERT INTO ${databaseName}.${tableName} (name, ingot)
             VALUES ('${constants.currentDatabaseIngot}', '${JSON.stringify(databaseIngot)}');
@@ -85,6 +102,10 @@ END;
 								databaseIngot,
 								dataSource
 							}: SyncDatabaseIngotOptionsInterface<DatabasesTypes.MYSQL>): Promise<void> {
+		if (!databaseName) {
+			throw new Error('Не вказано ім\'я бази даних');
+		}
+
 		const syncDatabaseIngotQuery = `
             UPDATE ${databaseName}.${tableName}
             SET ingot = '${JSON.stringify(databaseIngot)}'
@@ -99,6 +120,10 @@ END;
 									  tableName,
 									  dataSource
 								  }: GetCurrentDatabaseIngotOptionsInterface<DatabasesTypes.MYSQL>): Promise<DatabaseIngotInterface<DatabasesTypes.MYSQL>> {
+		if (!databaseName) {
+			throw new Error('Не вказано ім\'я бази даних');
+		}
+		
 		const getCurrentDatabaseIngotQuery = `SELECT ingot
                                               FROM ${databaseName}.${tableName}
                                               WHERE name = 'current_database_ingot'`;

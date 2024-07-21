@@ -1,6 +1,8 @@
 import {
 	CheckTableExistenceOptionsInterface,
 	CreateMigrationTableOptionsInterface,
+	CreatePreventUpdateNameSubroutineOptionsInterface,
+	CreatePreventUpdateNameTriggerOptions,
 	DatabaseIngotInterface,
 	GetCurrentDatabaseIngotOptionsInterface,
 	InitCurrentDatabaseIngotOptionsInterface,
@@ -18,5 +20,9 @@ export interface MigrationServiceInterface {
 	syncDatabaseIngot(options: SyncDatabaseIngotOptionsInterface<DatabasesTypes.POSTGRES>): Promise<void>;
 
 	getCurrentDatabaseIngot(options: GetCurrentDatabaseIngotOptionsInterface<DatabasesTypes.POSTGRES>): Promise<DatabaseIngotInterface<DatabasesTypes.POSTGRES>>;
+
+	createPreventUpdateNameSubroutine(options: CreatePreventUpdateNameSubroutineOptionsInterface): string;
+
+	createPreventUpdateNameTrigger(options: CreatePreventUpdateNameTriggerOptions): string;
 
 }
