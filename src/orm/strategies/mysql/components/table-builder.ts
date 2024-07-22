@@ -3,7 +3,6 @@ import {
 	ColumnInterface,
 	ComputedColumnInterface,
 	ForeignKeyInterface,
-	ManyToManyInterface,
 	OneToManyInterface,
 	OneToOneInterface,
 	PrimaryGeneratedColumnInterface,
@@ -20,12 +19,11 @@ export class TableBuilder implements TableBuilderInterface {
 		foreignKeys?: ForeignKeyInterface[],
 		primaryColumn?: PrimaryGeneratedColumnInterface<DatabasesTypes.MYSQL>,
 		oneToOne?: OneToOneInterface[],
-		oneToMany?: OneToManyInterface[],
-		manyToMany?: ManyToManyInterface[]
+		oneToMany?: OneToManyInterface[]
 	): string {
 		let createTableQuery;
 
-		createTableQuery = `\n\tCREATE TABLE IF NOT EXISTS \`${table.name}\` (\n`;
+		createTableQuery = `\n\tCREATE TABLE IF NOT EXISTS \\\`${table.name}\\\` (\n`;
 
 		if (primaryColumn) {
 			createTableQuery += this._handlePrimaryGeneratedColumns(primaryColumn);
@@ -69,7 +67,7 @@ export class TableBuilder implements TableBuilderInterface {
 			throw new Error('Please specify the type of the primary column!');
 		}
 
-		let columnDefinition = `\`${primaryColumn.columnName}\` ${primaryColumn.type} PRIMARY KEY AUTO_INCREMENT`;
+		let columnDefinition = `\\\`${primaryColumn.columnName}\\\` ${primaryColumn.type} PRIMARY KEY AUTO_INCREMENT`;
 
 		// Handling additional parameters
 		if (primaryColumn.startWith !== undefined) {
@@ -124,7 +122,7 @@ export class TableBuilder implements TableBuilderInterface {
 				throw new Error(`Ви не вказали точність та масштаб для типу ${options.dataType}`);
 			}
 
-			const columnAttributes = [`\`${name}\` ${options.dataType}`];
+			const columnAttributes = [`\\\`${name}\\\` ${options.dataType}`];
 
 			// Отримуємо довжину рядка і робимо йому правильний формат
 
@@ -187,7 +185,7 @@ export class TableBuilder implements TableBuilderInterface {
 	private _handleComputedColumns(computedColumns: ComputedColumnInterface<DatabasesTypes.MYSQL>[]): string {
 		const formattedComputedColumns = computedColumns
 			.map(({ name, calculate, dataType, stored }) =>
-				`\`${name}\` ${dataType} GENERATED ALWAYS AS (${calculate}) ${stored ? 'STORED' : 'VIRTUAL'}`);
+				`\\\`${name}\\\` ${dataType} GENERATED ALWAYS AS (${calculate}) ${stored ? 'STORED' : 'VIRTUAL'}`);
 
 		return `${formattedComputedColumns.length > 0 ? `, \n\t\t${formattedComputedColumns.join(', \n\t\t')}` : ''}`;
 	}
@@ -199,7 +197,7 @@ export class TableBuilder implements TableBuilderInterface {
 			const { key, table, columnName } = foreignKey;
 
 			formattedForeignKeys.push(`
-		FOREIGN KEY (\`${columnName}\`) REFERENCES ${table}(${key})`);
+		FOREIGN KEY (\\\`${columnName}\\\`) REFERENCES ${table}(${key})`);
 
 		}
 
@@ -208,10 +206,10 @@ export class TableBuilder implements TableBuilderInterface {
 
 	private _handleOneToOne(oneToOneConnections: OneToOneInterface[]): string {
 		const formattedOneToOneConnectionsStrings = oneToOneConnections.map(o2o => `
-			\`${o2o.foreignKey}\` INT UNIQUE,
-			\tCONSTRAINT \`fk_oo_${o2o.columnName}\`
-			\tFOREIGN KEY (\`${o2o.foreignKey}\`)
-			\t\tREFERENCES \`${o2o.table}\`(\`${o2o.referenceColumn}\`)
+			\\\`${o2o.foreignKey}\\\` INT UNIQUE,
+			\tCONSTRAINT \\\`fk_oo_${o2o.columnName}\\\`
+			\tFOREIGN KEY (\\\`${o2o.foreignKey}\\\`)
+			\t\tREFERENCES \\\`${o2o.table}\\\`(\\\`${o2o.referenceColumn}\\\`)
 	`);
 
 		return formattedOneToOneConnectionsStrings.join(',\n\t\t');
@@ -219,10 +217,10 @@ export class TableBuilder implements TableBuilderInterface {
 
 	private _handleOneToMany(oneToManyConnections: OneToManyInterface[]): string {
 		const formattedOneToManyConnectionsStrings = oneToManyConnections.map(o2m => `
-        \`${o2m.foreignKey}\` INT,
-        \tCONSTRAINT \`fk_${o2m.tableName}_${o2m.foreignKey}\`
-        \tFOREIGN KEY (\`${o2m.foreignKey}\`)
-		\t\tREFERENCES \`${o2m.tableName}\`(\`${o2m.referenceColumn}\`)
+        \\\`${o2m.foreignKey}\\\` INT,
+        \tCONSTRAINT \\\`fk_${o2m.tableName}_${o2m.foreignKey}\\\`
+        \tFOREIGN KEY (\\\`${o2m.foreignKey}\\\`)
+		\t\tREFERENCES \\\`${o2m.tableName}\\\`(\\\`${o2m.referenceColumn}\\\`)
     	`);
 
 		return formattedOneToManyConnectionsStrings.join(',\n\t\t');
@@ -239,19 +237,19 @@ export class TableBuilder implements TableBuilderInterface {
 				formattedUniqueColumns = (unique as string[][])
 					.map((uniqueCombination) =>
 						`UNIQUE (${uniqueCombination
-							.map(column => `\`${column}\``)
+							.map(column => `\\\`${column}\\\``)
 							.join(', ')})`
 					)
 					.join(', \n\t\t');
 			} else {
-				formattedUniqueColumns = `UNIQUE (${(unique as string[]).map(column => `\`${column}\``).join(', ')})`;
+				formattedUniqueColumns = `UNIQUE (${(unique as string[]).map(column => `\\\`${column}\\\``).join(', ')})`;
 			}
 
 			tableOptions.push(formattedUniqueColumns);
 		}
 
 		if (primaryKeys && primaryKeys.length > 0) {
-			tableOptions.push(`PRIMARY KEY (${primaryKeys.map(pk => `\`${pk}\``).join(', ')})`);
+			tableOptions.push(`PRIMARY KEY (${primaryKeys.map(pk => `\\\`${pk}\\\``).join(', ')})`);
 		}
 
 		return `${tableOptions.length > 0 ? `,\n\n\t\t${tableOptions.join(', \n\t\t')}` : ''}`;

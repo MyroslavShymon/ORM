@@ -85,8 +85,7 @@ export class DataSourcePostgres extends BaseQueries implements DataSourceInterfa
 			options?.foreignKeys,
 			options?.primaryColumn,
 			options?.oneToOne,
-			options?.oneToMany,
-			options?.manyToMany
+			options?.oneToMany
 		);
 	}
 

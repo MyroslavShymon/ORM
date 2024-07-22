@@ -6,7 +6,8 @@ export class InsertQueries implements InsertQueriesInterface {
 		const columnNames = columns.join(', ');
 		const columnValues = columns.map(column => `'${values[column]}'`).join(', ');
 
-		return `INSERT INTO \`${tableName}\` (${columnNames}) VALUES (${columnValues}) \n`;
+		return `INSERT INTO \\\`${tableName}\\\` (${columnNames})
+                VALUES (${columnValues})   `;
 	}
 
 	insertMany(values: Partial<unknown>[], tableName: string): string {
@@ -22,6 +23,7 @@ export class InsertQueries implements InsertQueriesInterface {
 			return `(${columnValues})`;
 		});
 
-		return `INSERT INTO \`${tableName}\` (${columnNames}) VALUES ${rows.join(', ')} \n`;
+		return `INSERT INTO \\\`${tableName}\\\` (${columnNames})
+                VALUES ${rows.join(', ')}   `;
 	}
 }

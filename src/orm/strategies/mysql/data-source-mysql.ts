@@ -73,7 +73,7 @@ export class DataSourceMySql extends BaseQueries implements DataSourceInterface<
 	}
 
 	async connect(dataToConnect: ConnectionData): Promise<void> {
-		this.client = await createConnection(dataToConnect);
+		this.client = await createConnection({ ...dataToConnect, multipleStatements: true });
 	}
 
 	createTable(options: CreateTableOptionsInterface<DatabasesTypes.MYSQL>): string {
@@ -84,8 +84,7 @@ export class DataSourceMySql extends BaseQueries implements DataSourceInterface<
 			options?.foreignKeys,
 			options?.primaryColumn,
 			options?.oneToOne,
-			options?.oneToMany,
-			options?.manyToMany
+			options?.oneToMany
 		);
 	}
 

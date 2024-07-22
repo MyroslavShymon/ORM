@@ -2,7 +2,6 @@ import {
 	ColumnInterface,
 	ComputedColumnInterface,
 	ForeignKeyInterface,
-	ManyToManyInterface,
 	OneToManyInterface,
 	OneToOneInterface,
 	PrimaryGeneratedColumnInterface,
@@ -18,7 +17,6 @@ export interface TableBuilderInterface {
 		foreignKeys?: ForeignKeyInterface[],
 		primaryColumn?: PrimaryGeneratedColumnInterface<DatabasesTypes.POSTGRES>,
 		oneToOne?: OneToOneInterface[],
-		oneToMany?: OneToManyInterface[],
-		manyToMany?: ManyToManyInterface[]
+		oneToMany?: OneToManyInterface[]
 	): string;
 }
