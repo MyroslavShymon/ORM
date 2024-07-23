@@ -21,7 +21,11 @@ export interface QueryBuilderInterface<T> {
 
 	from(table: string): QueryBuilderInterface<T>;
 
-	where(params: { conditions?: Condition<T>, logicalOperator?: LogicalOperators, exists?: string } | string): QueryBuilderInterface<T>;
+	where(params: {
+		conditions?: Condition<T>,
+		logicalOperator?: LogicalOperators,
+		exists?: string
+	} | string): QueryBuilderInterface<T>;
 
 	leftJoin(table: string, condition: string): QueryBuilderInterface<T>;
 
@@ -44,6 +48,8 @@ export interface QueryBuilderInterface<T> {
 	update(values: Partial<T>, tableName: string): QueryBuilderInterface<T>;
 
 	delete(tableName: string): QueryBuilderInterface<T>;
+
+	cache(): Promise<QueryBuilderInterface<T>>;
 
 	build(): string;
 

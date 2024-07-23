@@ -7,6 +7,7 @@ import { ConnectionData } from '@core/types';
 import { MigrationManager } from '@context/migration-manager';
 import { QueryBuilder } from '@context/query-builder';
 import {
+	CacheInterface,
 	DataSourceContextInterface,
 	MigrationManagerInterface,
 	QueryBuilderInterface,
@@ -18,9 +19,14 @@ import { DatabasesTypes } from '@core/enums';
 class DataSourceContext<DT extends DatabasesTypes> implements DataSourceContextInterface<DT> {
 	private _dataSource: DataSourceInterface<DT>;
 	private _client: DT extends DatabasesTypes.POSTGRES ? PoolClient : Connection;
+	private _cache: CacheInterface;
 
 	setDatabase(dataSource: DataSourceInterface<DT>): void {
 		this._dataSource = dataSource;
+	}
+
+	setCache(cache: CacheInterface): void {
+		this._cache = cache;
 	}
 
 	async connectDatabase(connectionData: ConnectionData): Promise<void> {
@@ -44,7 +50,7 @@ class DataSourceContext<DT extends DatabasesTypes> implements DataSourceContextI
 	}
 
 	queryBuilder<T>(): QueryBuilderInterface<T> {
-		return new QueryBuilder<T, DT>(this._dataSource, this.query);
+		return new QueryBuilder<T, DT>(this._dataSource, this.query, this._cache);
 	}
 
 	get tableManipulation(): TableManipulationInterface<DT> {

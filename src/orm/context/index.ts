@@ -6,3 +6,4 @@ export * from './migration-manager';
 export * from './query-builder';
 export * from './file-structure-manager';
 export * from './error-handler';
+export * from './cache';

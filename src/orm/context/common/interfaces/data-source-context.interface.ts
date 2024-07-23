@@ -3,6 +3,7 @@ import { Connection } from 'mysql2/promise';
 import { DataSourceInterface } from '@core/interfaces';
 import { ConnectionData } from '@core/types';
 import {
+	CacheInterface,
 	MigrationManagerInterface,
 	QueryBuilderInterface,
 	TableCreatorInterface,
@@ -19,6 +20,8 @@ export interface DataSourceContextInterface<DT extends DatabasesTypes> {
 	queryBuilder<T>(): QueryBuilderInterface<T>;
 
 	setDatabase(dataSource: DataSourceInterface<DT>): void;
+
+	setCache(cache: CacheInterface): void;
 
 	connectDatabase(connectionData: ConnectionData): Promise<void>;
 

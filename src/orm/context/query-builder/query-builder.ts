@@ -7,6 +7,7 @@ import { QueryStructureBuilder } from '@context/query-builder/query-structure-bu
 import { DataSourceInterface } from '@core/interfaces';
 import {
 	AggregateQueryBuilderInterface,
+	CacheInterface,
 	DeleteQueryBuilderInterface,
 	InsertQueryBuilderInterface,
 	QueryBuilderInterface,
@@ -21,6 +22,7 @@ export class QueryBuilder<T, DT extends DatabasesTypes> implements QueryBuilderI
 	query: string;
 
 	private readonly _dataSource: DataSourceInterface<DT>;
+	private readonly _cache: CacheInterface;
 	private readonly queryMethod: (sql: string) => Promise<Object>;
 
 	private selectQueryBuilder: SelectQueryBuilderInterface<T>;
@@ -30,10 +32,11 @@ export class QueryBuilder<T, DT extends DatabasesTypes> implements QueryBuilderI
 	private aggregateQueryBuilder: AggregateQueryBuilderInterface;
 	private queryStructureBuilder: QueryStructureBuilderInterface<T>;
 
-	constructor(dataSource: DataSourceInterface<DT>, methodForQuery?: (sql: string) => Promise<Object>) {
+	constructor(dataSource: DataSourceInterface<DT>, methodForQuery?: (sql: string) => Promise<Object>, cache?: CacheInterface) {
 		this.query = '';
 		this._dataSource = dataSource;
 		this.queryMethod = methodForQuery;
+		this._cache = cache;
 
 		this.selectQueryBuilder = new SelectQueryBuilder<T, DT>(this, this._dataSource);
 		this.insertQueryBuilder = new InsertQueryBuilder<T, DT>(this, this._dataSource);
@@ -79,7 +82,11 @@ export class QueryBuilder<T, DT extends DatabasesTypes> implements QueryBuilderI
 		return this;
 	}
 
-	where(params: { conditions?: Condition<T>, logicalOperator?: LogicalOperators, exists?: string } | string): QueryBuilderInterface<T> {
+	where(params: {
+		conditions?: Condition<T>,
+		logicalOperator?: LogicalOperators,
+		exists?: string
+	} | string): QueryBuilderInterface<T> {
 		this.selectQueryBuilder.where(params);
 		return this;
 	}
@@ -165,6 +172,16 @@ export class QueryBuilder<T, DT extends DatabasesTypes> implements QueryBuilderI
 
 	execute(): any {
 		return this.queryMethod(this.build());
+	}
+
+	//cache
+	async cache(): Promise<QueryBuilderInterface<T>> {
+		if (!this._cache) {
+			throw Error('Set type of cache!');
+		}
+		const value = this.execute();
+		await this._cache.set('random10', value);
+		return this;
 	}
 }
 

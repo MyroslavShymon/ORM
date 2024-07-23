@@ -10,6 +10,7 @@ import { DatabasesTypes } from '@core/enums';
 import { DataSourcePostgres } from '@strategies/postgres';
 import { DataSourceMySql } from '@strategies/mysql';
 import {
+	CacheInterface,
 	DataSourceContextInterface,
 	QueryBuilderInterface,
 	TableCreatorInterface,
@@ -18,10 +19,12 @@ import {
 import { FileStructureManager } from '@context/file-structure-manager';
 import { ErrorHandler } from '@context/error-handler';
 import { constants } from '@core/constants';
+import { CacheFactory } from '@context/cache';
 
 class DatabaseManager<DT extends DatabasesTypes> implements DatabaseManagerInterface<DT> {
 	private _connectionData: ConnectionData;
 	private _dataSource: DataSourceContextInterface<DT>;
+	private _cache: CacheInterface;
 
 	constructor(connectionData: ConnectionData, dataSource: DataSourceContextInterface<DT>) {
 		this._connectionData = this._handleConnectionData(connectionData);
@@ -86,6 +89,11 @@ class DatabaseManager<DT extends DatabasesTypes> implements DatabaseManagerInter
 				tableSchema: this._connectionData.migrationTableSchema,
 				databaseIngot
 			});
+
+			if (this._connectionData.cache.type) {
+				this._cache = await CacheFactory.createCache(this._connectionData.cache.type);
+				this._dataSource.setCache(this._cache);
+			}
 		} catch (error) {
 			console.error('Error while creating orm connection', error);
 			ErrorHandler.handleCreateOrmConnection(error);
