@@ -1,8 +1,6 @@
-import { PoolClient } from 'pg';
-import { Connection } from 'mysql2/promise';
 import { TableManipulation } from '@context/table-manipulation';
 import { TableCreator } from '@context/table-creator/table-creator';
-import { DataSourceInterface } from '@core/interfaces';
+import { DataSourceInterface, SqlClientInterface } from '@core/interfaces';
 import { ConnectionData } from '@core/types';
 import { MigrationManager } from '@context/migration-manager';
 import { QueryBuilder } from '@context/query-builder';
@@ -18,7 +16,7 @@ import { DatabasesTypes } from '@core/enums';
 
 class DataSourceContext<DT extends DatabasesTypes> implements DataSourceContextInterface<DT> {
 	private _dataSource: DataSourceInterface<DT>;
-	private _client: DT extends DatabasesTypes.POSTGRES ? PoolClient : Connection;
+	private _client: SqlClientInterface;
 	private _cache: CacheInterface;
 
 	setDatabase(dataSource: DataSourceInterface<DT>): void {
@@ -45,7 +43,7 @@ class DataSourceContext<DT extends DatabasesTypes> implements DataSourceContextI
 		return await this._dataSource.client.query(sql);
 	}
 
-	get client(): DT extends DatabasesTypes.POSTGRES ? PoolClient : Connection {
+	get client(): SqlClientInterface {
 		return this._client;
 	}
 

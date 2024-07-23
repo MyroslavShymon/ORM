@@ -32,9 +32,10 @@ import {
 	InitCurrentDatabaseIngotOptionsInterface,
 	SyncDatabaseIngotOptionsInterface
 } from '@core/interfaces/migration-service';
+import { SqlClientInterface } from '@core/interfaces/sql-client.interface';
 
 export interface DataSourceInterface<DT extends DatabasesTypes> {
-	client;//TODO typing
+	client: SqlClientInterface;
 
 	connect(dataToConnect: ConnectionData);
 
