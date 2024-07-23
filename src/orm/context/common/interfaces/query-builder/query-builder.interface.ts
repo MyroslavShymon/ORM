@@ -1,4 +1,5 @@
 import { Condition, LogicalOperators } from '@core/types';
+import { CacheOptionsInterface } from '@context/common/interfaces/query-builder/cache-options.interface';
 
 export interface QueryBuilderInterface<T> {
 	query: string;
@@ -49,7 +50,7 @@ export interface QueryBuilderInterface<T> {
 
 	delete(tableName: string): QueryBuilderInterface<T>;
 
-	cache(): Promise<QueryBuilderInterface<T>>;
+	cache(options: CacheOptionsInterface): Promise<T>;
 
 	build(): string;
 

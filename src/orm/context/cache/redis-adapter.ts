@@ -14,9 +14,12 @@ export class RedisAdapter implements CacheInterface {
 
 	async set(key: string, value: unknown, ttl?: number): Promise<void> {
 		await this.client.set(key, JSON.stringify(value));
+		if (ttl) {
+			await this.client.expire(key, ttl);
+		}
 	}
 
-	async get(key: string): Promise<any> {
+	async get(key: string): Promise<string> {
 		const reply = await this.client.get(key);
 		return reply ? JSON.parse(reply) : null;
 	}

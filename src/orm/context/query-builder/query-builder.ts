@@ -17,6 +17,7 @@ import {
 } from '@context/common';
 import { Condition, LogicalOperators, OrderOperators } from '@core/types';
 import { DatabasesTypes } from '@core/enums';
+import { CacheOptionsInterface } from '@context/common/interfaces/query-builder/cache-options.interface';
 
 export class QueryBuilder<T, DT extends DatabasesTypes> implements QueryBuilderInterface<T> {
 	query: string;
@@ -175,13 +176,19 @@ export class QueryBuilder<T, DT extends DatabasesTypes> implements QueryBuilderI
 	}
 
 	//cache
-	async cache(): Promise<QueryBuilderInterface<T>> {
+	async cache({ ttl, key }: CacheOptionsInterface): Promise<T> {
 		if (!this._cache) {
 			throw Error('Set type of cache!');
 		}
-		const value = this.execute();
-		await this._cache.set('random10', value);
-		return this;
+		const cachedData = await this._cache.get(key);
+
+		if (!cachedData) {
+			const [dataFromDb] = await this.execute();
+			await this._cache.set(key, JSON.stringify(dataFromDb), ttl);
+			return dataFromDb;
+		}
+
+		return JSON.parse(cachedData);
 	}
 }
 
