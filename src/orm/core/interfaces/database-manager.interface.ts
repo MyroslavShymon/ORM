@@ -1,11 +1,18 @@
 import { ConnectionData } from '@core/types';
-import { QueryBuilderInterface, TableCreatorInterface, TableManipulationInterface } from '@context/common';
+import {
+	EventManagerInterface,
+	QueryBuilderInterface,
+	TableCreatorInterface,
+	TableManipulationInterface
+} from '@context/common';
 import { DatabasesTypes } from '@core/enums';
 
 export interface DatabaseManagerInterface<DT extends DatabasesTypes> {
 	connectionData: ConnectionData;
 
 	tableCreator: TableCreatorInterface<DT>;
+
+	eventManager: EventManagerInterface;
 
 	queryBuilder<T>(): QueryBuilderInterface<T>;
 

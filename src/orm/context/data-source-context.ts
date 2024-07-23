@@ -7,12 +7,14 @@ import { QueryBuilder } from '@context/query-builder';
 import {
 	CacheInterface,
 	DataSourceContextInterface,
+	EventManagerInterface,
 	MigrationManagerInterface,
 	QueryBuilderInterface,
 	TableCreatorInterface,
 	TableManipulationInterface
 } from '@context/common';
 import { DatabasesTypes } from '@core/enums';
+import { EventManager } from '@context/event-manager';
 
 class DataSourceContext<DT extends DatabasesTypes> implements DataSourceContextInterface<DT> {
 	private _dataSource: DataSourceInterface<DT>;
@@ -61,6 +63,10 @@ class DataSourceContext<DT extends DatabasesTypes> implements DataSourceContextI
 
 	get migrationManager(): MigrationManagerInterface<DT> {
 		return new MigrationManager(this._dataSource);
+	}
+
+	get eventManager(): EventManagerInterface {
+		return new EventManager(this._cache);
 	}
 }
 

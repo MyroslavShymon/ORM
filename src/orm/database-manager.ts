@@ -12,6 +12,7 @@ import { DataSourceMySql } from '@strategies/mysql';
 import {
 	CacheInterface,
 	DataSourceContextInterface,
+	EventManagerInterface,
 	QueryBuilderInterface,
 	TableCreatorInterface,
 	TableManipulationInterface
@@ -135,6 +136,10 @@ class DatabaseManager<DT extends DatabasesTypes> implements DatabaseManagerInter
 
 	get tableCreator(): TableCreatorInterface<DT> {
 		return this._dataSource.tableCreator;
+	}
+
+	get eventManager(): EventManagerInterface {
+		return this._dataSource.eventManager;
 	}
 
 	queryBuilder<T>(): QueryBuilderInterface<T> {
