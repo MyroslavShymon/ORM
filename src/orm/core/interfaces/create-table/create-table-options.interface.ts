@@ -1,6 +1,5 @@
 import { DatabasesTypes } from '@core/enums';
-import { CreateTableOptionsPostgresInterface } from '@core/interfaces/create-table-options-postgres.interface';
-import { CreateTableOptionsMysqlInterface } from '@core/interfaces/create-table-options-mysql.interface';
+import { CreateTableOptionsMysqlInterface, CreateTableOptionsPostgresInterface } from '@core/interfaces';
 
 export type CreateTableOptionsInterface<DT extends DatabasesTypes> =
 	DT extends DatabasesTypes.POSTGRES ? CreateTableOptionsPostgresInterface :

@@ -10,7 +10,6 @@ import {
 } from '@core/interfaces/decorators';
 import { DatabasesTypes } from '@core/enums';
 
-//TODO зробити так шоб всі поля в TableIngotInterface<DB> окрім id і name були опціональними і нічого не зламалось
 export interface TableIngotInterface<DT extends DatabasesTypes> {
 	id?: string;
 	name: string;

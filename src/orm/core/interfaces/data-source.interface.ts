@@ -20,7 +20,6 @@ import {
 	RenameTableInterface
 } from '@core/interfaces/table-manipulation';
 import { QueryBuilderInterface } from '@context/common';
-import { CreateTableOptionsInterface } from '@core/interfaces/create-table-options.interface';
 import { AddComputedColumnInterface } from '@core/interfaces/table-manipulation/add-computed-column.interface';
 import { DatabasesTypes } from '@core/enums';
 import {
@@ -33,6 +32,7 @@ import {
 	SyncDatabaseIngotOptionsInterface
 } from '@core/interfaces/migration-service';
 import { SqlClientInterface } from '@core/interfaces/sql-client.interface';
+import { CreateTableOptionsInterface } from '@core/interfaces/create-table';
 
 export interface DataSourceInterface<DT extends DatabasesTypes> {
 	client: SqlClientInterface;
