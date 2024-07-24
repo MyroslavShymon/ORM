@@ -1,4 +1,4 @@
 export interface CacheOptionsInterface {
-	key: string;
+	key?: string;
 	ttl?: number;
 }

@@ -18,6 +18,8 @@ import {
 import { Condition, LogicalOperators, OrderOperators } from '@core/types';
 import { DatabasesTypes } from '@core/enums';
 import { CacheOptionsInterface } from '@context/common/interfaces/query-builder/cache-options.interface';
+import { Crypto } from '@utils/crypto';
+import * as console from 'node:console';
 
 export class QueryBuilder<T, DT extends DatabasesTypes> implements QueryBuilderInterface<T> {
 	query: string;
@@ -178,17 +180,35 @@ export class QueryBuilder<T, DT extends DatabasesTypes> implements QueryBuilderI
 	//cache
 	async cache({ ttl, key }: CacheOptionsInterface): Promise<T> {
 		if (!this._cache) {
-			throw Error('Set type of cache!');
-		}
-		const cachedData = await this._cache.get(key);
-
-		if (!cachedData) {
-			const [dataFromDb] = await this.execute();
-			await this._cache.set(key, JSON.stringify(dataFromDb), ttl);
-			return dataFromDb;
+			throw new Error('Cache not set!');
 		}
 
-		return JSON.parse(cachedData);
+		if (key) {
+			// If a specific key is provided
+			const cachedData = await this._cache.get(key);
+			if (cachedData) {
+				return JSON.parse(cachedData);
+			}
+			return this._fetchDataFromCache({ key, ttl });
+		}
+
+		// If no specific key is provided
+		console.info('It is better to set the hashing key so it will be better in terms of performance!');
+		const query = this.build();
+		const cacheKey = await Crypto.generateCacheKey(query);
+
+		const cachedData = await this._cache.get(cacheKey);
+		if (cachedData) {
+			return JSON.parse(cachedData);
+		}
+
+		return this._fetchDataFromCache({ key: cacheKey, ttl });
+	}
+
+	private async _fetchDataFromCache({ ttl, key }: CacheOptionsInterface): Promise<T> {
+		const [dataFromDb] = await this.execute();
+		await this._cache.set(key, JSON.stringify(dataFromDb), ttl);
+		return dataFromDb;
 	}
 }
 
