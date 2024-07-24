@@ -92,7 +92,7 @@ class DatabaseManager<DT extends DatabasesTypes> implements DatabaseManagerInter
 			});
 
 			if (this._connectionData.cache.type) {
-				this._cache = await CacheFactory.createCache(this._connectionData.cache.type);
+				this._cache = await CacheFactory.createCache(this._connectionData.cache.type, this._connectionData.cache.options);
 				this._dataSource.setCache(this._cache);
 			}
 		} catch (error) {

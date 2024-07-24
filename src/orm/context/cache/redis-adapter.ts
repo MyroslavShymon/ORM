@@ -1,12 +1,13 @@
 import { CacheInterface } from '@context/common';
 import { RedisClientType } from 'redis';
+import { CacheOptions } from '@core/types';
 
 export class RedisAdapter implements CacheInterface {
 	private client: RedisClientType;
 
-	async init(): Promise<void> {
+	async init(options?: CacheOptions): Promise<void> {
 		const { createClient } = (await import('redis'));
-		this.client = createClient();
+		this.client = createClient(options);
 		await this.client
 			.on('error', err => console.log('Redis Client Error', err))
 			.connect();

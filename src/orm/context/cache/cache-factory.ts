@@ -1,12 +1,12 @@
-import { CacheType } from '@core/types';
+import { CacheOptions, CacheType } from '@core/types';
 import { CacheInterface } from '@context/common';
 
 export class CacheFactory {
-	static async createCache(type: CacheType): Promise<CacheInterface> {
+	static async createCache(type: CacheType, options: CacheOptions): Promise<CacheInterface> {
 		if (type === 'redis') {
 			const { RedisAdapter } = await import('./redis-adapter');
 			const redisAdapter = new RedisAdapter();
-			await redisAdapter.init();
+			await redisAdapter.init(options);
 			return redisAdapter;
 		} else if (type === 'memcached') {
 			console.log('Coming soon...');
