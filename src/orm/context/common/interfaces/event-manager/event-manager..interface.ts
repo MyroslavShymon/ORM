@@ -1,3 +1,5 @@
+import { CacheManagerInterface } from '@context/common';
+
 export interface EventManagerInterface {
-	clearCache(key: string): Promise<void>;
+	cache: CacheManagerInterface;
 }

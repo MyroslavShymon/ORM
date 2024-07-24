@@ -14,7 +14,7 @@ import {
 	TableManipulationInterface
 } from '@context/common';
 import { DatabasesTypes } from '@core/enums';
-import { EventManager } from '@context/event-manager';
+import { EventManager } from '@context/events';
 
 class DataSourceContext<DT extends DatabasesTypes> implements DataSourceContextInterface<DT> {
 	private _dataSource: DataSourceInterface<DT>;

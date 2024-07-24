@@ -1,6 +1,6 @@
-import { CacheInterface, EventManagerInterface } from '@context/common';
+import { CacheInterface, CacheManagerInterface } from '@context/common';
 
-export class EventManager implements EventManagerInterface {
+export class CacheManager implements CacheManagerInterface {
 	_cache: CacheInterface;
 
 	constructor(cache: CacheInterface) {
@@ -10,5 +10,4 @@ export class EventManager implements EventManagerInterface {
 	async clearCache(key: string): Promise<void> {
 		await this._cache.delete(key);
 	}
-
 }

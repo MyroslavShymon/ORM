@@ -7,4 +7,4 @@ export * from './query-builder';
 export * from './file-structure-manager';
 export * from './error-handler';
 export * from './cache';
-export * from './event-manager';
+export * from './events';
