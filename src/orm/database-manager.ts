@@ -91,7 +91,7 @@ class DatabaseManager<DT extends DatabasesTypes> implements DatabaseManagerInter
 				databaseIngot
 			});
 
-			if (this._connectionData.cache.type) {
+			if (this._connectionData.cache) {
 				this._cache = await CacheFactory.createCache(this._connectionData.cache.type, this._connectionData.cache.options);
 				this._dataSource.setCache(this._cache);
 			}
@@ -144,6 +144,17 @@ class DatabaseManager<DT extends DatabasesTypes> implements DatabaseManagerInter
 
 	queryBuilder<T>(): QueryBuilderInterface<T> {
 		return this._dataSource.queryBuilder<T>();
+	}
+
+	async transaction(callback: (trx: DatabaseManagerInterface<DT>) => Promise<void>) {
+		await this._dataSource.transactionManager.beginTransaction();
+		try {
+			await callback(this);
+			await this._dataSource.transactionManager.commit();
+		} catch (error) {
+			await this._dataSource.transactionManager.rollback();
+			throw error;
+		}
 	}
 }
 

@@ -8,3 +8,4 @@ export * from './file-structure-manager';
 export * from './error-handler';
 export * from './cache';
 export * from './events';
+export * from './transaction';

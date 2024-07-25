@@ -146,4 +146,11 @@ export interface DataSourceInterface<DT extends DatabasesTypes> {
 	having(condition: string): string;
 
 	groupBy(columns: string[]): string;
+
+	//Transaction
+	beginTransaction(dataSource: DataSourceInterface<DT>): Promise<void>;
+
+	commit(dataSource: DataSourceInterface<DT>): Promise<void>;
+
+	rollback(dataSource: DataSourceInterface<DT>): Promise<void>;
 }

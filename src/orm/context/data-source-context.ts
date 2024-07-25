@@ -11,10 +11,12 @@ import {
 	MigrationManagerInterface,
 	QueryBuilderInterface,
 	TableCreatorInterface,
-	TableManipulationInterface
+	TableManipulationInterface,
+	TransactionManagerInterface
 } from '@context/common';
 import { DatabasesTypes } from '@core/enums';
 import { EventManager } from '@context/events';
+import { TransactionManager } from '@context/transaction';
 
 class DataSourceContext<DT extends DatabasesTypes> implements DataSourceContextInterface<DT> {
 	private _dataSource: DataSourceInterface<DT>;
@@ -67,6 +69,10 @@ class DataSourceContext<DT extends DatabasesTypes> implements DataSourceContextI
 
 	get eventManager(): EventManagerInterface {
 		return new EventManager(this._cache);
+	}
+
+	get transactionManager(): TransactionManagerInterface {
+		return new TransactionManager(this._dataSource);
 	}
 }
 

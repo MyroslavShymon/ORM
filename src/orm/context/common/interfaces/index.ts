@@ -5,3 +5,4 @@ export * from './migration-manager';
 export * from './query-builder';
 export * from './cache';
 export * from './event-manager';
+export * from './transaction';

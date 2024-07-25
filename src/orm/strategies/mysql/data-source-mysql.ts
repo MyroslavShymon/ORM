@@ -42,12 +42,14 @@ import {
 	SelectQueries,
 	TableAlterer,
 	TableBuilder,
+	Transaction,
 	UpdateQueries,
 	ViewQueries
 } from '@strategies/mysql/components';
 import { BaseQueries } from '@strategies/base-queries';
 import { AddComputedColumnInterface } from '@core/interfaces/table-manipulation/add-computed-column.interface';
 import { DatabasesTypes } from '@core/enums';
+import { TransactionInterface } from '@strategies/mysql';
 
 export class DataSourceMySql extends BaseQueries implements DataSourceInterface<DatabasesTypes.MYSQL> {
 	client: Connection;
@@ -59,6 +61,7 @@ export class DataSourceMySql extends BaseQueries implements DataSourceInterface<
 	private _deleteQueries: DeleteQueriesInterface;
 	private _viewQueries: ViewQueriesInterface;
 	private _selectQueries: SelectQueriesInterface;
+	private _transaction: TransactionInterface;
 
 	constructor() {
 		super();
@@ -70,6 +73,7 @@ export class DataSourceMySql extends BaseQueries implements DataSourceInterface<
 		this._deleteQueries = new DeleteQueries();
 		this._viewQueries = new ViewQueries();
 		this._selectQueries = new SelectQueries();
+		this._transaction = new Transaction();
 	}
 
 	async connect(dataToConnect: ConnectionData): Promise<void> {
@@ -210,5 +214,18 @@ export class DataSourceMySql extends BaseQueries implements DataSourceInterface<
 	//Base queries
 	createView(name: string): string {
 		return this._viewQueries.createView(name);
+	}
+
+	//Transaction
+	async beginTransaction(dataSource: DataSourceInterface<DatabasesTypes.MYSQL>): Promise<void> {
+		return this._transaction.beginTransaction(dataSource);
+	}
+
+	async commit(dataSource: DataSourceInterface<DatabasesTypes.MYSQL>): Promise<void> {
+		return this._transaction.commit(dataSource);
+	}
+
+	async rollback(dataSource: DataSourceInterface<DatabasesTypes.MYSQL>): Promise<void> {
+		return this._transaction.rollback(dataSource);
 	}
 }
