@@ -1,9 +1,11 @@
-import { Condition, LogicalOperators } from '@core/types';
+import { ConditionParamsType, JoinCondition } from '@core/types';
 
 export interface SelectQueriesInterface {
-	where(params: {
-		conditions?: Condition;
-		logicalOperator?: LogicalOperators;
-		exists?: string
-	} | string): string;
+	innerJoin(table: string, condition: JoinCondition): string;
+
+	leftJoin(table: string, condition: JoinCondition): string;
+
+	rightJoin(table: string, condition: JoinCondition): string;
+
+	where(params: ConditionParamsType): string;
 }

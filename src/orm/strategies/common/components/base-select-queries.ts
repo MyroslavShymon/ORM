@@ -17,16 +17,4 @@ export class BaseSelectQueries implements BaseSelectQueriesInterface {
 	limit(count: number): string {
 		return `LIMIT ${count} \n`;
 	}
-
-	innerJoin(table: string, condition: string): string {
-		return `INNER JOIN ${table} ON ${condition} \n`;
-	}
-
-	leftJoin(table: string, condition: string): string {
-		return `LEFT JOIN ${table} ON ${condition} \n`;
-	}
-
-	rightJoin(table: string, condition: string): string {
-		return `RIGHT JOIN ${table} ON ${condition} \n`;
-	}
 }

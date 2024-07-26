@@ -1,4 +1,4 @@
-import { Condition, LogicalOperators, OrderOperators } from '@core/types';
+import { ConditionParamsType, JoinCondition, OrderOperators } from '@core/types';
 
 export interface SelectQueryBuilderInterface<T> {
 	select(columns: string[]): void;
@@ -9,15 +9,11 @@ export interface SelectQueryBuilderInterface<T> {
 
 	limit(count: number): void;
 
-	leftJoin(table: string, condition: string): void;
+	leftJoin(table: string, condition: JoinCondition): void;
 
-	rightJoin(table: string, condition: string): void;
+	rightJoin(table: string, condition: JoinCondition): void;
 
-	innerJoin(table: string, condition: string): void;
+	innerJoin(table: string, condition: JoinCondition): void;
 
-	where(params: {
-		conditions?: Condition<T>,
-		logicalOperator?: LogicalOperators,
-		exists?: string
-	} | string): void;
+	where(params: ConditionParamsType<T>): void;
 }

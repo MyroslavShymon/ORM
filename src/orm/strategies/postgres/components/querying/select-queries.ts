@@ -1,12 +1,8 @@
 import { SelectQueriesInterface } from '@strategies/postgres';
-import { Condition, LogicalOperators } from '@core/types';
+import { ConditionParamsType } from '@core/types';
 
 export class SelectQueries implements SelectQueriesInterface {
-	where(params: {
-		conditions?: Condition;
-		logicalOperator?: LogicalOperators;
-		exists?: string
-	} | string): string {
+	where(params: ConditionParamsType): string {
 		if (typeof params === 'string') {
 			return `WHERE ${params} \n`;
 		}

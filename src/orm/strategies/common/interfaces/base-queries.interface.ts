@@ -27,12 +27,6 @@ export interface BaseQueriesInterface {
 
 	limit(count: number): string;
 
-	innerJoin(table: string, condition: string): string;
-
-	leftJoin(table: string, condition: string): string;
-
-	rightJoin(table: string, condition: string): string;
-
 	//insert
 	setInto(name: string): string;
 
@@ -47,8 +41,6 @@ export interface BaseQueriesInterface {
 	summing(column: string): string;
 
 	counting(column: string): string;
-
-	having(condition: string): string;
-
+	
 	groupBy(columns: string[]): string;
 }

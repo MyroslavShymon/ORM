@@ -24,7 +24,7 @@ import {
 	InitCurrentDatabaseIngotOptionsInterface,
 	SyncDatabaseIngotOptionsInterface
 } from '@core/interfaces';
-import { Condition, ConnectionData, LogicalOperators } from '@core/types';
+import { ConditionParamsType, ConnectionData, JoinCondition } from '@core/types';
 import {
 	DeleteQueriesInterface,
 	InsertQueriesInterface,
@@ -184,12 +184,27 @@ export class DataSourcePostgres extends BaseQueries implements DataSourceInterfa
 	}
 
 	//Select queries
-	where(params: {
-		conditions?: Condition;
-		logicalOperator?: LogicalOperators;
-		exists?: string
-	} | string): string {
+	where(params: ConditionParamsType): string {
 		return this._selectQueries.where(params);
+	}
+
+	//TODO
+	innerJoin(table: string, condition: JoinCondition): string {
+		throw new Error('Method not implemented.');
+	}
+
+	leftJoin(table: string, condition: JoinCondition): string {
+		throw new Error('Method not implemented.');
+	}
+
+	rightJoin(table: string, condition: JoinCondition): string {
+		throw new Error('Method not implemented.');
+	}
+
+	//TODO
+	//Aggregate queries
+	having(params: ConditionParamsType): string {
+		throw new Error('Method not implemented.');
 	}
 
 	//Insert queries

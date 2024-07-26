@@ -1,6 +1,7 @@
 import { AggregateQueryBuilderInterface, QueryBuilderInterface } from '@context/common/interfaces';
 import { DataSourceInterface } from '@core/interfaces';
 import { DatabasesTypes } from '@core/enums';
+import { ConditionParamsType } from '@core/types';
 
 export class AggregateQueryBuilder<T, DT extends DatabasesTypes> implements AggregateQueryBuilderInterface {
 	private _queryBuilder: QueryBuilderInterface<T>;
@@ -19,7 +20,7 @@ export class AggregateQueryBuilder<T, DT extends DatabasesTypes> implements Aggr
 		this._queryBuilder.query += this._dataSource.counting(column);
 	}
 
-	having(condition: string): void {
+	having(condition: ConditionParamsType<T>): void {
 		this._queryBuilder.query += this._dataSource.having(condition);
 	}
 

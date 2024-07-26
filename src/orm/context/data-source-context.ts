@@ -43,8 +43,8 @@ class DataSourceContext<DT extends DatabasesTypes> implements DataSourceContextI
 		return this._dataSource.client.query(getCurrentTimestampQuery);
 	}
 
-	async query(sql: string): Promise<Object> {
-		return await this._dataSource.client.query(sql);
+	async query(sql: string, params: any[]): Promise<Object> {
+		return await this._dataSource.client.query(sql, params);
 	}
 
 	get client(): SqlClientInterface {

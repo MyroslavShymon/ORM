@@ -15,7 +15,7 @@ import {
 	SelectQueryBuilderInterface,
 	UpdateQueryBuilderInterface
 } from '@context/common';
-import { Condition, LogicalOperators, OrderOperators } from '@core/types';
+import { ConditionParamsType, JoinCondition, OrderOperators } from '@core/types';
 import { DatabasesTypes } from '@core/enums';
 import { CacheOptionsInterface } from '@context/common/interfaces/query-builder/cache-options.interface';
 import { Crypto } from '@utils/crypto';
@@ -23,10 +23,11 @@ import * as console from 'node:console';
 
 export class QueryBuilder<T, DT extends DatabasesTypes> implements QueryBuilderInterface<T> {
 	query: string;
+	parameters: any[] = [];
 
 	private readonly _dataSource: DataSourceInterface<DT>;
 	private readonly _cache: CacheInterface;
-	private readonly queryMethod: (sql: string) => Promise<Object>;
+	private readonly queryMethod: (sql: string, params: any[]) => Promise<Object>;
 
 	private selectQueryBuilder: SelectQueryBuilderInterface<T>;
 	private insertQueryBuilder: InsertQueryBuilderInterface<T>;
@@ -35,7 +36,7 @@ export class QueryBuilder<T, DT extends DatabasesTypes> implements QueryBuilderI
 	private aggregateQueryBuilder: AggregateQueryBuilderInterface;
 	private queryStructureBuilder: QueryStructureBuilderInterface<T>;
 
-	constructor(dataSource: DataSourceInterface<DT>, methodForQuery?: (sql: string) => Promise<Object>, cache?: CacheInterface) {
+	constructor(dataSource: DataSourceInterface<DT>, methodForQuery?: (sql: string, params: any[]) => Promise<Object>, cache?: CacheInterface) {
 		this.query = '';
 		this._dataSource = dataSource;
 		this.queryMethod = methodForQuery;
@@ -70,37 +71,84 @@ export class QueryBuilder<T, DT extends DatabasesTypes> implements QueryBuilderI
 		return this;
 	}
 
-	innerJoin(table: string, condition: string): QueryBuilderInterface<T> {
+	innerJoin(table: string, condition: JoinCondition): QueryBuilderInterface<T> {
+		Array.isArray(condition.value) ?
+			this.parameters.push(...condition.value)
+			: this.parameters.push(condition.value);
 		this.selectQueryBuilder.innerJoin(table, condition);
 		return this;
 	}
 
-	leftJoin(table: string, condition: string): QueryBuilderInterface<T> {
+	leftJoin(table: string, condition: JoinCondition): QueryBuilderInterface<T> {
+		Array.isArray(condition.value) ?
+			this.parameters.push(...condition.value)
+			: this.parameters.push(condition.value);
 		this.selectQueryBuilder.leftJoin(table, condition);
 		return this;
 	}
 
-	rightJoin(table: string, condition: string): QueryBuilderInterface<T> {
+	rightJoin(table: string, condition: JoinCondition): QueryBuilderInterface<T> {
+		Array.isArray(condition.value) ?
+			this.parameters.push(...condition.value)
+			: this.parameters.push(condition.value);
+		;
 		this.selectQueryBuilder.rightJoin(table, condition);
 		return this;
 	}
 
-	where(params: {
-		conditions?: Condition<T>,
-		logicalOperator?: LogicalOperators,
-		exists?: string
-	} | string): QueryBuilderInterface<T> {
+	where(params: ConditionParamsType<T>): QueryBuilderInterface<T> {
+		this._extractParams(params);
 		this.selectQueryBuilder.where(params);
 		return this;
 	}
 
+	private _extractParams(params: ConditionParamsType<T>): void {
+		if (typeof params !== 'string' && params.conditions) {
+			const columns = Object.keys(params.conditions);
+
+			for (const column of columns) {
+				const operators = params.conditions[column];
+
+				for (const operator in operators) {
+					const value = operators[operator];
+
+					switch (operator) {
+						case 'in':
+							if (Array.isArray(value)) {
+								this.parameters.push(...value); // Add all values for IN condition
+							}
+							break;
+						case 'eq':
+						case 'neq':
+						case 'gt':
+						case 'gte':
+						case 'lt':
+						case 'lte':
+							this.parameters.push(value);
+							break;
+						case 'exists':
+							// EXISTS does not use parameters directly
+							break;
+						default:
+							this.parameters.push(value);
+							break;
+					}
+				}
+			}
+		}
+	}
+
 	//Insert query
 	insert(values: Partial<T>, tableName: string): QueryBuilderInterface<T> {
+		this.parameters.push(...Object.values(values));
 		this.insertQueryBuilder.insert(values, tableName);
 		return this;
 	}
 
 	insertMany(values: Partial<T>[], tableName: string): QueryBuilderInterface<T> {
+		for (const value of values) {
+			this.parameters.push(...Object.values(value));
+		}
 		this.insertQueryBuilder.insertMany(values, tableName);
 		return this;
 	}
@@ -112,6 +160,7 @@ export class QueryBuilder<T, DT extends DatabasesTypes> implements QueryBuilderI
 
 	//Update query
 	update(values: Partial<T>, tableName: string): QueryBuilderInterface<T> {
+		this.parameters.push(...Object.values(values));
 		this.updateQueryBuilder.update(values, tableName);
 		return this;
 	}
@@ -133,7 +182,8 @@ export class QueryBuilder<T, DT extends DatabasesTypes> implements QueryBuilderI
 		return this;
 	}
 
-	having(condition: string): QueryBuilderInterface<T> {
+	having(condition: ConditionParamsType<T>): QueryBuilderInterface<T> {
+		this._extractParams(condition);
 		this.aggregateQueryBuilder.having(condition);
 		return this;
 	}
@@ -166,7 +216,11 @@ export class QueryBuilder<T, DT extends DatabasesTypes> implements QueryBuilderI
 
 	//Building
 	build(): string {
-		return this.query.trim() + ';';
+		let sql = this.query.trim();
+
+		sql = sql.replace(/\\`/g, '`');
+
+		return sql + ';';
 	}
 
 	buildWithoutSemicolon(): string {
@@ -174,7 +228,7 @@ export class QueryBuilder<T, DT extends DatabasesTypes> implements QueryBuilderI
 	}
 
 	execute(): any {
-		return this.queryMethod(this.build());
+		return this.queryMethod(this.build(), this.parameters);
 	}
 
 	//cache

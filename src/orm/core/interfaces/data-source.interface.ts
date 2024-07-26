@@ -1,4 +1,4 @@
-import { Condition, ConnectionData, LogicalOperators, OrderOperators } from '@core/types';
+import { ConditionParamsType, ConnectionData, JoinCondition, OrderOperators } from '@core/types';
 import { AddColumnInterface } from '@core/interfaces/table-manipulation/add-column.interface';
 import { DatabaseIngotInterface } from '@core/interfaces/database-ingot.interface';
 import {
@@ -104,17 +104,13 @@ export interface DataSourceInterface<DT extends DatabasesTypes> {
 
 	limit(count: number): string;
 
-	innerJoin(table: string, condition: string): string;
+	innerJoin(table: string, condition: JoinCondition): string;
 
-	leftJoin(table: string, condition: string): string;
+	leftJoin(table: string, condition: JoinCondition): string;
 
-	rightJoin(table: string, condition: string): string;
+	rightJoin(table: string, condition: JoinCondition): string;
 
-	where(params: {
-		conditions?: Condition;
-		logicalOperator?: LogicalOperators;
-		exists?: string
-	} | string): string;
+	where(params: ConditionParamsType): string;
 
 	//Insert querying
 	setInto(name: string): string;
@@ -143,7 +139,7 @@ export interface DataSourceInterface<DT extends DatabasesTypes> {
 
 	counting(column: string): string;
 
-	having(condition: string): string;
+	having(params: ConditionParamsType): string;
 
 	groupBy(columns: string[]): string;
 

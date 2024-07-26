@@ -66,18 +66,6 @@ export class BaseQueries implements BaseQueriesInterface {
 		return this._baseSelectQueries.limit(count);
 	}
 
-	innerJoin(table: string, condition: string): string {
-		return this._baseSelectQueries.innerJoin(table, condition);
-	}
-
-	leftJoin(table: string, condition: string): string {
-		return this._baseSelectQueries.leftJoin(table, condition);
-	}
-
-	rightJoin(table: string, condition: string): string {
-		return this._baseSelectQueries.rightJoin(table, condition);
-	}
-
 	//insert
 	setInto(name: string): string {
 		return this._baseInsertQueries.setInto(name);
@@ -104,11 +92,7 @@ export class BaseQueries implements BaseQueriesInterface {
 	counting(column: string): string {
 		return this._baseAggregateQueries.counting(column);
 	}
-
-	having(condition: string): string {
-		return this._baseAggregateQueries.having(condition);
-	}
-
+	
 	groupBy(columns: string[]): string {
 		return this._baseAggregateQueries.groupBy(columns);
 	}

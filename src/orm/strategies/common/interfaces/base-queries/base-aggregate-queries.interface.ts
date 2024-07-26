@@ -3,7 +3,5 @@ export interface BaseAggregateQueriesInterface {
 
 	counting(column: string): string;
 
-	having(condition: string): string;
-
 	groupBy(columns: string[]): string;
 }

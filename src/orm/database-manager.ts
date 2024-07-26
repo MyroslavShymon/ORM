@@ -110,9 +110,9 @@ class DatabaseManager<DT extends DatabasesTypes> implements DatabaseManagerInter
 		return connectionData;
 	}
 
-	async query(sql: string): Promise<Object> {
+	async query(sql: string, params?: any[]): Promise<Object> {
 		try {
-			return this._dataSource.query(sql);
+			return this._dataSource.query(sql, params);
 		} catch (error) {
 			console.error('Error while querying', error);
 		}

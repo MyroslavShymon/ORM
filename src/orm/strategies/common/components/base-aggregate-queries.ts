@@ -12,10 +12,6 @@ export class BaseAggregateQueries implements BaseAggregateQueriesInterface {
 		return `COUNT(${column})`;
 	}
 
-	having(condition: string): string {
-		return `HAVING ${condition} \n`;
-	}
-
 	groupBy(columns: string[]): string {
 		return `GROUP BY ${columns.join(', ')} \n`;
 	}

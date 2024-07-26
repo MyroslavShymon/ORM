@@ -26,7 +26,7 @@ export interface DataSourceContextInterface<DT extends DatabasesTypes> {
 
 	connectDatabase(connectionData: ConnectionData): Promise<void>;
 
-	query(sql: string): Promise<Object>;
+	query(sql: string, params: any[]): Promise<Object>;
 
 	getCurrentTime(): Promise<Object>;
 }

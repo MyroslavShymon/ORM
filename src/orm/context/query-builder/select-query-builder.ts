@@ -1,6 +1,6 @@
 import { DataSourceInterface } from '@core/interfaces';
 import { QueryBuilderInterface, SelectQueryBuilderInterface } from '@context/common';
-import { Condition, LogicalOperators, OrderOperators } from '@core/types';
+import { ConditionParamsType, JoinCondition, OrderOperators } from '@core/types';
 import { DatabasesTypes } from '@core/enums';
 
 export class SelectQueryBuilder<T, DT extends DatabasesTypes> implements SelectQueryBuilderInterface<T> {
@@ -28,23 +28,19 @@ export class SelectQueryBuilder<T, DT extends DatabasesTypes> implements SelectQ
 		this._queryBuilder.query += this._dataSource.limit(count);
 	}
 
-	innerJoin(table: string, condition: string): void {
+	innerJoin(table: string, condition: JoinCondition): void {
 		this._queryBuilder.query += this._dataSource.innerJoin(table, condition);
 	}
 
-	leftJoin(table: string, condition: string): void {
+	leftJoin(table: string, condition: JoinCondition): void {
 		this._queryBuilder.query += this._dataSource.leftJoin(table, condition);
 	}
 
-	rightJoin(table: string, condition: string): void {
+	rightJoin(table: string, condition: JoinCondition): void {
 		this._queryBuilder.query += this._dataSource.rightJoin(table, condition);
 	}
 
-	where(params: {
-		conditions?: Condition<T>;
-		logicalOperator?: LogicalOperators;
-		exists?: string
-	} | string): void {
+	where(params: ConditionParamsType<T>): void {
 		this._queryBuilder.query += this._dataSource.where(params);
 	}
 }

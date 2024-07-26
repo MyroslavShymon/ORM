@@ -24,8 +24,9 @@ import {
 	InitCurrentDatabaseIngotOptionsInterface,
 	SyncDatabaseIngotOptionsInterface
 } from '@core/interfaces';
-import { Condition, ConnectionData, LogicalOperators } from '@core/types';
+import { ConditionParamsType, ConnectionData, JoinCondition } from '@core/types';
 import {
+	AggregateQueriesInterface,
 	DeleteQueriesInterface,
 	InsertQueriesInterface,
 	MigrationServiceInterface,
@@ -36,6 +37,7 @@ import {
 	ViewQueriesInterface
 } from '@strategies/mysql/interfaces';
 import {
+	AggregateQueries,
 	DeleteQueries,
 	InsertQueries,
 	MigrationService,
@@ -61,6 +63,7 @@ export class DataSourceMySql extends BaseQueries implements DataSourceInterface<
 	private _deleteQueries: DeleteQueriesInterface;
 	private _viewQueries: ViewQueriesInterface;
 	private _selectQueries: SelectQueriesInterface;
+	private _aggregateQueries: AggregateQueriesInterface;
 	private _transaction: TransactionInterface;
 
 	constructor() {
@@ -73,6 +76,7 @@ export class DataSourceMySql extends BaseQueries implements DataSourceInterface<
 		this._deleteQueries = new DeleteQueries();
 		this._viewQueries = new ViewQueries();
 		this._selectQueries = new SelectQueries();
+		this._aggregateQueries = new AggregateQueries();
 		this._transaction = new Transaction();
 	}
 
@@ -182,14 +186,26 @@ export class DataSourceMySql extends BaseQueries implements DataSourceInterface<
 		return 'SELECT NOW();';
 	}
 
-	//TODO query
 	//Select queries
-	where(params: {
-		conditions?: Condition;
-		logicalOperator?: LogicalOperators;
-		exists?: string
-	} | string): string {
+	where(params: ConditionParamsType): string {
 		return this._selectQueries.where(params);
+	}
+
+	innerJoin(table: string, condition: JoinCondition): string {
+		return this._selectQueries.innerJoin(table, condition);
+	}
+
+	leftJoin(table: string, condition: JoinCondition): string {
+		return this._selectQueries.leftJoin(table, condition);
+	}
+
+	rightJoin(table: string, condition: JoinCondition): string {
+		return this._selectQueries.rightJoin(table, condition);
+	}
+
+	//Aggregate queries
+	having(params: ConditionParamsType): string {
+		return this._aggregateQueries.having(params);
 	}
 
 	//Insert queries

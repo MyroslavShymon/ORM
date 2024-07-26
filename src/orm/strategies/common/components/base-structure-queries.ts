@@ -13,5 +13,4 @@ export class BaseStructureQueries implements BaseStructureQueriesInterface {
 	unionAll(queryBuilder: QueryBuilderInterface<Object>): string {
 		return `UNION ALL \n ${queryBuilder.build()} \n`;
 	}
-
 }

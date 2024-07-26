@@ -1,8 +1,9 @@
-import { Condition, LogicalOperators } from '@core/types';
+import { ConditionParamsType, JoinCondition } from '@core/types';
 import { CacheOptionsInterface } from '@context/common/interfaces/query-builder/cache-options.interface';
 
 export interface QueryBuilderInterface<T> {
 	query: string;
+	parameters: any[];
 
 	createView(name: string): QueryBuilderInterface<T>;
 
@@ -14,7 +15,7 @@ export interface QueryBuilderInterface<T> {
 
 	count(column: string): QueryBuilderInterface<T>;
 
-	having(condition: string): QueryBuilderInterface<T>;
+	having(condition: ConditionParamsType<T>): QueryBuilderInterface<T>;
 
 	as(alias: string): QueryBuilderInterface<T>;
 
@@ -22,17 +23,13 @@ export interface QueryBuilderInterface<T> {
 
 	from(table: string): QueryBuilderInterface<T>;
 
-	where(params: {
-		conditions?: Condition<T>,
-		logicalOperator?: LogicalOperators,
-		exists?: string
-	} | string): QueryBuilderInterface<T>;
+	where(params: ConditionParamsType<T>): QueryBuilderInterface<T>;
 
-	leftJoin(table: string, condition: string): QueryBuilderInterface<T>;
+	leftJoin(table: string, condition: JoinCondition): QueryBuilderInterface<T>;
 
-	rightJoin(table: string, condition: string): QueryBuilderInterface<T>;
+	rightJoin(table: string, condition: JoinCondition): QueryBuilderInterface<T>;
 
-	innerJoin(table: string, condition: string): QueryBuilderInterface<T>;
+	innerJoin(table: string, condition: JoinCondition): QueryBuilderInterface<T>;
 
 	union(queryBuilder: QueryBuilderInterface<T>): QueryBuilderInterface<T>;
 

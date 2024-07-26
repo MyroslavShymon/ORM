@@ -1,12 +1,41 @@
 import { SelectQueriesInterface } from '@strategies/mysql';
-import { Condition, LogicalOperators } from '@core/types';
+import { ConditionParamsType, JoinCondition } from '@core/types';
 
 export class SelectQueries implements SelectQueriesInterface {
-	where(params: {
-		conditions?: Condition;
-		logicalOperator?: LogicalOperators;
-		exists?: string;
-	} | string): string {
+	innerJoin(table: string, condition: JoinCondition): string {
+		const { column, operator, value } = condition;
+		let placeholder = '?';
+
+		if (operator === 'IN' && Array.isArray(value)) {
+			placeholder = value.map(() => '?').join(', ');
+		}
+
+		return `INNER JOIN ${table} ON ${column} ${operator} ${placeholder} \n`;
+	}
+
+	leftJoin(table: string, condition: JoinCondition): string {
+		const { column, operator, value } = condition;
+		let placeholder = '?';
+
+		if (operator === 'IN' && Array.isArray(value)) {
+			placeholder = value.map(() => '?').join(', ');
+		}
+
+		return `LEFT JOIN ${table} ON ${column} ${operator} ${placeholder} \n`;
+	}
+
+	rightJoin(table: string, condition: JoinCondition): string {
+		const { column, operator, value } = condition;
+		let placeholder = '?';
+
+		if (operator === 'IN' && Array.isArray(value)) {
+			placeholder = value.map(() => '?').join(', ');
+		}
+
+		return `RIGHT JOIN ${table} ON ${column} ${operator} ${placeholder} \n`;
+	}
+
+	where(params: ConditionParamsType): string {
 		if (typeof params === 'string') {
 			return `WHERE ${params} \n`;
 		}
@@ -28,30 +57,30 @@ export class SelectQueries implements SelectQueriesInterface {
 
 					switch (operator) {
 						case 'in':
-							conditionsArray.push(`${column} IN (${typeof value === 'string' ? value : value.join(', ')})`);
+							conditionsArray.push(`${column} IN (${typeof value === 'string' || 'number' ? '?' : value.map(() => '?').join(', ')})`);
 							break;
 						case 'eq':
-							conditionsArray.push(`${column} = ${this._handleValue(value, operators.isString)}`);
+							conditionsArray.push(`${column} = ?`);
 							break;
 						case 'neq':
-							conditionsArray.push(`${column} != ${this._handleValue(value, operators.isString)}`);
+							conditionsArray.push(`${column} != ?`);
 							break;
 						case 'gt':
-							conditionsArray.push(`${column} > ${this._handleValue(value, operators.isString)}`);
+							conditionsArray.push(`${column} > ?`);
 							break;
 						case 'gte':
-							conditionsArray.push(`${column} >= ${this._handleValue(value, operators.isString)}`);
+							conditionsArray.push(`${column} >= ?`);
 							break;
 						case 'lt':
-							conditionsArray.push(`${column} < ${this._handleValue(value, operators.isString)}`);
+							conditionsArray.push(`${column} < ?`);
 							break;
 						case 'lte':
-							conditionsArray.push(`${column} <= ${this._handleValue(value, operators.isString)}`);
+							conditionsArray.push(`${column} <= ?`);
 							break;
 						case 'isString':
 							break;
 						default:
-							conditionsArray.push(`${column} ${operator} ${this._handleValue(value, operators.isString)}`);
+							conditionsArray.push(`${column} ${operator} ?`);
 							break;
 					}
 				}
@@ -60,12 +89,5 @@ export class SelectQueries implements SelectQueriesInterface {
 
 		const logicalOperatorString = params.logicalOperator === 'or' ? ' OR ' : ' AND ';
 		return conditionsArray.length > 0 ? `WHERE ${conditionsArray.join(logicalOperatorString)} \n` : '';
-	}
-
-	private _handleValue(value: string | number | boolean, isString: boolean = true): string {
-		if (isString === false) {
-			return String(value);
-		}
-		return value === null || value === undefined ? 'NULL' : `'${String(value)}'`;
 	}
 }

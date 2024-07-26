@@ -12,6 +12,6 @@ import { ComparisonOperators } from '@core/types';
 
 export type Condition<T = unknown> = {
 	[K in keyof T]?: {
-		[key in ComparisonOperators]?: string | number;
+		[key in ComparisonOperators]?: key extends 'in' ? (string | number | string[] | number[]) : string | number;
 	}
 };
