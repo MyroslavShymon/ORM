@@ -22,13 +22,18 @@ class DataSourceContext<DT extends DatabasesTypes> implements DataSourceContextI
 	private _dataSource: DataSourceInterface<DT>;
 	private _client: SqlClientInterface;
 	private _cache: CacheInterface;
+	private _connectionData: ConnectionData;
 
-	setDatabase(dataSource: DataSourceInterface<DT>): void {
+	set database(dataSource: DataSourceInterface<DT>) {
 		this._dataSource = dataSource;
 	}
 
-	setCache(cache: CacheInterface): void {
+	set cache(cache: CacheInterface) {
 		this._cache = cache;
+	}
+
+	set connectionData(connectionData: ConnectionData) {
+		this._connectionData = connectionData;
 	}
 
 	async connectDatabase(connectionData: ConnectionData): Promise<void> {
@@ -52,7 +57,7 @@ class DataSourceContext<DT extends DatabasesTypes> implements DataSourceContextI
 	}
 
 	queryBuilder<T>(): QueryBuilderInterface<T> {
-		return new QueryBuilder<T, DT>(this._dataSource, this.query, this._cache);
+		return new QueryBuilder<T, DT>(this._dataSource, this._connectionData, this.query, this._cache);
 	}
 
 	get tableManipulation(): TableManipulationInterface<DT> {

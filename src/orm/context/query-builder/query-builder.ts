@@ -15,7 +15,7 @@ import {
 	SelectQueryBuilderInterface,
 	UpdateQueryBuilderInterface
 } from '@context/common';
-import { ConditionParamsType, JoinCondition, OrderOperators } from '@core/types';
+import { ConditionParamsType, ConnectionData, JoinCondition, OrderOperators } from '@core/types';
 import { DatabasesTypes } from '@core/enums';
 import { CacheOptionsInterface } from '@context/common/interfaces/query-builder/cache-options.interface';
 import { Crypto } from '@utils/crypto';
@@ -27,6 +27,7 @@ export class QueryBuilder<T, DT extends DatabasesTypes> implements QueryBuilderI
 
 	private readonly _dataSource: DataSourceInterface<DT>;
 	private readonly _cache: CacheInterface;
+	private readonly _connectionData: ConnectionData;
 	private readonly queryMethod: (sql: string, params: any[]) => Promise<Object>;
 
 	private selectQueryBuilder: SelectQueryBuilderInterface<T>;
@@ -36,11 +37,12 @@ export class QueryBuilder<T, DT extends DatabasesTypes> implements QueryBuilderI
 	private aggregateQueryBuilder: AggregateQueryBuilderInterface;
 	private queryStructureBuilder: QueryStructureBuilderInterface<T>;
 
-	constructor(dataSource: DataSourceInterface<DT>, methodForQuery?: (sql: string, params: any[]) => Promise<Object>, cache?: CacheInterface) {
+	constructor(dataSource: DataSourceInterface<DT>, connectionData: ConnectionData, methodForQuery?: (sql: string, params: any[]) => Promise<Object>, cache?: CacheInterface) {
 		this.query = '';
 		this._dataSource = dataSource;
 		this.queryMethod = methodForQuery;
 		this._cache = cache;
+		this._connectionData = connectionData;
 
 		this.selectQueryBuilder = new SelectQueryBuilder<T, DT>(this, this._dataSource);
 		this.insertQueryBuilder = new InsertQueryBuilder<T, DT>(this, this._dataSource);
@@ -218,7 +220,10 @@ export class QueryBuilder<T, DT extends DatabasesTypes> implements QueryBuilderI
 	build(): string {
 		let sql = this.query.trim();
 
-		sql = sql.replace(/\\`/g, '`');
+		if (this._connectionData.type === DatabasesTypes.POSTGRES) {
+			let counter = 1;
+			sql = sql.replace(/\?/g, () => `$${counter++}`);
+		}
 
 		return sql + ';';
 	}

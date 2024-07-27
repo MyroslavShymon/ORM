@@ -30,13 +30,14 @@ class DatabaseManager<DT extends DatabasesTypes> implements DatabaseManagerInter
 	constructor(connectionData: ConnectionData, dataSource: DataSourceContextInterface<DT>) {
 		this._connectionData = this._handleConnectionData(connectionData);
 		this._dataSource = dataSource;
+		this._dataSource.connectionData = this._connectionData;
 
 		if (connectionData.type === DatabasesTypes.POSTGRES) {
-			this._dataSource.setDatabase(new DataSourcePostgres() as DataSourceInterface<DT>);
+			this._dataSource.database = new DataSourcePostgres() as DataSourceInterface<DT>;
 		}
 
 		if (this._connectionData.type === DatabasesTypes.MYSQL) {
-			this._dataSource.setDatabase(new DataSourceMySql() as DataSourceInterface<DT>);
+			this._dataSource.database = new DataSourceMySql() as DataSourceInterface<DT>;
 		}
 	}
 
@@ -93,7 +94,7 @@ class DatabaseManager<DT extends DatabasesTypes> implements DatabaseManagerInter
 
 			if (this._connectionData.cache) {
 				this._cache = await CacheFactory.createCache(this._connectionData.cache.type, this._connectionData.cache.options);
-				this._dataSource.setCache(this._cache);
+				this._dataSource.cache = this._cache;
 			}
 		} catch (error) {
 			console.error('Error while creating orm connection', error);

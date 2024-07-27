@@ -1,4 +1,3 @@
-import { DataSourceInterface } from '@core/interfaces';
 import { ConnectionData } from '@core/types';
 import {
 	CacheInterface,
@@ -10,8 +9,15 @@ import {
 	TransactionManagerInterface
 } from '@context/common';
 import { DatabasesTypes } from '@core/enums';
+import { DataSourceInterface } from '@core/interfaces';
 
 export interface DataSourceContextInterface<DT extends DatabasesTypes> {
+	set database(dataSource: DataSourceInterface<DT>);
+
+	set cache(cache: CacheInterface);
+
+	set connectionData(connectionData: ConnectionData);
+
 	tableManipulation: TableManipulationInterface<DT>;
 	tableCreator: TableCreatorInterface<DT>;
 	migrationManager: MigrationManagerInterface<DT>;
@@ -19,10 +25,6 @@ export interface DataSourceContextInterface<DT extends DatabasesTypes> {
 	transactionManager: TransactionManagerInterface;
 
 	queryBuilder<T>(): QueryBuilderInterface<T>;
-
-	setDatabase(dataSource: DataSourceInterface<DT>): void;
-
-	setCache(cache: CacheInterface): void;
 
 	connectDatabase(connectionData: ConnectionData): Promise<void>;
 
