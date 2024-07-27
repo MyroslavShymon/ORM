@@ -10,8 +10,11 @@ import {
 } from '@context/common';
 import { DatabasesTypes } from '@core/enums';
 import { DataSourceInterface } from '@core/interfaces';
+import { LoggerInterface } from '../../../monitoring';
 
 export interface DataSourceContextInterface<DT extends DatabasesTypes> {
+	set logger(logger: LoggerInterface);
+
 	set database(dataSource: DataSourceInterface<DT>);
 
 	set cache(cache: CacheInterface);

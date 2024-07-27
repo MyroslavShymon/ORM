@@ -20,6 +20,7 @@ import { DatabasesTypes } from '@core/enums';
 import { CacheOptionsInterface } from '@context/common/interfaces/query-builder/cache-options.interface';
 import { Crypto } from '@utils/crypto';
 import * as console from 'node:console';
+import { LoggerInterface } from '../../monitoring';
 
 export class QueryBuilder<T, DT extends DatabasesTypes> implements QueryBuilderInterface<T> {
 	query: string;
@@ -28,6 +29,7 @@ export class QueryBuilder<T, DT extends DatabasesTypes> implements QueryBuilderI
 	private readonly _dataSource: DataSourceInterface<DT>;
 	private readonly _cache: CacheInterface;
 	private readonly _connectionData: ConnectionData;
+	private readonly _logger: LoggerInterface;
 	private readonly queryMethod: (sql: string, params: any[]) => Promise<Object>;
 
 	private selectQueryBuilder: SelectQueryBuilderInterface<T>;
@@ -37,12 +39,13 @@ export class QueryBuilder<T, DT extends DatabasesTypes> implements QueryBuilderI
 	private aggregateQueryBuilder: AggregateQueryBuilderInterface;
 	private queryStructureBuilder: QueryStructureBuilderInterface<T>;
 
-	constructor(dataSource: DataSourceInterface<DT>, connectionData: ConnectionData, methodForQuery?: (sql: string, params: any[]) => Promise<Object>, cache?: CacheInterface) {
+	constructor(dataSource: DataSourceInterface<DT>, connectionData: ConnectionData, methodForQuery?: (sql: string, params: any[]) => Promise<Object>, cache?: CacheInterface, logger?: LoggerInterface) {
 		this.query = '';
 		this._dataSource = dataSource;
 		this.queryMethod = methodForQuery;
 		this._cache = cache;
 		this._connectionData = connectionData;
+		this._logger = logger;
 
 		this.selectQueryBuilder = new SelectQueryBuilder<T, DT>(this, this._dataSource);
 		this.insertQueryBuilder = new InsertQueryBuilder<T, DT>(this, this._dataSource);
@@ -233,7 +236,16 @@ export class QueryBuilder<T, DT extends DatabasesTypes> implements QueryBuilderI
 	}
 
 	execute(): any {
-		return this.queryMethod(this.build(), this.parameters);
+		try {
+			const response = this.queryMethod(this.build(), this.parameters);
+			if (this._logger)
+				this._logger.log(JSON.stringify(response), this.build(), JSON.stringify(this.parameters));
+			return response;
+		} catch (error) {
+			console.error('Error while querying', error);
+			if (this._logger)
+				this._logger.error(JSON.stringify(error), this.build(), JSON.stringify(this.parameters));
+		}
 	}
 
 	//cache

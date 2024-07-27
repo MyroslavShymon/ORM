@@ -6,6 +6,7 @@ import {
 	TableManipulationInterface
 } from '@context/common';
 import { DatabasesTypes } from '@core/enums';
+import { LoggerInterface } from '../../monitoring';
 
 export interface DatabaseManagerInterface<DT extends DatabasesTypes> {
 	connectionData: ConnectionData;
@@ -13,6 +14,8 @@ export interface DatabaseManagerInterface<DT extends DatabasesTypes> {
 	tableCreator: TableCreatorInterface<DT>;
 
 	eventManager: EventManagerInterface;
+
+	logger: LoggerInterface;
 
 	queryBuilder<T>(): QueryBuilderInterface<T>;
 

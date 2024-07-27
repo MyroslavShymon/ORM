@@ -17,12 +17,14 @@ import {
 import { DatabasesTypes } from '@core/enums';
 import { EventManager } from '@context/events';
 import { TransactionManager } from '@context/transaction';
+import { LoggerInterface } from '../monitoring';
 
 class DataSourceContext<DT extends DatabasesTypes> implements DataSourceContextInterface<DT> {
 	private _dataSource: DataSourceInterface<DT>;
 	private _client: SqlClientInterface;
 	private _cache: CacheInterface;
 	private _connectionData: ConnectionData;
+	private _logger: LoggerInterface;
 
 	set database(dataSource: DataSourceInterface<DT>) {
 		this._dataSource = dataSource;
@@ -34,6 +36,10 @@ class DataSourceContext<DT extends DatabasesTypes> implements DataSourceContextI
 
 	set connectionData(connectionData: ConnectionData) {
 		this._connectionData = connectionData;
+	}
+
+	set logger(logger: LoggerInterface) {
+		this._logger = logger;
 	}
 
 	async connectDatabase(connectionData: ConnectionData): Promise<void> {
@@ -57,7 +63,7 @@ class DataSourceContext<DT extends DatabasesTypes> implements DataSourceContextI
 	}
 
 	queryBuilder<T>(): QueryBuilderInterface<T> {
-		return new QueryBuilder<T, DT>(this._dataSource, this._connectionData, this.query, this._cache);
+		return new QueryBuilder<T, DT>(this._dataSource, this._connectionData, this.query, this._cache, this._logger);
 	}
 
 	get tableManipulation(): TableManipulationInterface<DT> {

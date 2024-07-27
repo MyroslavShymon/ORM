@@ -21,16 +21,23 @@ import { FileStructureManager } from '@context/file-structure-manager';
 import { ErrorHandler } from '@context/error-handler';
 import { constants } from '@core/constants';
 import { CacheFactory } from '@context/cache';
+import { Logger, LoggerInterface } from './monitoring';
 
 class DatabaseManager<DT extends DatabasesTypes> implements DatabaseManagerInterface<DT> {
 	private _connectionData: ConnectionData;
 	private _dataSource: DataSourceContextInterface<DT>;
 	private _cache: CacheInterface;
+	private readonly _logger: LoggerInterface;
 
 	constructor(connectionData: ConnectionData, dataSource: DataSourceContextInterface<DT>) {
 		this._connectionData = this._handleConnectionData(connectionData);
 		this._dataSource = dataSource;
 		this._dataSource.connectionData = this._connectionData;
+
+		if (connectionData.logging) {
+			this._logger = new Logger();
+			this._dataSource.logger = new Logger();
+		}
 
 		if (connectionData.type === DatabasesTypes.POSTGRES) {
 			this._dataSource.database = new DataSourcePostgres() as DataSourceInterface<DT>;
@@ -113,9 +120,14 @@ class DatabaseManager<DT extends DatabasesTypes> implements DatabaseManagerInter
 
 	async query(sql: string, params?: any[]): Promise<Object> {
 		try {
-			return this._dataSource.query(sql, params);
+			const response = await this._dataSource.query(sql, params);
+			if (this._logger)
+				this._logger.log(JSON.stringify(response), sql, JSON.stringify(params));
+			return response;
 		} catch (error) {
 			console.error('Error while querying', error);
+			if (this._logger)
+				this._logger.error(JSON.stringify(error), sql, JSON.stringify(params));
 		}
 	}
 
@@ -141,6 +153,10 @@ class DatabaseManager<DT extends DatabasesTypes> implements DatabaseManagerInter
 
 	get eventManager(): EventManagerInterface {
 		return this._dataSource.eventManager;
+	}
+
+	get logger(): LoggerInterface {
+		return this._logger;
 	}
 
 	queryBuilder<T>(): QueryBuilderInterface<T> {
