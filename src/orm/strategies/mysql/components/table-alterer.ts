@@ -1,6 +1,7 @@
 import {
 	AddCheckConstraintToColumnInterface,
 	AddColumnInterface,
+	AddDefaultValueInterface,
 	AddForeignKeyInterface,
 	AddNotNullToColumnInterface,
 	AddPrimaryGeneratedColumnInterface,
@@ -10,8 +11,11 @@ import {
 	DeleteColumnInterface,
 	DeleteUniqueFromColumnInterface,
 	DropConstraintInterface,
+	DropDefaultValueInterface,
 	DropNotNullFromColumnInterface,
-	DropTableInterface
+	DropTableInterface,
+	RenameColumnInterface,
+	RenameTableInterface
 } from '@core/interfaces';
 import { AddComputedColumnInterface } from '@core/interfaces/table-manipulation/add-computed-column.interface';
 import { TableAltererInterface } from '@strategies/mysql';
@@ -209,6 +213,24 @@ export class TableAlterer implements TableAltererInterface {
 	}
 
 	dropTable(tableName: string, parameters: DropTableInterface<DatabasesTypes.MYSQL>): string {
-		return `DROP TABLE ${parameters.ifExist ? 'IF EXISTS ' : ''}${tableName};`;
+		return `DROP TABLE ${parameters.ifExist ? 'IF EXISTS ' : ''}\`${tableName}\`;`;
+	}
+
+	addDefaultValue(tableName: string, parameters: AddDefaultValueInterface): string {
+		return `ALTER TABLE \`${tableName}\`
+            ALTER COLUMN \`${parameters.columnName}\` SET DEFAULT '${parameters.value}';`;
+	}
+
+	dropDefaultValue(tableName: string, parameters: DropDefaultValueInterface): string {
+		return `ALTER TABLE \`${tableName}\`
+            ALTER COLUMN \`${parameters.columnName}\` DROP DEFAULT;`;
+	}
+
+	renameColumn(tableName: string, parameters: RenameColumnInterface): string {
+		return `ALTER TABLE \`${tableName}\` RENAME COLUMN \`${parameters.columnName}\` TO \`${parameters.futureColumnName}\`;`;
+	}
+
+	renameTable(tableName: string, parameters: RenameTableInterface): string {
+		return `ALTER TABLE public.\`${tableName}\` RENAME TO \`${parameters.tableName}\`;`;
 	}
 }

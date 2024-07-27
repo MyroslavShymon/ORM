@@ -4,9 +4,10 @@ export class InsertQueries implements InsertQueriesInterface {
 	insert(values: Partial<unknown>, tableName: string): string {
 		const columns = Object.keys(values);
 		const columnNames = columns.join(', ');
-		const columnValues = columns.map(column => `'${values[column]}'`).join(', ');
+		const columnValues = columns.map(() => '?').join(', ');
 
-		return `INSERT INTO ${tableName} (${columnNames}) VALUES (${columnValues}) \n`;
+		return `INSERT INTO ${tableName} (${columnNames})
+                VALUES (${columnValues})   `;
 	}
 
 	insertMany(values: Partial<unknown>[], tableName: string): string {
@@ -17,11 +18,16 @@ export class InsertQueries implements InsertQueriesInterface {
 		const columns = Object.keys(values[0]);
 		const columnNames = columns.join(', ');
 
-		const rows = values.map((row) => {
-			const columnValues = columns.map(column => `'${row[column]}'`).join(', ');
+		const rows = values.map(() => {
+			const columnValues = columns.map(() => '?').join(', ');
 			return `(${columnValues})`;
 		});
 
-		return `INSERT INTO ${tableName} (${columnNames}) VALUES ${rows.join(', ')} \n`;
+		return `INSERT INTO ${tableName} (${columnNames})
+                VALUES ${rows.join(', ')}   `;
+	}
+
+	setInto(name: string): string {
+		return ` INTO ${name} \n`;
 	}
 }

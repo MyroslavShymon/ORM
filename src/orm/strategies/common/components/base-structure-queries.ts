@@ -2,10 +2,6 @@ import { BaseStructureQueriesInterface } from '@strategies/common';
 import { QueryBuilderInterface } from '@context/common';
 
 export class BaseStructureQueries implements BaseStructureQueriesInterface {
-	from(table: string): string {
-		return `FROM ${table} \n`;
-	}
-
 	union(queryBuilder: QueryBuilderInterface<Object>): string {
 		return `UNION \n ${queryBuilder.build()} \n`;
 	}

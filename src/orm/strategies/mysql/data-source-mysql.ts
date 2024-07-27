@@ -2,6 +2,7 @@ import { Connection, createConnection } from 'mysql2/promise';
 import {
 	AddCheckConstraintToColumnInterface,
 	AddColumnInterface,
+	AddDefaultValueInterface,
 	AddForeignKeyInterface,
 	AddNotNullToColumnInterface,
 	AddPrimaryGeneratedColumnInterface,
@@ -18,19 +19,23 @@ import {
 	DeleteColumnInterface,
 	DeleteUniqueFromColumnInterface,
 	DropConstraintInterface,
+	DropDefaultValueInterface,
 	DropNotNullFromColumnInterface,
 	DropTableInterface,
 	GetCurrentDatabaseIngotOptionsInterface,
 	InitCurrentDatabaseIngotOptionsInterface,
+	RenameColumnInterface,
+	RenameTableInterface,
 	SyncDatabaseIngotOptionsInterface
 } from '@core/interfaces';
-import { ConditionParamsType, ConnectionData, JoinCondition } from '@core/types';
+import { ConditionParamsType, ConnectionData, JoinCondition, OrderOperators } from '@core/types';
 import {
 	AggregateQueriesInterface,
 	DeleteQueriesInterface,
 	InsertQueriesInterface,
 	MigrationServiceInterface,
 	SelectQueriesInterface,
+	StructureQueriesInterface,
 	TableAltererInterface,
 	TableBuilderInterface,
 	UpdateQueriesInterface,
@@ -42,6 +47,7 @@ import {
 	InsertQueries,
 	MigrationService,
 	SelectQueries,
+	StructureQueries,
 	TableAlterer,
 	TableBuilder,
 	Transaction,
@@ -61,9 +67,10 @@ export class DataSourceMySql extends BaseQueries implements DataSourceInterface<
 	private _insertQueries: InsertQueriesInterface;
 	private _updateQueries: UpdateQueriesInterface;
 	private _deleteQueries: DeleteQueriesInterface;
-	private _viewQueries: ViewQueriesInterface;
 	private _selectQueries: SelectQueriesInterface;
 	private _aggregateQueries: AggregateQueriesInterface;
+	private _structureQueries: StructureQueriesInterface;
+	private _viewQueries: ViewQueriesInterface;
 	private _transaction: TransactionInterface;
 
 	constructor() {
@@ -74,9 +81,10 @@ export class DataSourceMySql extends BaseQueries implements DataSourceInterface<
 		this._insertQueries = new InsertQueries();
 		this._updateQueries = new UpdateQueries();
 		this._deleteQueries = new DeleteQueries();
-		this._viewQueries = new ViewQueries();
 		this._selectQueries = new SelectQueries();
 		this._aggregateQueries = new AggregateQueries();
+		this._structureQueries = new StructureQueries();
+		this._viewQueries = new ViewQueries();
 		this._transaction = new Transaction();
 	}
 
@@ -181,6 +189,22 @@ export class DataSourceMySql extends BaseQueries implements DataSourceInterface<
 		return this._tableAlterer.dropTable(tableName, parameters);
 	}
 
+	addDefaultValue(tableName: string, parameters: AddDefaultValueInterface): string {
+		return this._tableAlterer.addDefaultValue(tableName, parameters);
+	}
+
+	dropDefaultValue(tableName: string, parameters: DropDefaultValueInterface): string {
+		return this._tableAlterer.dropDefaultValue(tableName, parameters);
+	}
+
+	renameColumn(tableName: string, parameters: RenameColumnInterface): string {
+		return this._tableAlterer.renameColumn(tableName, parameters);
+	}
+
+	renameTable(tableName: string, parameters: RenameTableInterface): string {
+		return this._tableAlterer.renameTable(tableName, parameters);
+	}
+
 	//get time
 	getCurrentTimestamp(): string {
 		return 'SELECT NOW();';
@@ -203,9 +227,33 @@ export class DataSourceMySql extends BaseQueries implements DataSourceInterface<
 		return this._selectQueries.rightJoin(table, condition);
 	}
 
+	select(columns: string[]): string {
+		return this._selectQueries.select(columns);
+	}
+
+	orderBy(column: string, order: OrderOperators): string {
+		return this._selectQueries.orderBy(column, order);
+	}
+
+	as(alias: string): string {
+		return this._selectQueries.as(alias);
+	}
+
 	//Aggregate queries
 	having(params: ConditionParamsType): string {
 		return this._aggregateQueries.having(params);
+	}
+
+	summing(column: string): string {
+		return this._aggregateQueries.summing(column);
+	}
+
+	counting(column: string): string {
+		return this._aggregateQueries.counting(column);
+	}
+
+	groupBy(columns: string[]): string {
+		return this._aggregateQueries.groupBy(columns);
 	}
 
 	//Insert queries
@@ -215,6 +263,15 @@ export class DataSourceMySql extends BaseQueries implements DataSourceInterface<
 
 	insertMany(values: Partial<unknown>[], tableName: string): string {
 		return this._insertQueries.insertMany(values, tableName);
+	}
+
+	setInto(name: string): string {
+		return this._insertQueries.setInto(name);
+	}
+
+	//Structure queries
+	from(table: string): string {
+		return this._structureQueries.from(table);
 	}
 
 	//Update queries

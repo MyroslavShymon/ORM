@@ -2,6 +2,7 @@ import { Pool, PoolClient } from 'pg';
 import {
 	AddCheckConstraintToColumnInterface,
 	AddColumnInterface,
+	AddDefaultValueInterface,
 	AddForeignKeyInterface,
 	AddNotNullToColumnInterface,
 	AddPrimaryGeneratedColumnInterface,
@@ -18,24 +19,30 @@ import {
 	DeleteColumnInterface,
 	DeleteUniqueFromColumnInterface,
 	DropConstraintInterface,
+	DropDefaultValueInterface,
 	DropNotNullFromColumnInterface,
 	DropTableInterface,
 	GetCurrentDatabaseIngotOptionsInterface,
 	InitCurrentDatabaseIngotOptionsInterface,
+	RenameColumnInterface,
+	RenameTableInterface,
 	SyncDatabaseIngotOptionsInterface
 } from '@core/interfaces';
-import { ConditionParamsType, ConnectionData, JoinCondition } from '@core/types';
+import { ConditionParamsType, ConnectionData, JoinCondition, OrderOperators } from '@core/types';
 import {
+	AggregateQueries,
+	AggregateQueriesInterface,
 	DeleteQueriesInterface,
 	InsertQueriesInterface,
 	MigrationServiceInterface,
 	SelectQueriesInterface,
 	TableAltererInterface,
 	TableBuilderInterface,
+	Transaction,
 	TransactionInterface,
 	UpdateQueriesInterface,
 	ViewQueriesInterface
-} from '@strategies/postgres/interfaces';
+} from '@strategies/postgres';
 import {
 	DeleteQueries,
 	InsertQueries,
@@ -49,7 +56,7 @@ import {
 import { BaseQueries } from '@strategies/base-queries';
 import { AddComputedColumnInterface } from '@core/interfaces/table-manipulation/add-computed-column.interface';
 import { DatabasesTypes } from '@core/enums';
-import { Transaction } from '@strategies/postgres';
+import { StructureQueries, StructureQueriesInterface } from '@strategies/mysql';
 
 export class DataSourcePostgres extends BaseQueries implements DataSourceInterface<DatabasesTypes.POSTGRES> {
 	client: PoolClient;
@@ -60,6 +67,8 @@ export class DataSourcePostgres extends BaseQueries implements DataSourceInterfa
 	private _insertQueries: InsertQueriesInterface;
 	private _updateQueries: UpdateQueriesInterface;
 	private _deleteQueries: DeleteQueriesInterface;
+	private _aggregateQueries: AggregateQueriesInterface;
+	private _structureQueries: StructureQueriesInterface;
 	private _viewQueries: ViewQueriesInterface;
 	private _transaction: TransactionInterface;
 
@@ -72,6 +81,8 @@ export class DataSourcePostgres extends BaseQueries implements DataSourceInterfa
 		this._insertQueries = new InsertQueries();
 		this._updateQueries = new UpdateQueries();
 		this._deleteQueries = new DeleteQueries();
+		this._aggregateQueries = new AggregateQueries();
+		this._structureQueries = new StructureQueries();
 		this._viewQueries = new ViewQueries();
 		this._transaction = new Transaction();
 	}
@@ -178,6 +189,23 @@ export class DataSourcePostgres extends BaseQueries implements DataSourceInterfa
 		return this._tableAlterer.dropTable(tableName, parameters);
 	}
 
+	addDefaultValue(tableName: string, parameters: AddDefaultValueInterface): string {
+		return this._tableAlterer.addDefaultValue(tableName, parameters);
+	}
+
+	dropDefaultValue(tableName: string, parameters: DropDefaultValueInterface): string {
+		return this._tableAlterer.dropDefaultValue(tableName, parameters);
+	}
+
+	renameColumn(tableName: string, parameters: RenameColumnInterface): string {
+		return this._tableAlterer.renameColumn(tableName, parameters);
+	}
+
+	renameTable(tableName: string, parameters: RenameTableInterface): string {
+		return this._tableAlterer.renameTable(tableName, parameters);
+	}
+
+
 	//Get current time
 	getCurrentTimestamp(): string {
 		return 'SELECT current_timestamp;';
@@ -188,23 +216,45 @@ export class DataSourcePostgres extends BaseQueries implements DataSourceInterfa
 		return this._selectQueries.where(params);
 	}
 
-	//TODO
 	innerJoin(table: string, condition: JoinCondition): string {
-		throw new Error('Method not implemented.');
+		return this._selectQueries.innerJoin(table, condition);
 	}
 
 	leftJoin(table: string, condition: JoinCondition): string {
-		throw new Error('Method not implemented.');
+		return this._selectQueries.leftJoin(table, condition);
 	}
 
 	rightJoin(table: string, condition: JoinCondition): string {
-		throw new Error('Method not implemented.');
+		return this._selectQueries.rightJoin(table, condition);
 	}
 
-	//TODO
+	select(columns: string[]): string {
+		return this._selectQueries.select(columns);
+	}
+
+	orderBy(column: string, order: OrderOperators): string {
+		return this._selectQueries.orderBy(column, order);
+	}
+
+	as(alias: string): string {
+		return this._selectQueries.as(alias);
+	}
+
 	//Aggregate queries
 	having(params: ConditionParamsType): string {
-		throw new Error('Method not implemented.');
+		return this._aggregateQueries.having(params);
+	}
+
+	summing(column: string): string {
+		return this._aggregateQueries.summing(column);
+	}
+
+	counting(column: string): string {
+		return this._aggregateQueries.counting(column);
+	}
+
+	groupBy(columns: string[]): string {
+		return this._aggregateQueries.groupBy(columns);
 	}
 
 	//Insert queries
@@ -214,6 +264,15 @@ export class DataSourcePostgres extends BaseQueries implements DataSourceInterfa
 
 	insertMany(values: Partial<unknown>[], tableName: string): string {
 		return this._insertQueries.insertMany(values, tableName);
+	}
+
+	setInto(name: string): string {
+		return this._insertQueries.setInto(name);
+	}
+
+	//Structure queries
+	from(table: string): string {
+		return this._structureQueries.from(table);
 	}
 
 	//Update queries

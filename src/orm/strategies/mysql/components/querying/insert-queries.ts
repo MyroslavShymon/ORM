@@ -26,4 +26,8 @@ export class InsertQueries implements InsertQueriesInterface {
 		return `INSERT INTO \\\`${tableName}\\\` (${columnNames})
                 VALUES ${rows.join(', ')}   `;
 	}
+
+	setInto(name: string): string {
+		return ` INTO \`${name}\` \n`;
+	}
 }

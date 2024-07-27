@@ -1,6 +1,7 @@
 import {
 	AddCheckConstraintToColumnInterface,
 	AddColumnInterface,
+	AddDefaultValueInterface,
 	AddForeignKeyInterface,
 	AddNotNullToColumnInterface,
 	AddPrimaryGeneratedColumnInterface,
@@ -10,8 +11,11 @@ import {
 	DeleteColumnInterface,
 	DeleteUniqueFromColumnInterface,
 	DropConstraintInterface,
+	DropDefaultValueInterface,
 	DropNotNullFromColumnInterface,
-	DropTableInterface
+	DropTableInterface,
+	RenameColumnInterface,
+	RenameTableInterface
 } from '@core/interfaces';
 import { AddComputedColumnInterface } from '@core/interfaces/table-manipulation/add-computed-column.interface';
 import { DatabasesTypes } from '@core/enums';
@@ -44,4 +48,12 @@ export interface TableAltererInterface {
 	addComputedColumn(tableName: string, parameters: AddComputedColumnInterface<DatabasesTypes.MYSQL>): string;
 
 	dropTable(tableName: string, parameters: DropTableInterface<DatabasesTypes.MYSQL>): string;
+	
+	addDefaultValue(tableName: string, parameters: AddDefaultValueInterface): string;
+
+	dropDefaultValue(tableName: string, parameters: DropDefaultValueInterface): string;
+
+	renameColumn(tableName: string, parameters: RenameColumnInterface): string;
+
+	renameTable(tableName: string, parameters: RenameTableInterface): string;
 }

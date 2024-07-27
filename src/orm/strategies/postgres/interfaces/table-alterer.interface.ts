@@ -1,6 +1,7 @@
 import {
 	AddCheckConstraintToColumnInterface,
 	AddColumnInterface,
+	AddDefaultValueInterface,
 	AddForeignKeyInterface,
 	AddNotNullToColumnInterface,
 	AddPrimaryGeneratedColumnInterface,
@@ -10,8 +11,11 @@ import {
 	DeleteColumnInterface,
 	DeleteUniqueFromColumnInterface,
 	DropConstraintInterface,
+	DropDefaultValueInterface,
 	DropNotNullFromColumnInterface,
-	DropTableInterface
+	DropTableInterface,
+	RenameColumnInterface,
+	RenameTableInterface
 } from '@core/interfaces';
 import { DatabasesTypes } from '@core/enums';
 import { AddComputedColumnInterface } from '@core/interfaces/table-manipulation/add-computed-column.interface';
@@ -45,4 +49,11 @@ export interface TableAltererInterface {
 
 	dropTable(tableName: string, parameters: DropTableInterface<DatabasesTypes.POSTGRES>): string;
 
+	addDefaultValue(tableName: string, parameters: AddDefaultValueInterface): string;
+
+	dropDefaultValue(tableName: string, parameters: DropDefaultValueInterface): string;
+
+	renameColumn(tableName: string, parameters: RenameColumnInterface): string;
+
+	renameTable(tableName: string, parameters: RenameTableInterface): string;
 }

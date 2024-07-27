@@ -1,5 +1,5 @@
 import { ConditionParamsType } from '@core/types';
-import { AggregateQueriesInterface } from '@strategies/mysql';
+import { AggregateQueriesInterface } from '@strategies/postgres';
 
 export class AggregateQueries implements AggregateQueriesInterface {
 	having(params: ConditionParamsType): string {
@@ -24,30 +24,30 @@ export class AggregateQueries implements AggregateQueriesInterface {
 
 					switch (operator) {
 						case 'in':
-							conditionsArray.push(`\`${column}\` IN (${Array.isArray(value) ? value.map(() => '?').join(', ') : '?'})`);
+							conditionsArray.push(`${column} IN (${Array.isArray(value) ? value.map(() => '?').join(', ') : '?'})`);
 							break;
 						case 'eq':
-							conditionsArray.push(`\`${column}\` = ?`);
+							conditionsArray.push(`${column} = ?`);
 							break;
 						case 'neq':
-							conditionsArray.push(`\`${column}\` != ?`);
+							conditionsArray.push(`${column} != ?`);
 							break;
 						case 'gt':
-							conditionsArray.push(`\`${column}\` > ?`);
+							conditionsArray.push(`${column} > ?`);
 							break;
 						case 'gte':
-							conditionsArray.push(`\`${column}\` >= ?`);
+							conditionsArray.push(`${column} >= ?`);
 							break;
 						case 'lt':
-							conditionsArray.push(`\`${column}\` < ?`);
+							conditionsArray.push(`${column} < ?`);
 							break;
 						case 'lte':
-							conditionsArray.push(`\`${column}\` <= ?`);
+							conditionsArray.push(`${column} <= ?`);
 							break;
 						case 'isString':
 							break;
 						default:
-							conditionsArray.push(`\`${column}\` ${operator} ?`);
+							conditionsArray.push(`${column} ${operator} ?`);
 							break;
 					}
 				}
@@ -59,14 +59,14 @@ export class AggregateQueries implements AggregateQueriesInterface {
 	}
 
 	summing(column: string): string {
-		return `SUM(\`${column}\`)`;
+		return `SUM(${column})`;
 	}
 
 	counting(column: string): string {
-		return `COUNT(\`${column}\`)`;
+		return `COUNT(${column})`;
 	}
 
 	groupBy(columns: string[]): string {
-		return `GROUP BY ${columns.map(col => `\`${col}\``).join(', ')} \n`;
+		return `GROUP BY ${columns.join(', ')} \n`;
 	}
 }
