@@ -29,7 +29,7 @@ export class TableAlterer implements TableAltererInterface {
 			throw new Error('You did not specify the column data type');
 		}
 
-		let columnDefinition = `\\\`${columnName}\\\` ${options.dataType}`; // Додано зворотні апострофи для імені стовпця
+		let columnDefinition = `\`${columnName}\` ${options.dataType}`; // Додано зворотні апострофи для імені стовпця
 
 		switch (options.dataType) {
 			case 'CHAR':
@@ -94,38 +94,38 @@ export class TableAlterer implements TableAltererInterface {
 			columnDefinition += ` CONSTRAINT ${options.nameOfCheckConstraint}`;
 		}
 
-		return `ALTER TABLE \\\`${tableName}\\\`
+		return `ALTER TABLE \`${tableName}\`
             ADD COLUMN ${columnDefinition};`;
 	}
 
 	deleteColumn(tableName: string, parameters: DeleteColumnInterface<DatabasesTypes.MYSQL>): string {
-		return `ALTER TABLE \\\`${tableName}\\\` DROP COLUMN \\\`${parameters.columnName}\\\`;`;
+		return `ALTER TABLE \`${tableName}\` DROP COLUMN \`${parameters.columnName}\`;`;
 	}
 
 	addNotNullToColumn(tableName: string, parameters: AddNotNullToColumnInterface): string {
-		return `ALTER TABLE \\\`${tableName}\\\` MODIFY COLUMN \\\`${parameters.columnName}\\\` NOT NULL;`;
+		return `ALTER TABLE \`${tableName}\` MODIFY COLUMN \`${parameters.columnName}\` NOT NULL;`;
 	}
 
 	dropNotNullFromColumn(tableName: string, parameters: DropNotNullFromColumnInterface): string {
-		return `ALTER TABLE \`${tableName}\` MODIFY COLUMN \\\`${parameters.columnName}\\\` NULL;`;
+		return `ALTER TABLE \`${tableName}\` MODIFY COLUMN \`${parameters.columnName}\` NULL;`;
 	}
 
 	addUniqueToColumn(tableName: string, parameters: AddUniqueToColumnInterface<DatabasesTypes.MYSQL>): string {
-		return `ALTER TABLE \\\`${tableName}\\\`
-            ADD UNIQUE (\\ \`${parameters.columnName}\\\`);`;
+		return `ALTER TABLE \`${tableName}\`
+            ADD UNIQUE (\`${parameters.columnName}\`);`;
 	}
 
 	deleteUniqueFromColum(tableName: string, parameters: DeleteUniqueFromColumnInterface): string {
 		const indexName = `${tableName}_${parameters.columnName}_unique`;
 
-		return `ALTER TABLE \\\`${tableName}\\\` DROP INDEX \\\`${indexName}\\\`;`;
+		return `ALTER TABLE \`${tableName}\` DROP INDEX \`${indexName}\`;`;
 	}
 
 	addCheckConstraintToColumn(tableName: string, parameters: AddCheckConstraintToColumnInterface): string {
-		let query = `ALTER TABLE \\\`${tableName}\\\` MODIFY COLUMN \\\`${parameters.columnName}\\\``;
+		let query = `ALTER TABLE \`${tableName}\` MODIFY COLUMN \`${parameters.columnName}\``;
 
 		if (parameters.check && parameters.nameOfCheckConstraint) {
-			query += ` ADD CONSTRAINT \\\`${parameters.nameOfCheckConstraint}\\\` CHECK (${parameters.check});`;
+			query += ` ADD CONSTRAINT \`${parameters.nameOfCheckConstraint}\` CHECK (${parameters.check});`;
 		} else if (parameters.check) {
 			query += ` ADD CHECK (${parameters.check});`;
 		} else {
@@ -138,15 +138,15 @@ export class TableAlterer implements TableAltererInterface {
 	deleteCheckConstraintOfColumn(tableName: string, parameters: DeleteCheckConstraintOfColumnInterface): string {
 		const constraintName = `${tableName}_${parameters.columnName}_check`;
 
-		return `ALTER TABLE \\\`${tableName}\\\` DROP CHECK \\\`${constraintName}\\\`;`;
+		return `ALTER TABLE \`${tableName}\` DROP CHECK \`${constraintName}\`;`;
 	}
 
 	dropConstraint(tableName: string, parameters: DropConstraintInterface): string {
-		return `ALTER TABLE \\\`${tableName}\\\` DROP INDEX \\\`${parameters.constraintName}\\\`;`;
+		return `ALTER TABLE \`${tableName}\` DROP INDEX \`${parameters.constraintName}\`;`;
 	}
 
 	changeDataTypeOfColumn(tableName: string, parameters: ChangeColumnDatatypeInterface): string {
-		let query = `ALTER TABLE \\\`${tableName}\\\` MODIFY COLUMN \\\`${parameters.columnName}\\\``;
+		let query = `ALTER TABLE \`${tableName}\` MODIFY COLUMN \`${parameters.columnName}\``;
 
 		if (parameters.length) {
 			query += ` ${parameters.dataType}(${parameters.length})`;
@@ -162,8 +162,8 @@ export class TableAlterer implements TableAltererInterface {
 	}
 
 	addPrimaryGeneratedColumn(tableName: string, parameters: AddPrimaryGeneratedColumnInterface<DatabasesTypes.MYSQL>): string {
-		let query = `ALTER TABLE \\\`${tableName}\\\`
-            ADD COLUMN \\\`${parameters.columnName}\\\` ${parameters.type} AUTO_INCREMENT`;
+		let query = `ALTER TABLE \`${tableName}\`
+            ADD COLUMN \`${parameters.columnName}\` ${parameters.type} AUTO_INCREMENT`;
 
 		// Додавання опціональних параметрів
 		if (parameters.startWith !== undefined) {
@@ -198,17 +198,17 @@ export class TableAlterer implements TableAltererInterface {
 
 	addForeignKey(tableName: string, parameters: AddForeignKeyInterface): string {
 		return `
-            ALTER TABLE \\\`${tableName}\\\`
+            ALTER TABLE \`${tableName}\`
                 ADD CONSTRAINT fk_${tableName}_${parameters.referencedTable}
-                FOREIGN KEY (\\\`${parameters.foreignKey}\\\`) REFERENCES \\\`${parameters.referencedTable}\\\`(\\\`${parameters.referencedColumn}\\\`);` + '\n';
+                FOREIGN KEY (\`${parameters.foreignKey}\`) REFERENCES \`${parameters.referencedTable}\`(\`${parameters.referencedColumn}\`);` + '\n';
 	}
 
 	addComputedColumn(tableName: string, parameters: AddComputedColumnInterface<DatabasesTypes.MYSQL>): string {
 		const { dataType, calculate, name, stored } = parameters;
 
 		return `
-            ALTER TABLE \\\`${tableName}\\\`
-                ADD COLUMN \\\`${name}\\\` ${dataType} GENERATED ALWAYS AS (${calculate}) ${stored ? 'STORED' : 'VIRTUAL'};
+            ALTER TABLE \`${tableName}\`
+                ADD COLUMN \`${name}\` ${dataType} GENERATED ALWAYS AS (${calculate}) ${stored ? 'STORED' : 'VIRTUAL'};
 		`;
 	}
 

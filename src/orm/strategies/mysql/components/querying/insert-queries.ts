@@ -6,7 +6,7 @@ export class InsertQueries implements InsertQueriesInterface {
 		const columnNames = columns.join(', ');
 		const columnValues = columns.map(() => '?').join(', ');
 
-		return `INSERT INTO \\\`${tableName}\\\` (${columnNames})
+		return `INSERT INTO \`${tableName}\` (${columnNames})
                 VALUES (${columnValues})   `;
 	}
 
@@ -23,7 +23,7 @@ export class InsertQueries implements InsertQueriesInterface {
 			return `(${columnValues})`;
 		});
 
-		return `INSERT INTO \\\`${tableName}\\\` (${columnNames})
+		return `INSERT INTO \`${tableName}\` (${columnNames})
                 VALUES ${rows.join(', ')}   `;
 	}
 

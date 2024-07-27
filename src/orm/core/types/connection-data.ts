@@ -12,7 +12,7 @@ export type ConnectionData = PoolConfig & ConnectionOptions & {
 	migrationTable?: string;
 	migrationTableSchema?: string;
 	database?: string;
-	cache: {
+	cache?: {
 		type: CacheType,
 		options: CacheOptions
 	}
