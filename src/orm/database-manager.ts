@@ -21,13 +21,14 @@ import { FileStructureManager } from '@context/file-structure-manager';
 import { ErrorHandler } from '@context/error-handler';
 import { constants } from '@core/constants';
 import { CacheFactory } from '@context/cache';
-import { Logger, LoggerInterface } from './monitoring';
+import { Logger, LoggerInterface, Monitoring, MonitoringInterface } from './monitoring';
 
 class DatabaseManager<DT extends DatabasesTypes> implements DatabaseManagerInterface<DT> {
 	private _connectionData: ConnectionData;
 	private _dataSource: DataSourceContextInterface<DT>;
 	private _cache: CacheInterface;
 	private readonly _logger: LoggerInterface;
+	private readonly _monitoring: MonitoringInterface;
 
 	constructor(connectionData: ConnectionData, dataSource: DataSourceContextInterface<DT>) {
 		this._connectionData = this._handleConnectionData(connectionData);
@@ -37,6 +38,11 @@ class DatabaseManager<DT extends DatabasesTypes> implements DatabaseManagerInter
 		if (connectionData.logging) {
 			this._logger = new Logger();
 			this._dataSource.logger = new Logger();
+		}
+
+		if (connectionData.monitoring) {
+			this._monitoring = new Monitoring();
+			this._dataSource.monitoring = new Monitoring();
 		}
 
 		if (connectionData.type === DatabasesTypes.POSTGRES) {
@@ -120,7 +126,12 @@ class DatabaseManager<DT extends DatabasesTypes> implements DatabaseManagerInter
 
 	async query(sql: string, params?: any[]): Promise<Object> {
 		try {
-			const response = await this._dataSource.query(sql, params);
+			const operation = () => this._dataSource.query(sql, params);
+
+			const response = this._monitoring
+				? await this._monitoring.measureExecutionTime(operation, sql, params)
+				: await operation();
+			
 			if (this._logger)
 				this._logger.log(JSON.stringify(response), sql, JSON.stringify(params));
 			return response;

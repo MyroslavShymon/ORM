@@ -47,11 +47,11 @@ export interface QueryBuilderInterface<T> {
 
 	delete(tableName: string): QueryBuilderInterface<T>;
 
-	cache(options: CacheOptionsInterface): Promise<T>;
+	cache(options: CacheOptionsInterface, enableMonitoring?: boolean): Promise<T>;
 
 	build(): string;
 
 	buildWithoutSemicolon(): string;
 
-	execute(): any;
+	execute(enableMonitoring?: boolean): any;
 }

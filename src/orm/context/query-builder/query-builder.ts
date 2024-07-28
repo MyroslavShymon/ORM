@@ -20,7 +20,7 @@ import { DatabasesTypes } from '@core/enums';
 import { CacheOptionsInterface } from '@context/common/interfaces/query-builder/cache-options.interface';
 import { Crypto } from '@utils/crypto';
 import * as console from 'node:console';
-import { LoggerInterface } from '../../monitoring';
+import { LoggerInterface, MonitoringInterface, MonitoringType } from '../../monitoring';
 
 export class QueryBuilder<T, DT extends DatabasesTypes> implements QueryBuilderInterface<T> {
 	query: string;
@@ -30,7 +30,8 @@ export class QueryBuilder<T, DT extends DatabasesTypes> implements QueryBuilderI
 	private readonly _cache: CacheInterface;
 	private readonly _connectionData: ConnectionData;
 	private readonly _logger: LoggerInterface;
-	private readonly queryMethod: (sql: string, params: any[]) => Promise<Object>;
+	private readonly _monitoring: MonitoringInterface;
+	private readonly queryMethod: (sql: string, params: any[]) => Promise<unknown>;
 
 	private selectQueryBuilder: SelectQueryBuilderInterface<T>;
 	private insertQueryBuilder: InsertQueryBuilderInterface<T>;
@@ -39,13 +40,21 @@ export class QueryBuilder<T, DT extends DatabasesTypes> implements QueryBuilderI
 	private aggregateQueryBuilder: AggregateQueryBuilderInterface;
 	private queryStructureBuilder: QueryStructureBuilderInterface<T>;
 
-	constructor(dataSource: DataSourceInterface<DT>, connectionData: ConnectionData, methodForQuery?: (sql: string, params: any[]) => Promise<Object>, cache?: CacheInterface, logger?: LoggerInterface) {
+	constructor(
+		dataSource: DataSourceInterface<DT>,
+		connectionData: ConnectionData,
+		methodForQuery?: (sql: string, params: any[]) => Promise<unknown>,
+		cache?: CacheInterface,
+		logger?: LoggerInterface,
+		monitoring?: MonitoringInterface
+	) {
 		this.query = '';
 		this._dataSource = dataSource;
 		this.queryMethod = methodForQuery;
 		this._cache = cache;
 		this._connectionData = connectionData;
 		this._logger = logger;
+		this._monitoring = monitoring;
 
 		this.selectQueryBuilder = new SelectQueryBuilder<T, DT>(this, this._dataSource);
 		this.insertQueryBuilder = new InsertQueryBuilder<T, DT>(this, this._dataSource);
@@ -235,9 +244,14 @@ export class QueryBuilder<T, DT extends DatabasesTypes> implements QueryBuilderI
 		return this.query.trim();
 	}
 
-	execute(): any {
+	async execute(enableMonitoring: boolean = true): Promise<any> {
+		const operation = () => this.queryMethod(this.build(), this.parameters);
+
 		try {
-			const response = this.queryMethod(this.build(), this.parameters);
+			const response = this._monitoring && enableMonitoring
+				? await this._monitoring.measureExecutionTime(operation, this.build(), this.parameters)
+				: await operation();
+
 			if (this._logger)
 				this._logger.log(JSON.stringify(response), this.build(), JSON.stringify(this.parameters));
 			return response;
@@ -249,37 +263,30 @@ export class QueryBuilder<T, DT extends DatabasesTypes> implements QueryBuilderI
 	}
 
 	//cache
-	async cache({ ttl, key }: CacheOptionsInterface): Promise<T> {
+	async cache({ ttl, key }: CacheOptionsInterface, enableMonitoring: boolean = true): Promise<T> {
 		if (!this._cache) {
 			throw new Error('Cache not set!');
 		}
+		if (!key) {
+			console.info('It is better to set the hashing key so it will be better in terms of performance!');
+		}
 
-		if (key) {
-			// If a specific key is provided
-			const cachedData = await this._cache.get(key);
+		const queryExecute = async () => {
+			const cacheKey = key || await Crypto.generateCacheKey(this.build());
+			const cachedData = await this._cache.get(cacheKey);
+
 			if (cachedData) {
 				return JSON.parse(cachedData);
 			}
-			return this._fetchDataFromCache({ key, ttl });
-		}
 
-		// If no specific key is provided
-		console.info('It is better to set the hashing key so it will be better in terms of performance!');
-		const query = this.build();
-		const cacheKey = await Crypto.generateCacheKey(query);
+			const dataFromDb = await this.execute(false);
+			await this._cache.set(cacheKey, JSON.stringify(dataFromDb), ttl);
+			return dataFromDb;
+		};
 
-		const cachedData = await this._cache.get(cacheKey);
-		if (cachedData) {
-			return JSON.parse(cachedData);
-		}
-
-		return this._fetchDataFromCache({ key: cacheKey, ttl });
-	}
-
-	private async _fetchDataFromCache({ ttl, key }: CacheOptionsInterface): Promise<T> {
-		const [dataFromDb] = await this.execute();
-		await this._cache.set(key, JSON.stringify(dataFromDb), ttl);
-		return dataFromDb;
+		return this._monitoring && enableMonitoring
+			? await this._monitoring.measureExecutionTime(queryExecute, this.build(), this.parameters, MonitoringType.CacheQuery)
+			: await queryExecute();
 	}
 }
 

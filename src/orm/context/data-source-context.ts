@@ -17,7 +17,7 @@ import {
 import { DatabasesTypes } from '@core/enums';
 import { EventManager } from '@context/events';
 import { TransactionManager } from '@context/transaction';
-import { LoggerInterface } from '../monitoring';
+import { LoggerInterface, MonitoringInterface } from '../monitoring';
 
 class DataSourceContext<DT extends DatabasesTypes> implements DataSourceContextInterface<DT> {
 	private _dataSource: DataSourceInterface<DT>;
@@ -25,9 +25,14 @@ class DataSourceContext<DT extends DatabasesTypes> implements DataSourceContextI
 	private _cache: CacheInterface;
 	private _connectionData: ConnectionData;
 	private _logger: LoggerInterface;
+	private _monitoring: MonitoringInterface;
 
 	set database(dataSource: DataSourceInterface<DT>) {
 		this._dataSource = dataSource;
+	}
+
+	set monitoring(monitoring: MonitoringInterface) {
+		this._monitoring = monitoring;
 	}
 
 	set cache(cache: CacheInterface) {
@@ -63,7 +68,7 @@ class DataSourceContext<DT extends DatabasesTypes> implements DataSourceContextI
 	}
 
 	queryBuilder<T>(): QueryBuilderInterface<T> {
-		return new QueryBuilder<T, DT>(this._dataSource, this._connectionData, this.query, this._cache, this._logger);
+		return new QueryBuilder<T, DT>(this._dataSource, this._connectionData, this.query, this._cache, this._logger, this._monitoring);
 	}
 
 	get tableManipulation(): TableManipulationInterface<DT> {

@@ -3,6 +3,9 @@ import { ConditionParamsType, JoinCondition, OrderOperators } from '@core/types'
 
 export class SelectQueries implements SelectQueriesInterface {
 	select(columns: string[]): string {
+		if (columns[0] === '*') {
+			return `SELECT *`;
+		}
 		return `SELECT ${columns.map(col => `\`${col}\``).join(', ')} ${columns.length > 2 ? '\n' : ''}`;
 	}
 
