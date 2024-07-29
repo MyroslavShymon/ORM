@@ -51,7 +51,7 @@ class DataSourceContext<DT extends DatabasesTypes> implements DataSourceContextI
 		await this._dataSource.connect(connectionData);
 
 		this._client = await this._dataSource.client;
-		
+
 		await this._monitoring.getMonitoringMetrics(this._dataSource);
 	}
 
@@ -74,7 +74,7 @@ class DataSourceContext<DT extends DatabasesTypes> implements DataSourceContextI
 	}
 
 	get tableManipulation(): TableManipulationInterface<DT> {
-		return new TableManipulation(this._dataSource);
+		return new TableManipulation(this._dataSource, this._connectionData);
 	}
 
 	get tableCreator(): TableCreatorInterface<DT> {

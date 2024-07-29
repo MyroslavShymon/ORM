@@ -22,6 +22,7 @@ import { ErrorHandler } from '@context/error-handler';
 import { constants } from '@core/constants';
 import { CacheFactory } from '@context/cache';
 import { Logger, LoggerInterface, Monitoring, MonitoringInterface } from './monitoring';
+import { Sanitizer } from '@utils/sanitizer';
 
 class DatabaseManager<DT extends DatabasesTypes> implements DatabaseManagerInterface<DT> {
 	private _connectionData: ConnectionData;
@@ -126,6 +127,8 @@ class DatabaseManager<DT extends DatabasesTypes> implements DatabaseManagerInter
 
 	async query(sql: string, params?: any[]): Promise<Object> {
 		try {
+			if (this._connectionData.sanitizer)
+				params = params.map(parameter => Sanitizer.sanitize(parameter));
 			const operation = () => this._dataSource.query(sql, params);
 
 			const response = this._monitoring
@@ -174,7 +177,7 @@ class DatabaseManager<DT extends DatabasesTypes> implements DatabaseManagerInter
 		return this._dataSource.queryBuilder<T>();
 	}
 
-	async transaction(callback: (trx: DatabaseManagerInterface<DT>) => Promise<void>) {
+	async transaction(callback: (trx: DatabaseManagerInterface<DT>) => Promise<void>): Promise<void> {
 		await this._dataSource.transactionManager.beginTransaction();
 		try {
 			await callback(this);

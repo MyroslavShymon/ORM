@@ -21,6 +21,7 @@ import { CacheOptionsInterface } from '@context/common/interfaces/query-builder/
 import { Crypto } from '@utils/crypto';
 import * as console from 'node:console';
 import { LoggerInterface, MonitoringInterface, MonitoringType } from '../../monitoring';
+import { Sanitizer } from '@utils/sanitizer';
 
 export class QueryBuilder<T, DT extends DatabasesTypes> implements QueryBuilderInterface<T> {
 	query: string;
@@ -245,6 +246,9 @@ export class QueryBuilder<T, DT extends DatabasesTypes> implements QueryBuilderI
 	}
 
 	async execute(enableMonitoring: boolean = true): Promise<any> {
+		if (this._connectionData.sanitizer)
+			this.parameters = this.parameters.map(parameter => Sanitizer.sanitize(parameter));
+
 		const operation = () => this.queryMethod(this.build(), this.parameters);
 
 		try {

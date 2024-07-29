@@ -26,4 +26,6 @@ export interface DatabaseManagerInterface<DT extends DatabasesTypes> {
 	createOrmConnection(): Promise<void>;
 
 	get tableManipulation(): TableManipulationInterface<DT>;
+
+	transaction(callback: (trx: DatabaseManagerInterface<DT>) => Promise<void>): Promise<void>;
 }

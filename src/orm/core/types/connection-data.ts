@@ -14,6 +14,7 @@ export type ConnectionData = PoolConfig & ConnectionOptions & {
 	database?: string;
 	logging?: boolean;
 	monitoring?: boolean;
+	sanitizer?: boolean;
 	cache?: {
 		type: CacheType,
 		options: CacheOptions

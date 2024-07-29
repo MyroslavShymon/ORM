@@ -1,6 +1,7 @@
 import { Crypto } from './crypto';
 import { FS } from './fs';
 import { IncrementalTypeIndexator } from './incremental-type-indexator';
+import { Sanitizer } from './sanitizer';
 import { TypescriptCodeGenerator } from './typescript-code-generator';
 
 export function isArrayArrayOfArrays(array: any[]): boolean {
@@ -10,4 +11,4 @@ export function isArrayArrayOfArrays(array: any[]): boolean {
 	return false;
 }
 
-export { TypescriptCodeGenerator, FS, IncrementalTypeIndexator, Crypto };
+export { TypescriptCodeGenerator, FS, IncrementalTypeIndexator, Crypto, Sanitizer };
