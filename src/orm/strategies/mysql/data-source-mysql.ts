@@ -30,16 +30,21 @@ import {
 } from '@core/interfaces';
 import { ConditionParamsType, ConnectionData, JoinCondition, OrderOperators } from '@core/types';
 import {
+	ActiveConnectionsInterface,
 	AggregateQueriesInterface,
+	CpuUsageInterface,
 	DeleteQueriesInterface,
+	DiskUsageInterface,
 	InsertQueriesInterface,
+	MemoryUsageInterface,
 	MigrationServiceInterface,
 	SelectQueriesInterface,
 	StructureQueriesInterface,
 	TableAltererInterface,
 	TableBuilderInterface,
 	UpdateQueriesInterface,
-	ViewQueriesInterface
+	ViewQueriesInterface,
+	WaitingConnectionsInterface
 } from '@strategies/mysql/interfaces';
 import {
 	AggregateQueries,
@@ -57,7 +62,7 @@ import {
 import { BaseQueries } from '@strategies/base-queries';
 import { AddComputedColumnInterface } from '@core/interfaces/table-manipulation/add-computed-column.interface';
 import { DatabasesTypes } from '@core/enums';
-import { TransactionInterface } from '@strategies/mysql';
+import { Monitoring, MonitoringInterface, TransactionInterface } from '@strategies/mysql';
 
 export class DataSourceMySql extends BaseQueries implements DataSourceInterface<DatabasesTypes.MYSQL> {
 	client: Connection;
@@ -72,6 +77,7 @@ export class DataSourceMySql extends BaseQueries implements DataSourceInterface<
 	private _structureQueries: StructureQueriesInterface;
 	private _viewQueries: ViewQueriesInterface;
 	private _transaction: TransactionInterface;
+	private _monitoring: MonitoringInterface<DatabasesTypes.MYSQL>;
 
 	constructor() {
 		super();
@@ -86,6 +92,7 @@ export class DataSourceMySql extends BaseQueries implements DataSourceInterface<
 		this._structureQueries = new StructureQueries();
 		this._viewQueries = new ViewQueries();
 		this._transaction = new Transaction();
+		this._monitoring = new Monitoring();
 	}
 
 	async connect(dataToConnect: ConnectionData): Promise<void> {
@@ -300,5 +307,26 @@ export class DataSourceMySql extends BaseQueries implements DataSourceInterface<
 
 	async rollback(dataSource: DataSourceInterface<DatabasesTypes.MYSQL>): Promise<void> {
 		return this._transaction.rollback(dataSource);
+	}
+
+	//Monitoring
+	async getCPUUsage(dataSource: DataSourceInterface<DatabasesTypes.MYSQL>): Promise<CpuUsageInterface[]> {
+		return this._monitoring.getCPUUsage(dataSource);
+	}
+
+	async getMemoryUsage(dataSource: DataSourceInterface<DatabasesTypes.MYSQL>): Promise<MemoryUsageInterface[]> {
+		return this._monitoring.getMemoryUsage(dataSource);
+	}
+
+	async getDiskUsage(dataSource: DataSourceInterface<DatabasesTypes.MYSQL>): Promise<DiskUsageInterface[]> {
+		return this._monitoring.getDiskUsage(dataSource);
+	}
+
+	async getActiveConnections(dataSource: DataSourceInterface<DatabasesTypes.MYSQL>): Promise<ActiveConnectionsInterface> {
+		return this._monitoring.getActiveConnections(dataSource);
+	}
+
+	async getWaitingConnections(dataSource: DataSourceInterface<DatabasesTypes.MYSQL>): Promise<WaitingConnectionsInterface> {
+		return this._monitoring.getWaitingConnections(dataSource);
 	}
 }

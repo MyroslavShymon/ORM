@@ -30,7 +30,7 @@ export class QueryBuilder<T, DT extends DatabasesTypes> implements QueryBuilderI
 	private readonly _cache: CacheInterface;
 	private readonly _connectionData: ConnectionData;
 	private readonly _logger: LoggerInterface;
-	private readonly _monitoring: MonitoringInterface;
+	private readonly _monitoring: MonitoringInterface<DT>;
 	private readonly queryMethod: (sql: string, params: any[]) => Promise<unknown>;
 
 	private selectQueryBuilder: SelectQueryBuilderInterface<T>;
@@ -46,7 +46,7 @@ export class QueryBuilder<T, DT extends DatabasesTypes> implements QueryBuilderI
 		methodForQuery?: (sql: string, params: any[]) => Promise<unknown>,
 		cache?: CacheInterface,
 		logger?: LoggerInterface,
-		monitoring?: MonitoringInterface
+		monitoring?: MonitoringInterface<DT>
 	) {
 		this.query = '';
 		this._dataSource = dataSource;

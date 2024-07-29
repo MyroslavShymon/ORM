@@ -28,7 +28,7 @@ class DatabaseManager<DT extends DatabasesTypes> implements DatabaseManagerInter
 	private _dataSource: DataSourceContextInterface<DT>;
 	private _cache: CacheInterface;
 	private readonly _logger: LoggerInterface;
-	private readonly _monitoring: MonitoringInterface;
+	private readonly _monitoring: MonitoringInterface<DT>;
 
 	constructor(connectionData: ConnectionData, dataSource: DataSourceContextInterface<DT>) {
 		this._connectionData = this._handleConnectionData(connectionData);
@@ -131,7 +131,7 @@ class DatabaseManager<DT extends DatabasesTypes> implements DatabaseManagerInter
 			const response = this._monitoring
 				? await this._monitoring.measureExecutionTime(operation, sql, params)
 				: await operation();
-			
+
 			if (this._logger)
 				this._logger.log(JSON.stringify(response), sql, JSON.stringify(params));
 			return response;

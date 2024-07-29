@@ -33,6 +33,13 @@ import {
 } from '@core/interfaces/migration-service';
 import { SqlClientInterface } from '@core/interfaces/sql-client.interface';
 import { CreateTableOptionsInterface } from '@core/interfaces/create-table';
+import {
+	ActiveConnectionsInterface,
+	CpuUsageInterface,
+	DiskUsageInterface,
+	MemoryUsageInterface,
+	WaitingConnectionsInterface
+} from '@strategies/mysql';
 
 export interface DataSourceInterface<DT extends DatabasesTypes> {
 	client: SqlClientInterface;
@@ -149,4 +156,15 @@ export interface DataSourceInterface<DT extends DatabasesTypes> {
 	commit(dataSource: DataSourceInterface<DT>): Promise<void>;
 
 	rollback(dataSource: DataSourceInterface<DT>): Promise<void>;
+
+	//Monitoring
+	getCPUUsage(dataSource: DataSourceInterface<DT>): Promise<DT extends DatabasesTypes.MYSQL ? CpuUsageInterface[] : unknown>;
+
+	getMemoryUsage(dataSource: DataSourceInterface<DT>): Promise<DT extends DatabasesTypes.MYSQL ? MemoryUsageInterface[] : unknown>;
+
+	getDiskUsage(dataSource: DataSourceInterface<DT>): Promise<DT extends DatabasesTypes.MYSQL ? DiskUsageInterface[] : unknown>;
+
+	getActiveConnections(dataSource: DataSourceInterface<DT>): Promise<DT extends DatabasesTypes.MYSQL ? ActiveConnectionsInterface : unknown>;
+
+	getWaitingConnections(dataSource: DataSourceInterface<DT>): Promise<DT extends DatabasesTypes.MYSQL ? WaitingConnectionsInterface : unknown>;
 }

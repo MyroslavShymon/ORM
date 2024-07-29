@@ -3,6 +3,10 @@ export const constants = {
 	migrationsTableSchemaName: 'public',
 	currentDatabaseIngot: 'current_database_ingot',
 
+	monitoring: {
+		interval: 900000//15 хвилин
+	},
+
 	tableComparerAlgorithm: {
 		maximumConvergenceOfTable: 100,
 		minimumUniquesPercentage: 70,

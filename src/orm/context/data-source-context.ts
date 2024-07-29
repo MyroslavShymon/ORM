@@ -25,13 +25,13 @@ class DataSourceContext<DT extends DatabasesTypes> implements DataSourceContextI
 	private _cache: CacheInterface;
 	private _connectionData: ConnectionData;
 	private _logger: LoggerInterface;
-	private _monitoring: MonitoringInterface;
+	private _monitoring: MonitoringInterface<DT>;
 
 	set database(dataSource: DataSourceInterface<DT>) {
 		this._dataSource = dataSource;
 	}
 
-	set monitoring(monitoring: MonitoringInterface) {
+	set monitoring(monitoring: MonitoringInterface<DT>) {
 		this._monitoring = monitoring;
 	}
 
@@ -51,6 +51,8 @@ class DataSourceContext<DT extends DatabasesTypes> implements DataSourceContextI
 		await this._dataSource.connect(connectionData);
 
 		this._client = await this._dataSource.client;
+		
+		await this._monitoring.getMonitoringMetrics(this._dataSource);
 	}
 
 	async getCurrentTime(): Promise<Object> {

@@ -35,6 +35,8 @@ import {
 	DeleteQueriesInterface,
 	InsertQueriesInterface,
 	MigrationServiceInterface,
+	Monitoring,
+	MonitoringInterface,
 	SelectQueriesInterface,
 	TableAltererInterface,
 	TableBuilderInterface,
@@ -71,6 +73,7 @@ export class DataSourcePostgres extends BaseQueries implements DataSourceInterfa
 	private _structureQueries: StructureQueriesInterface;
 	private _viewQueries: ViewQueriesInterface;
 	private _transaction: TransactionInterface;
+	private _monitoring: MonitoringInterface<DatabasesTypes.POSTGRES>;
 
 	constructor() {
 		super();
@@ -85,6 +88,7 @@ export class DataSourcePostgres extends BaseQueries implements DataSourceInterfa
 		this._structureQueries = new StructureQueries();
 		this._viewQueries = new ViewQueries();
 		this._transaction = new Transaction();
+		this._monitoring = new Monitoring();
 	}
 
 	async connect(dataToConnect: ConnectionData): Promise<void> {
@@ -301,5 +305,26 @@ export class DataSourcePostgres extends BaseQueries implements DataSourceInterfa
 
 	async rollback(dataSource: DataSourceInterface<DatabasesTypes.POSTGRES>): Promise<void> {
 		return this._transaction.rollback(dataSource);
+	}
+
+	//Monitoring
+	async getCPUUsage(dataSource: DataSourceInterface<DatabasesTypes.POSTGRES>): Promise<unknown> {
+		return this._monitoring.getCPUUsage(dataSource);
+	}
+
+	async getMemoryUsage(dataSource: DataSourceInterface<DatabasesTypes.POSTGRES>): Promise<unknown> {
+		return this._monitoring.getMemoryUsage(dataSource);
+	}
+
+	async getDiskUsage(dataSource: DataSourceInterface<DatabasesTypes.POSTGRES>): Promise<unknown> {
+		return this._monitoring.getDiskUsage(dataSource);
+	}
+
+	async getActiveConnections(dataSource: DataSourceInterface<DatabasesTypes.POSTGRES>): Promise<unknown> {
+		return this._monitoring.getActiveConnections(dataSource);
+	}
+
+	async getWaitingConnections(dataSource: DataSourceInterface<DatabasesTypes.POSTGRES>): Promise<unknown> {
+		return this._monitoring.getWaitingConnections(dataSource);
 	}
 }

@@ -15,7 +15,7 @@ import { LoggerInterface, MonitoringInterface } from '../../../monitoring';
 export interface DataSourceContextInterface<DT extends DatabasesTypes> {
 	set logger(logger: LoggerInterface);
 
-	set monitoring(monitoring: MonitoringInterface);
+	set monitoring(monitoring: MonitoringInterface<DT>);
 
 	set database(dataSource: DataSourceInterface<DT>);
 
