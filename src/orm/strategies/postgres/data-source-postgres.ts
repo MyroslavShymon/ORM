@@ -30,10 +30,14 @@ import {
 } from '@core/interfaces';
 import { ConditionParamsType, ConnectionData, JoinCondition, OrderOperators } from '@core/types';
 import {
+	ActiveConnectionsInterface,
 	AggregateQueries,
 	AggregateQueriesInterface,
+	CpuUsageInterface,
 	DeleteQueriesInterface,
+	DiskUsageInterface,
 	InsertQueriesInterface,
+	MemoryUsageInterface,
 	MigrationServiceInterface,
 	Monitoring,
 	MonitoringInterface,
@@ -45,7 +49,8 @@ import {
 	Transaction,
 	TransactionInterface,
 	UpdateQueriesInterface,
-	ViewQueriesInterface
+	ViewQueriesInterface,
+	WaitingConnectionsInterface
 } from '@strategies/postgres';
 import {
 	DeleteQueries,
@@ -310,23 +315,23 @@ export class DataSourcePostgres extends BaseQueries implements DataSourceInterfa
 	}
 
 	//Monitoring
-	async getCPUUsage(dataSource: DataSourceInterface<DatabasesTypes.POSTGRES>): Promise<unknown> {
+	async getCPUUsage(dataSource: DataSourceInterface<DatabasesTypes.POSTGRES>): Promise<CpuUsageInterface[]> {
 		return this._monitoring.getCPUUsage(dataSource);
 	}
 
-	async getMemoryUsage(dataSource: DataSourceInterface<DatabasesTypes.POSTGRES>): Promise<unknown> {
+	async getMemoryUsage(dataSource: DataSourceInterface<DatabasesTypes.POSTGRES>): Promise<MemoryUsageInterface> {
 		return this._monitoring.getMemoryUsage(dataSource);
 	}
 
-	async getDiskUsage(dataSource: DataSourceInterface<DatabasesTypes.POSTGRES>): Promise<unknown> {
+	async getDiskUsage(dataSource: DataSourceInterface<DatabasesTypes.POSTGRES>): Promise<DiskUsageInterface[]> {
 		return this._monitoring.getDiskUsage(dataSource);
 	}
 
-	async getActiveConnections(dataSource: DataSourceInterface<DatabasesTypes.POSTGRES>): Promise<unknown> {
+	async getActiveConnections(dataSource: DataSourceInterface<DatabasesTypes.POSTGRES>): Promise<ActiveConnectionsInterface> {
 		return this._monitoring.getActiveConnections(dataSource);
 	}
 
-	async getWaitingConnections(dataSource: DataSourceInterface<DatabasesTypes.POSTGRES>): Promise<unknown> {
+	async getWaitingConnections(dataSource: DataSourceInterface<DatabasesTypes.POSTGRES>): Promise<WaitingConnectionsInterface> {
 		return this._monitoring.getWaitingConnections(dataSource);
 	}
 }

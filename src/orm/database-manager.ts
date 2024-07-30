@@ -47,11 +47,11 @@ class DatabaseManager<DT extends DatabasesTypes> implements DatabaseManagerInter
 		}
 
 		if (connectionData.type === DatabasesTypes.POSTGRES) {
-			this._dataSource.database = new DataSourcePostgres() as DataSourceInterface<DT>;
+			this._dataSource.database = new DataSourcePostgres() as unknown as DataSourceInterface<DT>;
 		}
 
 		if (this._connectionData.type === DatabasesTypes.MYSQL) {
-			this._dataSource.database = new DataSourceMySql() as DataSourceInterface<DT>;
+			this._dataSource.database = new DataSourceMySql() as unknown as DataSourceInterface<DT>;
 		}
 	}
 

@@ -34,12 +34,12 @@ import {
 import { SqlClientInterface } from '@core/interfaces/sql-client.interface';
 import { CreateTableOptionsInterface } from '@core/interfaces/create-table';
 import {
-	ActiveConnectionsInterface,
-	CpuUsageInterface,
-	DiskUsageInterface,
-	MemoryUsageInterface,
-	WaitingConnectionsInterface
-} from '@strategies/mysql';
+	ActiveConnectionsType,
+	CpuUsageType,
+	DiskUsageType,
+	MemoryUsageType,
+	WaitingConnectionsType
+} from '@strategies/common';
 
 export interface DataSourceInterface<DT extends DatabasesTypes> {
 	client: SqlClientInterface;
@@ -158,13 +158,13 @@ export interface DataSourceInterface<DT extends DatabasesTypes> {
 	rollback(dataSource: DataSourceInterface<DT>): Promise<void>;
 
 	//Monitoring
-	getCPUUsage(dataSource: DataSourceInterface<DT>): Promise<DT extends DatabasesTypes.MYSQL ? CpuUsageInterface[] : unknown>;
+	getCPUUsage(dataSource: DataSourceInterface<DT>): Promise<CpuUsageType<DT>>;
 
-	getMemoryUsage(dataSource: DataSourceInterface<DT>): Promise<DT extends DatabasesTypes.MYSQL ? MemoryUsageInterface[] : unknown>;
+	getMemoryUsage(dataSource: DataSourceInterface<DT>): Promise<MemoryUsageType<DT>>;
 
-	getDiskUsage(dataSource: DataSourceInterface<DT>): Promise<DT extends DatabasesTypes.MYSQL ? DiskUsageInterface[] : unknown>;
+	getDiskUsage(dataSource: DataSourceInterface<DT>): Promise<DiskUsageType<DT>>;
 
-	getActiveConnections(dataSource: DataSourceInterface<DT>): Promise<DT extends DatabasesTypes.MYSQL ? ActiveConnectionsInterface : unknown>;
+	getActiveConnections(dataSource: DataSourceInterface<DT>): Promise<ActiveConnectionsType<DT>>;
 
-	getWaitingConnections(dataSource: DataSourceInterface<DT>): Promise<DT extends DatabasesTypes.MYSQL ? WaitingConnectionsInterface : unknown>;
+	getWaitingConnections(dataSource: DataSourceInterface<DT>): Promise<WaitingConnectionsType<DT>>;
 }

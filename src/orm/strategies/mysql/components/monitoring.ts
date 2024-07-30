@@ -24,7 +24,6 @@ export class Monitoring implements MonitoringInterface<DatabasesTypes.MYSQL> {
             WHERE PROCESSLIST_ID IS NOT NULL;`;
 
 		const CPUUsage = await dataSource.client.query(getCPUUsageQuery);
-
 		return CPUUsage[0];
 	}
 

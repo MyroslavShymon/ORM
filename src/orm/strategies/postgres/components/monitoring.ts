@@ -1,9 +1,16 @@
 import { DatabasesTypes } from '@core/enums';
 import { DataSourceInterface } from '@core/interfaces';
-import { MonitoringInterface } from '@strategies/postgres';
+import {
+	ActiveConnectionsInterface,
+	CpuUsageInterface,
+	DiskUsageInterface,
+	MemoryUsageInterface,
+	MonitoringInterface,
+	WaitingConnectionsInterface
+} from '@strategies/postgres';
 
 export class Monitoring implements MonitoringInterface<DatabasesTypes.POSTGRES> {
-	async getCPUUsage(dataSource: DataSourceInterface<DatabasesTypes.POSTGRES>): Promise<unknown> {
+	async getCPUUsage(dataSource: DataSourceInterface<DatabasesTypes.POSTGRES>): Promise<CpuUsageInterface[]> {
 		const getCPUUsageQuery = `
             SELECT pid,
                    usename,
@@ -15,52 +22,55 @@ export class Monitoring implements MonitoringInterface<DatabasesTypes.POSTGRES> 
                    query
             FROM pg_stat_activity;`;
 
-		return dataSource.client.query(getCPUUsageQuery);
+		const CPUUsage = await dataSource.client.query(getCPUUsageQuery);
+		return CPUUsage.rows;
 	}
 
-	async getMemoryUsage(dataSource: DataSourceInterface<DatabasesTypes.POSTGRES>): Promise<unknown> {
+	async getMemoryUsage(dataSource: DataSourceInterface<DatabasesTypes.POSTGRES>): Promise<MemoryUsageInterface> {
 		const getMemoryUsageQuery = `
-            SELECT pg_stat_statements.queryid,
-                   pg_stat_statements.calls,
-                   pg_stat_statements.total_time,
-                   pg_stat_statements.rows,
-                   pg_stat_statements.shared_blks_hit,
-                   pg_stat_statements.shared_blks_read,
-                   pg_stat_statements.shared_blks_dirtied,
-                   pg_stat_statements.shared_blks_written
-            FROM pg_stat_statements
-            ORDER BY pg_stat_statements.total_time DESC
-            LIMIT 10;`;
+			 SELECT
+				pg_size_pretty(pg_database_size(current_database())) AS database_size,
+				pg_size_pretty(sum(pg_relation_size(oid))) AS total_table_size,
+				pg_size_pretty(sum(pg_indexes_size(oid))) AS total_index_size,
+				pg_size_pretty(sum(pg_total_relation_size(oid) - pg_relation_size(oid) - pg_indexes_size(oid))) AS total_toast_size
+			FROM
+				pg_class
+			WHERE
+				relkind = 'r';`;
 
-		return dataSource.client.query(getMemoryUsageQuery);
+		const memoryUsage = await dataSource.client.query(getMemoryUsageQuery);
+		return memoryUsage.rows[0];
 	}
 
-	async getDiskUsage(dataSource: DataSourceInterface<DatabasesTypes.POSTGRES>): Promise<unknown> {
+	async getDiskUsage(dataSource: DataSourceInterface<DatabasesTypes.POSTGRES>): Promise<DiskUsageInterface[]> {
 		const getDiskUsageQuery = `
             SELECT pg_database.datname                                   AS database_name,
                    pg_size_pretty(pg_database_size(pg_database.datname)) AS size
             FROM pg_database
             ORDER BY pg_database_size(pg_database.datname) DESC;`;
 
-		return dataSource.client.query(getDiskUsageQuery);
+		const diskUsage = await dataSource.client.query(getDiskUsageQuery);
+		return diskUsage.rows;
 	}
 
-	async getActiveConnections(dataSource: DataSourceInterface<DatabasesTypes.POSTGRES>): Promise<unknown> {
+	async getActiveConnections(dataSource: DataSourceInterface<DatabasesTypes.POSTGRES>): Promise<ActiveConnectionsInterface> {
 		const getActiveConnectionsQuery = `
             SELECT COUNT(*) AS active_connections
             FROM pg_stat_activity
             WHERE state = 'active';`;
 
-		return dataSource.client.query(getActiveConnectionsQuery);
+		const activeConnections = await dataSource.client.query(getActiveConnectionsQuery);
+		return activeConnections.rows[0];
 	}
 
-	async getWaitingConnections(dataSource: DataSourceInterface<DatabasesTypes.POSTGRES>): Promise<unknown> {
+	async getWaitingConnections(dataSource: DataSourceInterface<DatabasesTypes.POSTGRES>): Promise<WaitingConnectionsInterface> {
 		const getWaitingConnectionsQuery = `
             SELECT COUNT(*) AS waiting_connections
             FROM pg_stat_activity
             WHERE wait_event IS NOT NULL;`;
 
-		return dataSource.client.query(getWaitingConnectionsQuery);
+		const waitingConnections = await dataSource.client.query(getWaitingConnectionsQuery);
+		return waitingConnections.rows[0];
 	}
 
 }

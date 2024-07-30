@@ -4,7 +4,7 @@ export const constants = {
 	currentDatabaseIngot: 'current_database_ingot',
 
 	monitoring: {
-		interval: 900000//15 хвилин
+		interval: 900000 //15 хвилин == 900000
 	},
 
 	tableComparerAlgorithm: {
