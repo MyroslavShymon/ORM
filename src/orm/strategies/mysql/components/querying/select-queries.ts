@@ -1,5 +1,5 @@
-import { SelectQueriesInterface } from '@strategies/mysql';
 import { ConditionParamsType, JoinCondition, OrderOperators } from '@core/types';
+import { SelectQueriesInterface } from '@strategies/common';
 
 export class SelectQueries implements SelectQueriesInterface {
 	select(columns: string[]): string {

@@ -1,5 +1,5 @@
 import { ConditionParamsType } from '@core/types';
-import { AggregateQueriesInterface } from '@strategies/mysql';
+import { AggregateQueriesInterface } from '@strategies/common';
 
 export class AggregateQueries implements AggregateQueriesInterface {
 	having(params: ConditionParamsType): string {

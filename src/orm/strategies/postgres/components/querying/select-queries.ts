@@ -1,5 +1,5 @@
-import { SelectQueriesInterface } from '@strategies/postgres';
 import { ConditionParamsType, JoinCondition, OrderOperators } from '@core/types';
+import { SelectQueriesInterface } from '@strategies/common';
 
 export class SelectQueries implements SelectQueriesInterface {
 	select(columns: string[]): string {
@@ -13,7 +13,7 @@ export class SelectQueries implements SelectQueriesInterface {
 	as(alias: string): string {
 		return ` AS ${alias}`;
 	}
-	
+
 	innerJoin(table: string, condition: JoinCondition): string {
 		const { column, operator, value } = condition;
 		let placeholder = '?';

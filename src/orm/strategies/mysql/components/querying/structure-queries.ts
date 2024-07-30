@@ -1,4 +1,4 @@
-import { StructureQueriesInterface } from '@strategies/mysql';
+import { StructureQueriesInterface } from '@strategies/common';
 
 export class StructureQueries implements StructureQueriesInterface {
 	from(table: string): string {

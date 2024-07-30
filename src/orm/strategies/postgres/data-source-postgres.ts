@@ -32,24 +32,17 @@ import { ConditionParamsType, ConnectionData, JoinCondition, OrderOperators } fr
 import {
 	ActiveConnectionsInterface,
 	AggregateQueries,
-	AggregateQueriesInterface,
 	CpuUsageInterface,
-	DeleteQueriesInterface,
 	DiskUsageInterface,
-	InsertQueriesInterface,
 	MemoryUsageInterface,
 	MigrationServiceInterface,
 	Monitoring,
 	MonitoringInterface,
-	SelectQueriesInterface,
 	StructureQueries,
-	StructureQueriesInterface,
 	TableAltererInterface,
 	TableBuilderInterface,
 	Transaction,
 	TransactionInterface,
-	UpdateQueriesInterface,
-	ViewQueriesInterface,
 	WaitingConnectionsInterface
 } from '@strategies/postgres';
 import {
@@ -65,6 +58,15 @@ import {
 import { BaseQueries } from '@strategies/base-queries';
 import { AddComputedColumnInterface } from '@core/interfaces/table-manipulation/add-computed-column.interface';
 import { DatabasesTypes } from '@core/enums';
+import {
+	AggregateQueriesInterface,
+	DeleteQueriesInterface,
+	InsertQueriesInterface,
+	SelectQueriesInterface,
+	StructureQueriesInterface,
+	UpdateQueriesInterface,
+	ViewQueriesInterface
+} from '@strategies/common';
 
 
 export class DataSourcePostgres extends BaseQueries implements DataSourceInterface<DatabasesTypes.POSTGRES> {

@@ -31,19 +31,12 @@ import {
 import { ConditionParamsType, ConnectionData, JoinCondition, OrderOperators } from '@core/types';
 import {
 	ActiveConnectionsInterface,
-	AggregateQueriesInterface,
 	CpuUsageInterface,
-	DeleteQueriesInterface,
 	DiskUsageInterface,
-	InsertQueriesInterface,
 	MemoryUsageInterface,
 	MigrationServiceInterface,
-	SelectQueriesInterface,
-	StructureQueriesInterface,
 	TableAltererInterface,
 	TableBuilderInterface,
-	UpdateQueriesInterface,
-	ViewQueriesInterface,
 	WaitingConnectionsInterface
 } from '@strategies/mysql/interfaces';
 import {
@@ -63,6 +56,15 @@ import { BaseQueries } from '@strategies/base-queries';
 import { AddComputedColumnInterface } from '@core/interfaces/table-manipulation/add-computed-column.interface';
 import { DatabasesTypes } from '@core/enums';
 import { Monitoring, MonitoringInterface, TransactionInterface } from '@strategies/mysql';
+import {
+	AggregateQueriesInterface,
+	DeleteQueriesInterface,
+	InsertQueriesInterface,
+	SelectQueriesInterface,
+	StructureQueriesInterface,
+	UpdateQueriesInterface,
+	ViewQueriesInterface
+} from '@strategies/common';
 
 export class DataSourceMySql extends BaseQueries implements DataSourceInterface<DatabasesTypes.MYSQL> {
 	client: Connection;

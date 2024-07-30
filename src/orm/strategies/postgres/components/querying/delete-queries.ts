@@ -1,4 +1,4 @@
-import { DeleteQueriesInterface } from '@strategies/postgres';
+import { DeleteQueriesInterface } from '@strategies/common';
 
 export class DeleteQueries implements DeleteQueriesInterface {
 	deleting(tableName: string): string {

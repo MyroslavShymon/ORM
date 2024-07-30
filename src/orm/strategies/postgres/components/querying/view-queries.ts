@@ -1,4 +1,4 @@
-import { ViewQueriesInterface } from '@strategies/postgres';
+import { ViewQueriesInterface } from '@strategies/common';
 
 export class ViewQueries implements ViewQueriesInterface {
 	createView(name: string): string {

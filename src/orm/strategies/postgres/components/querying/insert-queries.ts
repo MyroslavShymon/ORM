@@ -1,4 +1,4 @@
-import { InsertQueriesInterface } from '@strategies/postgres';
+import { InsertQueriesInterface } from '@strategies/common';
 
 export class InsertQueries implements InsertQueriesInterface {
 	insert(values: Partial<unknown>, tableName: string): string {

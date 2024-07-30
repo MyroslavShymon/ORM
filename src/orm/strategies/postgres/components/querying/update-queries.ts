@@ -1,4 +1,4 @@
-import { UpdateQueriesInterface } from '@strategies/postgres';
+import { UpdateQueriesInterface } from '@strategies/common';
 
 export class UpdateQueries implements UpdateQueriesInterface {
 	update(values: Partial<Object>, tableName: string): string {
