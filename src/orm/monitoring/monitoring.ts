@@ -16,13 +16,14 @@ export class Monitoring<DT extends DatabasesTypes> implements MonitoringInterfac
 
 			const endTime = performance.now();
 			const duration = endTime - startTime;
-			fs.appendFileSync(this.monitoringFile, `Executed in ${duration} ms, TYPE: ${type || MonitoringType.RegularQuery}, SQL: ${buildQuery}, PARAMS: ${JSON.stringify(parameters)}\n`);
+			parameters = typeof parameters === 'object' ? JSON.stringify(parameters) : parameters;
+			fs.appendFileSync(this.monitoringFile, `Executed in ${duration} ms, TYPE: ${type || MonitoringType.RegularQuery}${buildQuery ? ', SQL: ' + buildQuery : ''}${parameters ? ', PARAMS: ' + parameters : ''}\n`);
 
 			return result;
 		} catch (error) {
 			const endTime = performance.now();
 			const duration = endTime - startTime;
-			fs.appendFileSync(this.monitoringFile, `Executed in ${duration} ms, TYPE: ${type || MonitoringType.RegularQuery}, ERROR: ${error}, SQL: ${buildQuery}, PARAMS: ${JSON.stringify(parameters)}\n`);
+			fs.appendFileSync(this.monitoringFile, `Executed in ${duration} ms, TYPE: ${type || MonitoringType.RegularQuery}, ERROR: ${error}${buildQuery ? ', SQL: ' + buildQuery : ''}${parameters ? ', PARAMS: ' + parameters : ''}\n`);
 			throw error;
 		}
 	}
