@@ -38,6 +38,8 @@ import {
 	Monitoring,
 	MonitoringInterface,
 	SelectQueriesInterface,
+	StructureQueries,
+	StructureQueriesInterface,
 	TableAltererInterface,
 	TableBuilderInterface,
 	Transaction,
@@ -58,7 +60,7 @@ import {
 import { BaseQueries } from '@strategies/base-queries';
 import { AddComputedColumnInterface } from '@core/interfaces/table-manipulation/add-computed-column.interface';
 import { DatabasesTypes } from '@core/enums';
-import { StructureQueries, StructureQueriesInterface } from '@strategies/mysql';
+
 
 export class DataSourcePostgres extends BaseQueries implements DataSourceInterface<DatabasesTypes.POSTGRES> {
 	client: PoolClient;
