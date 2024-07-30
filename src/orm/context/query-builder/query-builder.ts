@@ -32,7 +32,7 @@ export class QueryBuilder<T, DT extends DatabasesTypes> implements QueryBuilderI
 	private readonly _connectionData: ConnectionData;
 	private readonly _logger: LoggerInterface;
 	private readonly _monitoring: MonitoringInterface<DT>;
-	private readonly queryMethod: (sql: string, params: any[]) => Promise<unknown>;
+	private readonly queryMethod: (sql: string, params: any[]) => Promise<T>;
 
 	private selectQueryBuilder: SelectQueryBuilderInterface<T>;
 	private insertQueryBuilder: InsertQueryBuilderInterface<T>;
@@ -44,7 +44,7 @@ export class QueryBuilder<T, DT extends DatabasesTypes> implements QueryBuilderI
 	constructor(
 		dataSource: DataSourceInterface<DT>,
 		connectionData: ConnectionData,
-		methodForQuery?: (sql: string, params: any[]) => Promise<unknown>,
+		methodForQuery?: <T>(sql: string, params: any[]) => Promise<T>,
 		cache?: CacheInterface,
 		logger?: LoggerInterface,
 		monitoring?: MonitoringInterface<DT>
@@ -245,7 +245,7 @@ export class QueryBuilder<T, DT extends DatabasesTypes> implements QueryBuilderI
 		return this.query.trim();
 	}
 
-	async execute(enableMonitoring: boolean = true): Promise<any> {
+	async execute(enableMonitoring: boolean = true): Promise<T> {
 		if (this._connectionData.sanitizer)
 			this.parameters = this.parameters.map(parameter => Sanitizer.sanitize(parameter));
 
@@ -253,7 +253,7 @@ export class QueryBuilder<T, DT extends DatabasesTypes> implements QueryBuilderI
 
 		try {
 			const response = this._monitoring && enableMonitoring
-				? await this._monitoring.measureExecutionTime(operation, this.build(), this.parameters)
+				? await this._monitoring.measureExecutionTime<T>(operation, this.build(), this.parameters)
 				: await operation();
 
 			if (this._logger)

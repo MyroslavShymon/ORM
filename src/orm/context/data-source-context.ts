@@ -61,8 +61,14 @@ class DataSourceContext<DT extends DatabasesTypes> implements DataSourceContextI
 		return this._dataSource.client.query(getCurrentTimestampQuery);
 	}
 
-	async query(sql: string, params: any[]): Promise<Object> {
-		return await this._dataSource.client.query(sql, params);
+	async query<T>(sql: string, params: any[]): Promise<T> {
+		const response = await this._dataSource.client.query(sql, params);
+		if (this._connectionData.type === DatabasesTypes.MYSQL) {
+			return response[0];
+		}
+		if (this._connectionData.type === DatabasesTypes.POSTGRES) {
+			return response.rows;
+		}
 	}
 
 	get client(): SqlClientInterface {

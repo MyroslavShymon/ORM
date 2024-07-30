@@ -33,7 +33,7 @@ export interface DataSourceContextInterface<DT extends DatabasesTypes> {
 
 	connectDatabase(connectionData: ConnectionData): Promise<void>;
 
-	query(sql: string, params: any[]): Promise<Object>;
+	query<T>(sql: string, params: any[]): Promise<T>;
 
 	getCurrentTime(): Promise<Object>;
 }

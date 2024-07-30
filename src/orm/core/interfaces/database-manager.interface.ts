@@ -19,7 +19,7 @@ export interface DatabaseManagerInterface<DT extends DatabasesTypes> {
 
 	queryBuilder<T>(): QueryBuilderInterface<T>;
 
-	query(sql: string, params?: any[]): Promise<Object>;
+	query<T>(sql: string, params?: any[]): Promise<T>;
 
 	connectDatabase(): Promise<void>;
 

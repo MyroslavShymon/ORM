@@ -125,14 +125,14 @@ class DatabaseManager<DT extends DatabasesTypes> implements DatabaseManagerInter
 		return connectionData;
 	}
 
-	async query(sql: string, params?: any[]): Promise<Object> {
+	async query<T>(sql: string, params?: any[]): Promise<T> {
 		try {
 			if (this._connectionData.sanitizer)
 				params = params.map(parameter => Sanitizer.sanitize(parameter));
-			const operation = () => this._dataSource.query(sql, params);
+			const operation = () => this._dataSource.query<T>(sql, params);
 
 			const response = this._monitoring
-				? await this._monitoring.measureExecutionTime(operation, sql, params)
+				? await this._monitoring.measureExecutionTime<T>(operation, sql, params)
 				: await operation();
 
 			if (this._logger)

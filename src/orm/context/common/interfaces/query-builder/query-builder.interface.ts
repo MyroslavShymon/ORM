@@ -53,5 +53,5 @@ export interface QueryBuilderInterface<T> {
 
 	buildWithoutSemicolon(): string;
 
-	execute(enableMonitoring?: boolean): any;
+	execute(enableMonitoring?: boolean): Promise<T>;
 }
