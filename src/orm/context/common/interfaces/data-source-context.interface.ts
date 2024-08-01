@@ -6,7 +6,8 @@ import {
 	QueryBuilderInterface,
 	TableCreatorInterface,
 	TableManipulationInterface,
-	TransactionManagerInterface
+	TransactionManagerInterface,
+	TriggerCreatorInterface
 } from '@context/common';
 import { DatabasesTypes } from '@core/enums';
 import { DataSourceInterface } from '@core/interfaces';
@@ -25,6 +26,7 @@ export interface DataSourceContextInterface<DT extends DatabasesTypes> {
 
 	tableManipulation: TableManipulationInterface<DT>;
 	tableCreator: TableCreatorInterface<DT>;
+	triggerCreator: TriggerCreatorInterface;
 	migrationManager: MigrationManagerInterface<DT>;
 	eventManager: EventManagerInterface;
 	transactionManager: TransactionManagerInterface;

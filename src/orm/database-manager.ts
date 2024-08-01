@@ -1,10 +1,5 @@
 import 'reflect-metadata';
-import {
-	DatabaseIngotInterface,
-	DatabaseManagerInterface,
-	DataSourceInterface,
-	TableIngotInterface
-} from '@core/interfaces';
+import { DatabaseIngotInterface, DatabaseManagerInterface, DataSourceInterface } from '@core/interfaces';
 import { ConnectionData } from '@core/types';
 import { DatabasesTypes } from '@core/enums';
 import { DataSourcePostgres } from '@strategies/postgres';
@@ -67,7 +62,7 @@ class DatabaseManager<DT extends DatabasesTypes> implements DatabaseManagerInter
 		try {
 			FileStructureManager.manage(this._connectionData);
 
-			const databaseIngot: DatabaseIngotInterface<DT> = { tables: [] };
+			const databaseIngot: DatabaseIngotInterface<DT> = { tables: [], triggers: [] };
 
 			await this._dataSource.connectDatabase(this._connectionData);
 
@@ -93,11 +88,15 @@ class DatabaseManager<DT extends DatabasesTypes> implements DatabaseManagerInter
 			}
 
 			const tablesIngot = await this._dataSource.tableCreator.createIngotOfTables(this._connectionData);
+			const triggersIngot = await this._dataSource.triggerCreator.createIngotOfTrigger(this._connectionData);
+
 			if (!tablesIngot.length) {
 				const results = await this._dataSource.getCurrentTime();
 				console.log('Database is work, current timestamp: ', results);
 			}
-			databaseIngot.tables = tablesIngot as TableIngotInterface<DT>[] || [];
+
+			databaseIngot.tables = tablesIngot || [];
+			databaseIngot.triggers = triggersIngot || [];
 
 			await this._dataSource.migrationManager.syncDatabaseIngot({
 				databaseName: this._connectionData.database,

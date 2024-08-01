@@ -6,5 +6,7 @@ export class ErrorHandler {
 		if (typeof error === 'string' && errorCodes.some(code => error.includes(code))) {
 			throw error;
 		}
+
+		throw error;
 	}
 }

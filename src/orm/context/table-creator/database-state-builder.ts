@@ -6,8 +6,7 @@ import {
 	OneToOneInterface,
 	PrimaryGeneratedColumnInterface,
 	TableIngotInterface,
-	TableInterface,
-	TriggerInterface
+	TableInterface
 } from '@core/interfaces';
 import { ColumnMetadataInterface, ComputedColumnMetadataInterface } from '@decorators/index';
 import { DatabaseStateBuilderInterface, DatabaseStateInterface } from '@context/common';
@@ -38,15 +37,6 @@ export class DatabaseStateBuilder<DT extends DatabasesTypes> implements Database
 				= Reflect.getMetadata(constants.decoratorsMetadata.oneToMany, model.prototype) || [];
 			const manyToMany: ManyToManyInterface[]
 				= Reflect.getMetadata(constants.decoratorsMetadata.manyToMany, model.prototype) || [];
-			let triggers: TriggerInterface[]
-				= Reflect.getMetadata(constants.decoratorsMetadata.triggers, model.prototype) || [];
-
-			triggers = triggers.map(trigger => trigger.tableName !== table.name ? {
-				...trigger,
-				tableName: table.name
-			} : trigger);
-
-			console.log('TrigggersTrigggersTrigggersTrigggers', triggers);
 
 			let columns = [];
 			if (metadataColumns) {
