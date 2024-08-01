@@ -27,7 +27,8 @@ export {
 	Numeric,
 	OneToOne,
 	OneToMany,
-	ManyToMany
+	ManyToMany,
+	Trigger
 } from '@decorators/index';
 export { DataSourceContext } from './orm/context/data-source-context';
 export { DatabaseManager } from './orm/database-manager';

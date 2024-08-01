@@ -21,7 +21,9 @@ export const constants = {
 		computedColumns: 'computed-columns',
 		oneToOne: 'one-to-one',
 		oneToMany: 'one-to-many',
-		manyToMany: 'many-to-many'
+		manyToMany: 'many-to-many',
+		triggers: 'triggers',
+		functions: 'functions'
 	},
 
 	errors: {
