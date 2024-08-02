@@ -41,13 +41,15 @@ export class TriggerCreator<DT extends DatabasesTypes> implements TriggerCreator
 				databaseName: database
 			});
 
+		if (!currentTriggersIngot) {
+			return prepareTriggers.map(trigger => ({ ...trigger, id: uuidv4() }));
+		}
+
 		const newTriggers = this._getNewTriggers(prepareTriggers, currentTriggersIngot);
 
 		const commonTriggers = this._getCommonTriggers(prepareTriggers, currentTriggersIngot);
 
-		const renamedTriggers = this._getRenamedTriggers(prepareTriggers, currentTriggersIngot);
-
-		return [...renamedTriggers, ...commonTriggers, ...newTriggers];
+		return [...commonTriggers, ...newTriggers];
 	}
 
 	private _getPrepareTriggers(models: ClassInterface[]): TriggerInterface[] {
@@ -57,6 +59,7 @@ export class TriggerCreator<DT extends DatabasesTypes> implements TriggerCreator
 				= Reflect.getMetadata(constants.decoratorsMetadata.table, model.prototype);
 			const triggers: TriggerInterface[]
 				= Reflect.getMetadata(constants.decoratorsMetadata.triggers, model.prototype) || [];
+			console.log('triggerstriggerstriggerstriggers', triggers);
 
 			const preparedModelTriggers = triggers.map(trigger => trigger.tableName !== table.name ? {
 				...trigger,
@@ -82,34 +85,23 @@ export class TriggerCreator<DT extends DatabasesTypes> implements TriggerCreator
 	private _getNewTriggers(preparedTriggers: TriggerInterface[], currentTriggersIngot: TriggerInterface[]): TriggerInterface[] {
 		return preparedTriggers
 			.filter(preparedTrigger =>
-				!currentTriggersIngot.some(currentTrigger => currentTrigger.name === preparedTrigger.name || currentTrigger.function === preparedTrigger.function)
+				!currentTriggersIngot.some(currentTrigger => currentTrigger.name === preparedTrigger.name)
 			)
 			.map(newTrigger => ({ ...newTrigger, id: uuidv4() }));
 	}
 
 	private _getCommonTriggers(preparedTriggers: TriggerInterface[], currentTriggersIngot: TriggerInterface[]): TriggerInterface[] {
-		return currentTriggersIngot
-			.filter(currentTrigger =>
-				preparedTriggers.some(preparedTrigger => preparedTrigger.name === currentTrigger.name)
-			);
+		return preparedTriggers
+			.filter(preparedTrigger =>
+				currentTriggersIngot.some(currentTrigger => preparedTrigger.name === currentTrigger.name)
+			)
+			.map(preparedTrigger => {
+				const currentTrigger = currentTriggersIngot.find(currentTrigger => preparedTrigger.name === currentTrigger.name);
+				return {
+					...preparedTrigger,
+					id: currentTrigger?.id
+				};
+			});
 	}
 
-	private _getRenamedTriggers(preparedTriggers: TriggerInterface[], currentTriggersIngot: TriggerInterface[]): TriggerInterface[] {
-		return currentTriggersIngot
-			.map(currentTrigger => {
-				const matchedPreparedTrigger = preparedTriggers.find(preparedTrigger =>
-					preparedTrigger.function == currentTrigger.function &&
-					preparedTrigger.name !== currentTrigger.name
-				);
-
-				if (matchedPreparedTrigger) {
-					return {
-						...matchedPreparedTrigger,
-						id: currentTrigger.id
-					};
-				}
-				return null;
-			})
-			.filter(trigger => trigger !== null);
-	}
 }

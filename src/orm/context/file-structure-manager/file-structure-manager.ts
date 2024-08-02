@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { DatabasesTypes } from '@core/enums';
+import { DatabasesTypes, TriggerTimingsTypes } from '@core/enums';
 import {
 	OptionsToCreateFieldInterface,
 	TypescriptCodeGenerator,
@@ -21,6 +21,7 @@ export class FileStructureManager {
 		this._generateIntegerDecoratorInterface(connectionData);
 		this._generateFloatDecoratorInterface(connectionData);
 		this._generateNumericDecoratorInterface(connectionData);
+		this._generateTriggerDecoratorInterface(connectionData);
 	}
 
 	private static _generateNumericDecoratorInterface(connectionData: ConnectionData) {
@@ -208,6 +209,69 @@ export class FileStructureManager {
 			'IntegerDecoratorInterface',
 			interfaceFields,
 			[imports]
+		);
+	}
+
+	private static _generateTriggerDecoratorInterface(connectionData: ConnectionData) {
+		const fileName = 'trigger-decorator.interface.d.ts';
+		const filePath = path.join(__dirname, '../..', '/decorators/trigger/interfaces', fileName);
+
+		const [triggerEventsTypesImports, triggerEventsTypesTypeNode] =
+			this._typescriptCodeGenerator.formImport('TriggerEventsTypes', '../../../core/enums/trigger/trigger-events-types');
+		const [triggerTimingsTypesImports, triggerTimingsTypesTypeNode] =
+			this._typescriptCodeGenerator.formImport('TriggerTimingsTypes', '../../../core/enums/trigger/trigger-timings-types');
+		const [classInterfaceImports, classInterfaceTypeNode] =
+			this._typescriptCodeGenerator.formImport('ClassInterface', '../../../core/interfaces/class.interface');
+
+		const interfaceFields = [
+			{
+				fieldName: 'name',
+				fieldType: { type: 'string' }
+			},
+			{
+				fieldName: 'function',
+				isFieldOptional: true,
+				fieldType: { type: 'string' }
+			},
+			{
+				fieldName: 'tableName',
+				isFieldOptional: true,
+				fieldType: { type: 'string' }
+			},
+			{
+				fieldName: 'functionName',
+				isFieldOptional: true,
+				fieldType: { type: 'string' }
+			},
+			{
+				fieldName: 'event',
+				fieldType: triggerEventsTypesTypeNode
+			},
+			{
+				fieldName: 'timing',
+				fieldType: triggerTimingsTypesTypeNode
+			},
+			{
+				fieldName: 'functions',
+				isFieldOptional: true,
+				fieldType: classInterfaceTypeNode
+			}
+		];
+		if (connectionData.type === DatabasesTypes.POSTGRES) {
+			interfaceFields.push(
+				{
+					fieldName: 'triggerFunctionName',
+					fieldType: { type: 'string' }
+				}
+			);
+		}
+
+		this._typescriptCodeGenerator.generateInterfaceFile(
+			fileName,
+			filePath,
+			'TriggerDecoratorInterface',
+			interfaceFields,
+			[triggerEventsTypesImports, triggerTimingsTypesImports, classInterfaceImports]
 		);
 	}
 

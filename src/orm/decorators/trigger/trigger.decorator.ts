@@ -16,7 +16,7 @@ export function Trigger(decoratorParams: TriggerDecoratorInterface) {
 			}
 		}
 
-		const { name, event, timing } = decoratorParams;
+		const { name, event, timing, triggerFunctionName } = decoratorParams;
 
 		triggers = removeExistingTrigger(triggers, decoratorParams, tableName);
 
@@ -25,6 +25,7 @@ export function Trigger(decoratorParams: TriggerDecoratorInterface) {
 			event,
 			tableName,
 			timing,
+			triggerFunctionName,
 			function: decoratorParams.function
 		});
 		Reflect.defineMetadata(constants.decoratorsMetadata.triggers, triggers, constructor.prototype);
@@ -52,5 +53,4 @@ function removeExistingTrigger(triggers: TriggerMetadataInterface[], decoratorPa
 			trigger.timing === decoratorParams.timing &&
 			trigger.tableName === tableName)
 	);
-
 }

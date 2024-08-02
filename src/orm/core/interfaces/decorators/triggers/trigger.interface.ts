@@ -1,10 +1,9 @@
-import { TriggerEventsTypes, TriggerTimingsTypes } from '@core/enums';
+import { DatabasesTypes } from '@core/enums';
+import { TriggerMysqlInterface, TriggerPostgresInterface } from '@core/interfaces';
 
-export interface TriggerInterface {
-	id?: string,
-	name: string,
-	timing: TriggerTimingsTypes,
-	event: TriggerEventsTypes,
-	tableName: string
-	function: string
-}
+export type TriggerInterface<DT extends DatabasesTypes | undefined = undefined> =
+	DT extends DatabasesTypes.POSTGRES ? TriggerPostgresInterface :
+		DT extends DatabasesTypes.MYSQL ? TriggerMysqlInterface :
+			never;
+
+

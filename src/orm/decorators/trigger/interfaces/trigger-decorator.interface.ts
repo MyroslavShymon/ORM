@@ -9,4 +9,5 @@ export interface TriggerDecoratorInterface {
 	tableName?: string
 	functionName?: string
 	functions?: ClassInterface
+	triggerFunctionName?: string //Postgres
 }
