@@ -40,6 +40,8 @@ import {
 	MemoryUsageType,
 	WaitingConnectionsType
 } from '@strategies/common';
+import { TriggerInterface } from '@core/interfaces/decorators';
+import { DropTriggerInterface } from '@core/interfaces/triggers-manager';
 
 export interface DataSourceInterface<DT extends DatabasesTypes> {
 	client: SqlClientInterface;
@@ -167,4 +169,9 @@ export interface DataSourceInterface<DT extends DatabasesTypes> {
 	getActiveConnections(dataSource: DataSourceInterface<DT>): Promise<ActiveConnectionsType<DT>>;
 
 	getWaitingConnections(dataSource: DataSourceInterface<DT>): Promise<WaitingConnectionsType<DT>>;
+
+	//Trigger
+	createTrigger(trigger: TriggerInterface<DT>): string;
+
+	dropTrigger(parameters: DropTriggerInterface<DT>): string;
 }

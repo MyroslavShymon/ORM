@@ -3,7 +3,8 @@ import {
 	EventManagerInterface,
 	QueryBuilderInterface,
 	TableCreatorInterface,
-	TableManipulationInterface
+	TableManipulationInterface,
+	TriggerManagerInterface
 } from '@context/common';
 import { DatabasesTypes } from '@core/enums';
 import { LoggerInterface } from '../../monitoring';
@@ -26,6 +27,8 @@ export interface DatabaseManagerInterface<DT extends DatabasesTypes> {
 	createOrmConnection(): Promise<void>;
 
 	get tableManipulation(): TableManipulationInterface<DT>;
+
+	get triggerManager(): TriggerManagerInterface<DT>;
 
 	transaction(callback: (trx: DatabaseManagerInterface<DT>) => Promise<void>): Promise<void>;
 }

@@ -59,7 +59,6 @@ export class TriggerCreator<DT extends DatabasesTypes> implements TriggerCreator
 				= Reflect.getMetadata(constants.decoratorsMetadata.table, model.prototype);
 			const triggers: TriggerInterface[]
 				= Reflect.getMetadata(constants.decoratorsMetadata.triggers, model.prototype) || [];
-			console.log('triggerstriggerstriggerstriggers', triggers);
 
 			const preparedModelTriggers = triggers.map(trigger => trigger.tableName !== table.name ? {
 				...trigger,
@@ -103,5 +102,4 @@ export class TriggerCreator<DT extends DatabasesTypes> implements TriggerCreator
 				};
 			});
 	}
-
 }

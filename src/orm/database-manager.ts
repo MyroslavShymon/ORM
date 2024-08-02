@@ -10,7 +10,8 @@ import {
 	EventManagerInterface,
 	QueryBuilderInterface,
 	TableCreatorInterface,
-	TableManipulationInterface
+	TableManipulationInterface,
+	TriggerManagerInterface
 } from '@context/common';
 import { FileStructureManager } from '@context/file-structure-manager';
 import { ErrorHandler } from '@context/error-handler';
@@ -166,6 +167,10 @@ class DatabaseManager<DT extends DatabasesTypes> implements DatabaseManagerInter
 
 	get eventManager(): EventManagerInterface {
 		return this._dataSource.eventManager;
+	}
+
+	get triggerManager(): TriggerManagerInterface<DT> {
+		return this._dataSource.triggerManager;
 	}
 
 	get logger(): LoggerInterface {

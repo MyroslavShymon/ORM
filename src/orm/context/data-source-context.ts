@@ -13,13 +13,15 @@ import {
 	TableCreatorInterface,
 	TableManipulationInterface,
 	TransactionManagerInterface,
-	TriggerCreatorInterface
+	TriggerCreatorInterface,
+	TriggerManagerInterface
 } from '@context/common';
 import { DatabasesTypes } from '@core/enums';
 import { EventManager } from '@context/events';
 import { TransactionManager } from '@context/transaction';
 import { LoggerInterface, MonitoringInterface } from '../monitoring';
 import { TriggerCreator } from '@context/triger-creator';
+import { TriggersManager } from '@context/triggers-manager';
 
 class DataSourceContext<DT extends DatabasesTypes> implements DataSourceContextInterface<DT> {
 	private _dataSource: DataSourceInterface<DT>;
@@ -103,6 +105,10 @@ class DataSourceContext<DT extends DatabasesTypes> implements DataSourceContextI
 
 	get transactionManager(): TransactionManagerInterface {
 		return new TransactionManager(this._dataSource);
+	}
+
+	get triggerManager(): TriggerManagerInterface<DT> {
+		return new TriggersManager<DT>(this._dataSource);
 	}
 }
 

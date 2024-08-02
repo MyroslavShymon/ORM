@@ -26,7 +26,8 @@ import {
 	InitCurrentDatabaseIngotOptionsInterface,
 	RenameColumnInterface,
 	RenameTableInterface,
-	SyncDatabaseIngotOptionsInterface
+	SyncDatabaseIngotOptionsInterface,
+	TriggerInterface
 } from '@core/interfaces';
 import { ConditionParamsType, ConnectionData, JoinCondition, OrderOperators } from '@core/types';
 import {
@@ -43,6 +44,8 @@ import {
 	TableBuilderInterface,
 	Transaction,
 	TransactionInterface,
+	TriggerAlterer,
+	TriggerAltererInterface,
 	WaitingConnectionsInterface
 } from '@strategies/postgres';
 import {
@@ -67,6 +70,7 @@ import {
 	UpdateQueriesInterface,
 	ViewQueriesInterface
 } from '@strategies/common';
+import { DropTriggerInterface } from '@core/interfaces/triggers-manager';
 
 
 export class DataSourcePostgres extends BaseQueries implements DataSourceInterface<DatabasesTypes.POSTGRES> {
@@ -81,6 +85,7 @@ export class DataSourcePostgres extends BaseQueries implements DataSourceInterfa
 	private _aggregateQueries: AggregateQueriesInterface;
 	private _structureQueries: StructureQueriesInterface;
 	private _viewQueries: ViewQueriesInterface;
+	private _triggerAlterer: TriggerAltererInterface;
 	private _transaction: TransactionInterface;
 	private _monitoring: MonitoringInterface<DatabasesTypes.POSTGRES>;
 
@@ -96,6 +101,7 @@ export class DataSourcePostgres extends BaseQueries implements DataSourceInterfa
 		this._aggregateQueries = new AggregateQueries();
 		this._structureQueries = new StructureQueries();
 		this._viewQueries = new ViewQueries();
+		this._triggerAlterer = new TriggerAlterer();
 		this._transaction = new Transaction();
 		this._monitoring = new Monitoring();
 	}
@@ -335,5 +341,13 @@ export class DataSourcePostgres extends BaseQueries implements DataSourceInterfa
 
 	async getWaitingConnections(dataSource: DataSourceInterface<DatabasesTypes.POSTGRES>): Promise<WaitingConnectionsInterface> {
 		return this._monitoring.getWaitingConnections(dataSource);
+	}
+
+	createTrigger(trigger: TriggerInterface<DatabasesTypes.POSTGRES>): string {
+		return this._triggerAlterer.createTrigger(trigger);
+	}
+
+	dropTrigger(parameters: DropTriggerInterface<DatabasesTypes.POSTGRES>): string {
+		return this._triggerAlterer.dropTrigger(parameters);
 	}
 }

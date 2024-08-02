@@ -26,7 +26,8 @@ import {
 	InitCurrentDatabaseIngotOptionsInterface,
 	RenameColumnInterface,
 	RenameTableInterface,
-	SyncDatabaseIngotOptionsInterface
+	SyncDatabaseIngotOptionsInterface,
+	TriggerInterface
 } from '@core/interfaces';
 import { ConditionParamsType, ConnectionData, JoinCondition, OrderOperators } from '@core/types';
 import {
@@ -49,13 +50,14 @@ import {
 	TableAlterer,
 	TableBuilder,
 	Transaction,
+	TriggerAlterer,
 	UpdateQueries,
 	ViewQueries
 } from '@strategies/mysql/components';
 import { BaseQueries } from '@strategies/base-queries';
 import { AddComputedColumnInterface } from '@core/interfaces/table-manipulation/add-computed-column.interface';
 import { DatabasesTypes } from '@core/enums';
-import { Monitoring, MonitoringInterface, TransactionInterface } from '@strategies/mysql';
+import { Monitoring, MonitoringInterface, TransactionInterface, TriggerAltererInterface } from '@strategies/mysql';
 import {
 	AggregateQueriesInterface,
 	DeleteQueriesInterface,
@@ -65,6 +67,7 @@ import {
 	UpdateQueriesInterface,
 	ViewQueriesInterface
 } from '@strategies/common';
+import { DropTriggerInterface } from '@core/interfaces/triggers-manager';
 
 export class DataSourceMySql extends BaseQueries implements DataSourceInterface<DatabasesTypes.MYSQL> {
 	client: Connection;
@@ -78,6 +81,7 @@ export class DataSourceMySql extends BaseQueries implements DataSourceInterface<
 	private _aggregateQueries: AggregateQueriesInterface;
 	private _structureQueries: StructureQueriesInterface;
 	private _viewQueries: ViewQueriesInterface;
+	private _triggerAlterer: TriggerAltererInterface;
 	private _transaction: TransactionInterface;
 	private _monitoring: MonitoringInterface<DatabasesTypes.MYSQL>;
 
@@ -93,6 +97,7 @@ export class DataSourceMySql extends BaseQueries implements DataSourceInterface<
 		this._aggregateQueries = new AggregateQueries();
 		this._structureQueries = new StructureQueries();
 		this._viewQueries = new ViewQueries();
+		this._triggerAlterer = new TriggerAlterer();
 		this._transaction = new Transaction();
 		this._monitoring = new Monitoring();
 	}
@@ -330,5 +335,13 @@ export class DataSourceMySql extends BaseQueries implements DataSourceInterface<
 
 	async getWaitingConnections(dataSource: DataSourceInterface<DatabasesTypes.MYSQL>): Promise<WaitingConnectionsInterface> {
 		return this._monitoring.getWaitingConnections(dataSource);
+	}
+
+	createTrigger(trigger: TriggerInterface<DatabasesTypes.MYSQL>): string {
+		return this._triggerAlterer.createTrigger(trigger);
+	}
+
+	dropTrigger(parameters: DropTriggerInterface<DatabasesTypes.MYSQL>): string {
+		return this._triggerAlterer.dropTrigger(parameters);
 	}
 }

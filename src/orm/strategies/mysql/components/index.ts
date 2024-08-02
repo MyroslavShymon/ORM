@@ -4,3 +4,4 @@ export * from './migration-service';
 export * from './querying';
 export * from './transaction';
 export * from './monitoring';
+export * from './trigger-alterer';

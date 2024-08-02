@@ -7,3 +7,4 @@ export * from './cache';
 export * from './event-manager';
 export * from './transaction';
 export * from './trigger-creator';
+export * from './triggers-manager';
