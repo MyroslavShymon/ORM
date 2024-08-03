@@ -6,3 +6,4 @@ export * from './foreign-key';
 export * from './primary-generated-column';
 export * from './relations';
 export * from './trigger';
+export * from './index/index';

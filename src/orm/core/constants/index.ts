@@ -23,7 +23,8 @@ export const constants = {
 		oneToMany: 'one-to-many',
 		manyToMany: 'many-to-many',
 		triggers: 'triggers',
-		functions: 'functions'
+		functions: 'functions',
+		indexes: 'indexes'
 	},
 
 	errors: {
