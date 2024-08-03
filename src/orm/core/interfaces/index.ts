@@ -10,3 +10,4 @@ export * from './migration-service';
 export * from './sql-client.interface';
 export * from './create-table';
 export * from './triggers-manager';
+export * from './indexes-manager';

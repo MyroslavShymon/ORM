@@ -8,6 +8,7 @@ import {
 	CacheInterface,
 	DataSourceContextInterface,
 	EventManagerInterface,
+	IndexManagerInterface,
 	IngotCreatorInterface,
 	MigrationManagerInterface,
 	QueryBuilderInterface,
@@ -22,6 +23,7 @@ import { TransactionManager } from '@context/transaction';
 import { LoggerInterface, MonitoringInterface } from '../monitoring';
 import { TriggersManager } from '@context/triggers-manager';
 import { IndexCreator, TriggerCreator } from '@context/creators';
+import { IndexesManager } from '@context/indexes-manager';
 
 class DataSourceContext<DT extends DatabasesTypes> implements DataSourceContextInterface<DT> {
 	private _dataSource: DataSourceInterface<DT>;
@@ -113,6 +115,10 @@ class DataSourceContext<DT extends DatabasesTypes> implements DataSourceContextI
 
 	get triggerManager(): TriggerManagerInterface<DT> {
 		return new TriggersManager<DT>(this._dataSource);
+	}
+
+	get indexManager(): IndexManagerInterface<DT> {
+		return new IndexesManager<DT>(this._dataSource);
 	}
 }
 

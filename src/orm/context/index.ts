@@ -10,3 +10,5 @@ export * from './cache';
 export * from './events';
 export * from './transaction';
 export * from './creators';
+export * from './indexes-manager';
+export * from './triggers-manager';

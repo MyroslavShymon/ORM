@@ -8,6 +8,7 @@ import {
 	CacheInterface,
 	DataSourceContextInterface,
 	EventManagerInterface,
+	IndexManagerInterface,
 	QueryBuilderInterface,
 	TableCreatorInterface,
 	TableManipulationInterface,
@@ -173,6 +174,10 @@ class DatabaseManager<DT extends DatabasesTypes> implements DatabaseManagerInter
 
 	get triggerManager(): TriggerManagerInterface<DT> {
 		return this._dataSource.triggerManager;
+	}
+
+	get indexManager(): IndexManagerInterface<DT> {
+		return this._dataSource.indexManager;
 	}
 
 	get logger(): LoggerInterface {

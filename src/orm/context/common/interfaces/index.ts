@@ -8,3 +8,4 @@ export * from './event-manager';
 export * from './transaction';
 export * from './triggers-manager';
 export * from './creator';
+export * from './indexes-manager';

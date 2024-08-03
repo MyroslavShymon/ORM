@@ -1,6 +1,7 @@
 import { ConnectionData } from '@core/types';
 import {
 	EventManagerInterface,
+	IndexManagerInterface,
 	QueryBuilderInterface,
 	TableCreatorInterface,
 	TableManipulationInterface,
@@ -29,6 +30,8 @@ export interface DatabaseManagerInterface<DT extends DatabasesTypes> {
 	get tableManipulation(): TableManipulationInterface<DT>;
 
 	get triggerManager(): TriggerManagerInterface<DT>;
+
+	get indexManager(): IndexManagerInterface<DT>;
 
 	transaction(callback: (trx: DatabaseManagerInterface<DT>) => Promise<void>): Promise<void>;
 }

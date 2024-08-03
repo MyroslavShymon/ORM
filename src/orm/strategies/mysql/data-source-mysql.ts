@@ -20,9 +20,11 @@ import {
 	DeleteUniqueFromColumnInterface,
 	DropConstraintInterface,
 	DropDefaultValueInterface,
+	DropIndexInterface,
 	DropNotNullFromColumnInterface,
 	DropTableInterface,
 	GetCurrentDatabaseIngotOptionsInterface,
+	IndexInterface,
 	InitCurrentDatabaseIngotOptionsInterface,
 	RenameColumnInterface,
 	RenameTableInterface,
@@ -34,6 +36,7 @@ import {
 	ActiveConnectionsInterface,
 	CpuUsageInterface,
 	DiskUsageInterface,
+	IndexAltererInterface,
 	MemoryUsageInterface,
 	MigrationServiceInterface,
 	TableAltererInterface,
@@ -43,6 +46,7 @@ import {
 import {
 	AggregateQueries,
 	DeleteQueries,
+	IndexAlterer,
 	InsertQueries,
 	MigrationService,
 	SelectQueries,
@@ -82,6 +86,7 @@ export class DataSourceMySql extends BaseQueries implements DataSourceInterface<
 	private _structureQueries: StructureQueriesInterface;
 	private _viewQueries: ViewQueriesInterface;
 	private _triggerAlterer: TriggerAltererInterface;
+	private _indexAlterer: IndexAltererInterface;
 	private _transaction: TransactionInterface;
 	private _monitoring: MonitoringInterface<DatabasesTypes.MYSQL>;
 
@@ -98,6 +103,7 @@ export class DataSourceMySql extends BaseQueries implements DataSourceInterface<
 		this._structureQueries = new StructureQueries();
 		this._viewQueries = new ViewQueries();
 		this._triggerAlterer = new TriggerAlterer();
+		this._indexAlterer = new IndexAlterer();
 		this._transaction = new Transaction();
 		this._monitoring = new Monitoring();
 	}
@@ -337,11 +343,21 @@ export class DataSourceMySql extends BaseQueries implements DataSourceInterface<
 		return this._monitoring.getWaitingConnections(dataSource);
 	}
 
+	//Triggers
 	createTrigger(trigger: TriggerInterface<DatabasesTypes.MYSQL>): string {
 		return this._triggerAlterer.createTrigger(trigger);
 	}
 
 	dropTrigger(parameters: DropTriggerInterface<DatabasesTypes.MYSQL>): string {
 		return this._triggerAlterer.dropTrigger(parameters);
+	}
+
+	//Indexes
+	createIndex(index: IndexInterface<DatabasesTypes.MYSQL>): string {
+		return this._indexAlterer.createIndex(index);
+	}
+
+	dropIndex(parameters: DropIndexInterface<DatabasesTypes.MYSQL>): string {
+		return this._indexAlterer.dropIndex(parameters);
 	}
 }

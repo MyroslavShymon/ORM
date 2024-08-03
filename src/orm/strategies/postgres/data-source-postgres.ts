@@ -20,9 +20,11 @@ import {
 	DeleteUniqueFromColumnInterface,
 	DropConstraintInterface,
 	DropDefaultValueInterface,
+	DropIndexInterface,
 	DropNotNullFromColumnInterface,
 	DropTableInterface,
 	GetCurrentDatabaseIngotOptionsInterface,
+	IndexInterface,
 	InitCurrentDatabaseIngotOptionsInterface,
 	RenameColumnInterface,
 	RenameTableInterface,
@@ -35,6 +37,8 @@ import {
 	AggregateQueries,
 	CpuUsageInterface,
 	DiskUsageInterface,
+	IndexAlterer,
+	IndexAltererInterface,
 	MemoryUsageInterface,
 	MigrationServiceInterface,
 	Monitoring,
@@ -86,6 +90,7 @@ export class DataSourcePostgres extends BaseQueries implements DataSourceInterfa
 	private _structureQueries: StructureQueriesInterface;
 	private _viewQueries: ViewQueriesInterface;
 	private _triggerAlterer: TriggerAltererInterface;
+	private _indexAlterer: IndexAltererInterface;
 	private _transaction: TransactionInterface;
 	private _monitoring: MonitoringInterface<DatabasesTypes.POSTGRES>;
 
@@ -102,6 +107,7 @@ export class DataSourcePostgres extends BaseQueries implements DataSourceInterfa
 		this._structureQueries = new StructureQueries();
 		this._viewQueries = new ViewQueries();
 		this._triggerAlterer = new TriggerAlterer();
+		this._indexAlterer = new IndexAlterer();
 		this._transaction = new Transaction();
 		this._monitoring = new Monitoring();
 	}
@@ -343,11 +349,21 @@ export class DataSourcePostgres extends BaseQueries implements DataSourceInterfa
 		return this._monitoring.getWaitingConnections(dataSource);
 	}
 
+	//Triggers
 	createTrigger(trigger: TriggerInterface<DatabasesTypes.POSTGRES>): string {
 		return this._triggerAlterer.createTrigger(trigger);
 	}
 
 	dropTrigger(parameters: DropTriggerInterface<DatabasesTypes.POSTGRES>): string {
 		return this._triggerAlterer.dropTrigger(parameters);
+	}
+
+	//Indexes
+	createIndex(index: IndexInterface<DatabasesTypes.POSTGRES>): string {
+		return this._indexAlterer.createIndex(index);
+	}
+
+	dropIndex(parameters: DropIndexInterface<DatabasesTypes.POSTGRES>): string {
+		return this._indexAlterer.dropIndex(parameters);
 	}
 }

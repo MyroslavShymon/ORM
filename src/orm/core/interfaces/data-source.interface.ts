@@ -40,8 +40,9 @@ import {
 	MemoryUsageType,
 	WaitingConnectionsType
 } from '@strategies/common';
-import { TriggerInterface } from '@core/interfaces/decorators';
+import { IndexInterface, TriggerInterface } from '@core/interfaces/decorators';
 import { DropTriggerInterface } from '@core/interfaces/triggers-manager';
+import { DropIndexInterface } from '@core/interfaces/indexes-manager';
 
 export interface DataSourceInterface<DT extends DatabasesTypes> {
 	client: SqlClientInterface;
@@ -174,4 +175,9 @@ export interface DataSourceInterface<DT extends DatabasesTypes> {
 	createTrigger(trigger: TriggerInterface<DT>): string;
 
 	dropTrigger(parameters: DropTriggerInterface<DT>): string;
+
+	//Index
+	createIndex(index: IndexInterface<DT>): string;
+
+	dropIndex(parameters: DropIndexInterface<DT>): string;
 }
