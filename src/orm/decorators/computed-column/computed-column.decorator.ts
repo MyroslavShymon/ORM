@@ -8,7 +8,7 @@ export function ComputedColumn({ name, calculate, dataType }: ComputedColumnDeco
 			name = propertyKey;
 		}
 
-		const columns: ComputedColumnMetadataInterface[] = Reflect.getMetadata('computed-columns', target) || [];
+		const columns: ComputedColumnMetadataInterface[] = Reflect.getMetadata(constants.decoratorsMetadata.computedColumns, target) || [];
 		columns.push({ name, dataType, calculate, propertyKey });
 		Reflect.defineMetadata(constants.decoratorsMetadata.computedColumns, columns, target);
 	};

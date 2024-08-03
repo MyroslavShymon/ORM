@@ -1,5 +1,6 @@
 import 'reflect-metadata';
 import { ColumnDecoratorInterface, ColumnMetadataInterface, ColumnOptionsDecoratorInterface } from '@decorators/index';
+import { constants } from '@core/constants';
 
 export function Column(decoratorParams?: ColumnDecoratorInterface) {
 	return function(target: any, propertyKey: string) {
@@ -11,7 +12,7 @@ export function Column(decoratorParams?: ColumnDecoratorInterface) {
 			options = { ...options, ...decoratorParams.options };
 		}
 
-		const columns: ColumnMetadataInterface[] = Reflect.getMetadata('columns', target) || [];
+		const columns: ColumnMetadataInterface[] = Reflect.getMetadata(constants.decoratorsMetadata.columns, target) || [];
 
 		columns.forEach(column => {
 			if (!column.options?.dataType) {
@@ -20,6 +21,6 @@ export function Column(decoratorParams?: ColumnDecoratorInterface) {
 		});
 
 		columns.push({ name, options, propertyKey });
-		Reflect.defineMetadata('columns', columns, target);
+		Reflect.defineMetadata(constants.decoratorsMetadata.columns, columns, target);
 	};
 }
