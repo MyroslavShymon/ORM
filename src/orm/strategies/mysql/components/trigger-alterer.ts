@@ -10,12 +10,12 @@ export class TriggerAlterer implements TriggerAltererInterface {
 		   ${trigger.timing} ${trigger.event} ON ${trigger.tableName}
 		   FOR EACH ROW
 		   BEGIN
-			${trigger.function}
+			${trigger.triggerFunction}
 		   END;
-	 `;
+	 ` + '\n';
 	}
 
 	dropTrigger(parameters: DropTriggerInterface<DatabasesTypes.MYSQL>): string {
-		return `DROP TRIGGER IF EXISTS ${parameters.triggerName};`;
+		return `DROP TRIGGER IF EXISTS ${parameters.triggerName};` + '\n';
 	}
 }

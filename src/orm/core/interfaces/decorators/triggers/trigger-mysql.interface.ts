@@ -1,10 +1,4 @@
-import { TriggerEventsTypes, TriggerTimingsTypes } from '@core/enums';
+import { BaseTriggerInterface } from '@core/interfaces';
 
-export interface TriggerMysqlInterface {
-	id?: string,
-	name: string,
-	timing: TriggerTimingsTypes,
-	event: TriggerEventsTypes,
-	tableName: string
-	function: string
+export interface TriggerMysqlInterface extends BaseTriggerInterface {
 }

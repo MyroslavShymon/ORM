@@ -6,13 +6,13 @@ export function Trigger(decoratorParams: TriggerDecoratorInterface) {
 	return function(constructor: Function) {
 		let tableName = decoratorParams.tableName || constructor.name;
 		let triggers: TriggerMetadataInterface[] = Reflect.getMetadata(constants.decoratorsMetadata.triggers, constructor.prototype) || [];
-		if (!decoratorParams.function) {
+		if (!decoratorParams.triggerFunction) {
 			if (!decoratorParams.functionName || !decoratorParams.functions) {
 				throw Error('Ви не вказали функцію або не вказали імені для функції або не вказали клас з функціями!');
 			}
 
 			if (decoratorParams.functions) {
-				decoratorParams.function = getFunction(decoratorParams);
+				decoratorParams.triggerFunction = getFunction(decoratorParams);
 			}
 		}
 
@@ -26,7 +26,7 @@ export function Trigger(decoratorParams: TriggerDecoratorInterface) {
 			tableName,
 			timing,
 			triggerFunctionName,
-			function: decoratorParams.function
+			triggerFunction: decoratorParams.triggerFunction
 		});
 		Reflect.defineMetadata(constants.decoratorsMetadata.triggers, triggers, constructor.prototype);
 	};

@@ -229,7 +229,7 @@ export class FileStructureManager {
 				fieldType: { type: 'string' }
 			},
 			{
-				fieldName: 'function',
+				fieldName: 'triggerFunction',
 				isFieldOptional: true,
 				fieldType: { type: 'string' }
 			},

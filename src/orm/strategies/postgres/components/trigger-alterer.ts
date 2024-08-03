@@ -9,7 +9,7 @@ export class TriggerAlterer implements TriggerAltererInterface {
 			  CREATE OR REPLACE FUNCTION ${trigger.triggerFunctionName}()
 			  RETURNS TRIGGER AS $$
 			  BEGIN
-			   ${trigger.function}
+			   ${trigger.triggerFunction}
 			  END;
 			  $$ LANGUAGE plpgsql;
 		
@@ -17,10 +17,10 @@ export class TriggerAlterer implements TriggerAltererInterface {
 			  ${trigger.timing} ${trigger.event} ON ${trigger.tableName}
 			  FOR EACH ROW
 			  EXECUTE FUNCTION ${trigger.triggerFunctionName}();
-	 `;
+	 ` + '\n';
 	}
 
 	dropTrigger(parameters: DropTriggerInterface<DatabasesTypes.POSTGRES>): string {
-		return `DROP TRIGGER IF EXISTS ${parameters.triggerName} ON ${parameters.tableName};`;
+		return `DROP TRIGGER IF EXISTS ${parameters.triggerName} ON ${parameters.tableName};` + '\n';
 	}
 }

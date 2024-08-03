@@ -1,11 +1,5 @@
-import { TriggerEventsTypes, TriggerTimingsTypes } from '@core/enums';
+import { BaseTriggerInterface } from '@core/interfaces';
 
-export interface TriggerPostgresInterface {
-	id?: string,
-	name: string,
-	timing: TriggerTimingsTypes,
-	event: TriggerEventsTypes,
-	tableName: string
-	function: string
-	triggerFunctionName: string
+export interface TriggerPostgresInterface extends BaseTriggerInterface {
+	triggerFunctionName: string;
 }

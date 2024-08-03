@@ -5,7 +5,7 @@ export interface TriggerDecoratorInterface {
 	name: string,
 	timing: TriggerTimingsTypes,
 	event: TriggerEventsTypes,
-	function?: string
+	triggerFunction?: string
 	tableName?: string
 	functionName?: string
 	functions?: ClassInterface
