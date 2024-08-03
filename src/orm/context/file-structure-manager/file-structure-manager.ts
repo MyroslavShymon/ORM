@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { DatabasesTypes, TriggerTimingsTypes } from '@core/enums';
+import { DatabasesTypes } from '@core/enums';
 import {
 	OptionsToCreateFieldInterface,
 	TypescriptCodeGenerator,
@@ -22,6 +22,8 @@ export class FileStructureManager {
 		this._generateFloatDecoratorInterface(connectionData);
 		this._generateNumericDecoratorInterface(connectionData);
 		this._generateTriggerDecoratorInterface(connectionData);
+		this._generateIndexOptionsDecoratorInterface(connectionData);
+		this._generateIndexDecoratorInterface(connectionData);
 	}
 
 	private static _generateNumericDecoratorInterface(connectionData: ConnectionData) {
@@ -212,6 +214,124 @@ export class FileStructureManager {
 		);
 	}
 
+	private static _generateIndexDecoratorInterface(connectionData: ConnectionData) {
+		const fileName = 'index-decorator.interface.d.ts';
+		const filePath = path.join(__dirname, '../..', '/decorators/index/interfaces', fileName);
+
+		const [indexOptionsDecoratorInterfaceImports, indexOptionsDecoratorInterfaceTypeNode] =
+			this._typescriptCodeGenerator.formImport('IndexOptionsDecoratorInterface', './index-options-decorator.interface');
+
+
+		const interfaceFields: OptionsToCreateFieldInterface[] = [
+			{
+				fieldName: 'indexName',
+				fieldType: { type: 'string' }
+			},
+			{
+				fieldName: 'columns',
+				fieldType: { type: 'string', isArray: true }
+			},
+			{
+				fieldName: 'tableName',
+				isFieldOptional: true,
+				fieldType: { type: 'string' }
+			},
+			{
+				fieldName: 'options',
+				isFieldOptional: true,
+				fieldType: indexOptionsDecoratorInterfaceTypeNode
+			}
+		];
+
+		this._typescriptCodeGenerator.generateInterfaceFile(
+			fileName,
+			filePath,
+			'IndexDecoratorInterface',
+			interfaceFields,
+			[indexOptionsDecoratorInterfaceImports]
+		);
+	}
+
+	private static _generateIndexOptionsDecoratorInterface(connectionData: ConnectionData) {
+		const fileName = 'index-options-decorator.interface.d.ts';
+		const filePath = path.join(__dirname, '../..', '/decorators/index/interfaces', fileName);
+
+		const interfaceFields: OptionsToCreateFieldInterface[] = [
+			{
+				fieldName: 'isUnique',
+				isFieldOptional: true,
+				fieldType: { type: 'boolean' }
+			},
+			{
+				fieldName: 'included',
+				isFieldOptional: true,
+				fieldType: { type: 'string', isArray: true }
+			}
+		];
+
+		if (connectionData.type === DatabasesTypes.POSTGRES) {
+			interfaceFields.push(
+				{
+					fieldName: 'isHash',
+					isFieldOptional: true,
+					fieldType: { type: 'boolean' }
+				},
+				{
+					fieldName: 'isGist',
+					isFieldOptional: true,
+					fieldType: { type: 'boolean' }
+				},
+				{
+					fieldName: 'isGin',
+					isFieldOptional: true,
+					fieldType: { type: 'boolean' }
+				},
+				{
+					fieldName: 'isSpgist',
+					isFieldOptional: true,
+					fieldType: { type: 'boolean' }
+				},
+				{
+					fieldName: 'isBrin',
+					isFieldOptional: true,
+					fieldType: { type: 'boolean' }
+				},
+				{
+					fieldName: 'bloomWith',
+					isFieldOptional: true,
+					fieldType: { type: 'string' }
+				},
+				{
+					fieldName: 'condition',
+					isFieldOptional: true,
+					fieldType: { type: 'string' }
+				}
+			);
+		}
+
+		if (connectionData.type === DatabasesTypes.MYSQL) {
+			interfaceFields.push(
+				{
+					fieldName: 'isFulltext',
+					isFieldOptional: true,
+					fieldType: { type: 'boolean' }
+				},
+				{
+					fieldName: 'isSpatial',
+					isFieldOptional: true,
+					fieldType: { type: 'boolean' }
+				}
+			);
+		}
+
+		this._typescriptCodeGenerator.generateInterfaceFile(
+			fileName,
+			filePath,
+			'IndexOptionsDecoratorInterface',
+			interfaceFields
+		);
+	}
+
 	private static _generateTriggerDecoratorInterface(connectionData: ConnectionData) {
 		const fileName = 'trigger-decorator.interface.d.ts';
 		const filePath = path.join(__dirname, '../..', '/decorators/trigger/interfaces', fileName);
@@ -223,7 +343,7 @@ export class FileStructureManager {
 		const [classInterfaceImports, classInterfaceTypeNode] =
 			this._typescriptCodeGenerator.formImport('ClassInterface', '../../../core/interfaces/class.interface');
 
-		const interfaceFields = [
+		const interfaceFields: OptionsToCreateFieldInterface[] = [
 			{
 				fieldName: 'name',
 				fieldType: { type: 'string' }

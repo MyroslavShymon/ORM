@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { IndexDecoratorInterface } from '@decorators/index/interfaces';
+import { IndexDecoratorInterface, IndexMetadataInterface } from '@decorators/index/interfaces';
 import { constants } from '@core/constants';
 
 export function Index({ tableName, indexName, columns, options }: IndexDecoratorInterface) {
@@ -10,12 +10,10 @@ export function Index({ tableName, indexName, columns, options }: IndexDecorator
 			);
 			tableName = constructor.name;
 		}
+		let indexes: IndexMetadataInterface[] = Reflect.getMetadata(constants.decoratorsMetadata.indexes, constructor.prototype) || [];
 
-		Reflect.defineMetadata(constants.decoratorsMetadata.indexes, {
-			tableName,
-			indexName,
-			columns,
-			options
-		}, constructor.prototype);
+		indexes.push({ tableName, indexName, columns, options });
+
+		Reflect.defineMetadata(constants.decoratorsMetadata.indexes, indexes, constructor.prototype);
 	};
 }

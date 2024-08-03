@@ -1,4 +1,4 @@
-import { IndexOptionsDecoratorInterface } from '@decorators/index/interfaces/index-options-decorator.interface';
+import { IndexOptionsDecoratorInterface } from '@decorators/index';
 
 export interface IndexDecoratorInterface {
 	indexName: string;

@@ -1,6 +1,7 @@
 import {
 	ClassInterface,
 	ForeignKeyInterface,
+	IndexInterface,
 	ManyToManyInterface,
 	OneToManyInterface,
 	OneToOneInterface,
@@ -37,13 +38,15 @@ export class DatabaseStateBuilder<DT extends DatabasesTypes> implements Database
 				= Reflect.getMetadata(constants.decoratorsMetadata.oneToMany, model.prototype) || [];
 			const manyToMany: ManyToManyInterface[]
 				= Reflect.getMetadata(constants.decoratorsMetadata.manyToMany, model.prototype) || [];
-			const indexes: any[]
+			const indexes: IndexInterface<DT>[]
 				= Reflect.getMetadata(constants.decoratorsMetadata.indexes, model.prototype) || [];
+
 
 			const preparedModelIndexes = indexes.map(index => index.tableName !== table.name ? {
 				...index,
 				tableName: table.name
 			} : index);
+			console.log('preparedModelIndexespreparedModelIndexes', preparedModelIndexes);
 
 			let columns = [];
 			if (metadataColumns) {
