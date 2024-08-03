@@ -42,15 +42,14 @@ export abstract class IngotCreator<DT extends DatabasesTypes, T extends IngotInt
 		const currentItemsIngot = currentIngot[this.getMetadataKey()] as unknown as T[] || [];
 
 		const newItems = this._getNewItems(preparedItems, currentItemsIngot);
-
 		const commonItems = this._getCommonItems(preparedItems, currentItemsIngot);
 
 		return [...commonItems, ...newItems];
 	}
 
 	private _getPreparedItems(models: ClassInterface[]): T[] {
-		const preparedItems = [];
-		for (let model of models) {
+		const preparedItems: T[] = [];
+		for (const model of models) {
 			const table: TableInterface = Reflect.getMetadata(constants.decoratorsMetadata.table, model.prototype);
 			const items: T[] = Reflect.getMetadata(this.getMetadataKey(), model.prototype) || [];
 
@@ -66,23 +65,24 @@ export abstract class IngotCreator<DT extends DatabasesTypes, T extends IngotInt
 	}
 
 	private _getNewItems(preparedItems: T[], currentItemsIngot: T[]): T[] {
+		const existingNames = new Set(currentItemsIngot.map(item => item.indexName)); // або item.name, якщо у вас є indexName
 		return preparedItems
-			.filter(preparedItem =>
-				!currentItemsIngot.some(currentItem => currentItem.name === preparedItem.name)
-			)
-			.map(newItem => ({ ...newItem, id: uuidv4() }));
+			.filter(preparedItem => !existingNames.has(preparedItem.indexName)) // або preparedItem.name
+			.map(newItem => ({
+				...newItem,
+				id: uuidv4() // Генеруємо новий id для нових елементів
+			}));
 	}
 
 	private _getCommonItems(preparedItems: T[], currentItemsIngot: T[]): T[] {
+		const currentItemsMap = new Map(currentItemsIngot.map(item => [item.indexName, item])); // або item.name
 		return preparedItems
-			.filter(preparedItem =>
-				currentItemsIngot.some(currentItem => preparedItem.name === currentItem.name)
-			)
+			.filter(preparedItem => currentItemsMap.has(preparedItem.indexName)) // або preparedItem.name
 			.map(preparedItem => {
-				const currentItem = currentItemsIngot.find(currentItem => preparedItem.name === currentItem.name);
+				const currentItem = currentItemsMap.get(preparedItem.indexName); // або item.name
 				return {
 					...preparedItem,
-					id: currentItem?.id
+					id: currentItem?.id // Залишаємо id як в існуючого елемента
 				};
 			});
 	}
