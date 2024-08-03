@@ -2,17 +2,16 @@ import { ConnectionData } from '@core/types';
 import {
 	CacheInterface,
 	EventManagerInterface,
-	IndexCreatorInterface,
+	IngotCreatorInterface,
 	MigrationManagerInterface,
 	QueryBuilderInterface,
 	TableCreatorInterface,
 	TableManipulationInterface,
 	TransactionManagerInterface,
-	TriggerCreatorInterface,
 	TriggerManagerInterface
 } from '@context/common';
 import { DatabasesTypes } from '@core/enums';
-import { DataSourceInterface } from '@core/interfaces';
+import { DataSourceInterface, IndexInterface, TriggerInterface } from '@core/interfaces';
 import { LoggerInterface, MonitoringInterface } from '../../../monitoring';
 
 export interface DataSourceContextInterface<DT extends DatabasesTypes> {
@@ -28,8 +27,8 @@ export interface DataSourceContextInterface<DT extends DatabasesTypes> {
 
 	tableManipulation: TableManipulationInterface<DT>;
 	tableCreator: TableCreatorInterface<DT>;
-	triggerCreator: TriggerCreatorInterface;
-	indexCreator: IndexCreatorInterface<DT>;
+	triggerCreator: IngotCreatorInterface<TriggerInterface<DT>>;
+	indexCreator: IngotCreatorInterface<IndexInterface<DT>>;
 	migrationManager: MigrationManagerInterface<DT>;
 	eventManager: EventManagerInterface;
 	transactionManager: TransactionManagerInterface;

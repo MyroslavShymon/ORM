@@ -89,8 +89,8 @@ class DatabaseManager<DT extends DatabasesTypes> implements DatabaseManagerInter
 			}
 
 			const tablesIngot = await this._dataSource.tableCreator.createIngotOfTables(this._connectionData);
-			const triggersIngot = await this._dataSource.triggerCreator.createIngotOfTrigger(this._connectionData);
-			const indexesIngot = await this._dataSource.indexCreator.createIngotOfIndex(this._connectionData);
+			const triggersIngot = await this._dataSource.triggerCreator.createIngot(this._connectionData);
+			const indexesIngot = await this._dataSource.indexCreator.createIngot(this._connectionData);
 
 			if (!tablesIngot.length) {
 				const results = await this._dataSource.getCurrentTime();

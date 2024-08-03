@@ -1,6 +1,6 @@
 import { TableManipulation } from '@context/table-manipulation';
 import { TableCreator } from '@context/table-creator/table-creator';
-import { DataSourceInterface, SqlClientInterface } from '@core/interfaces';
+import { DataSourceInterface, IndexInterface, SqlClientInterface, TriggerInterface } from '@core/interfaces';
 import { ConnectionData } from '@core/types';
 import { MigrationManager } from '@context/migration-manager';
 import { QueryBuilder } from '@context/query-builder';
@@ -8,22 +8,20 @@ import {
 	CacheInterface,
 	DataSourceContextInterface,
 	EventManagerInterface,
-	IndexCreatorInterface,
+	IngotCreatorInterface,
 	MigrationManagerInterface,
 	QueryBuilderInterface,
 	TableCreatorInterface,
 	TableManipulationInterface,
 	TransactionManagerInterface,
-	TriggerCreatorInterface,
 	TriggerManagerInterface
 } from '@context/common';
 import { DatabasesTypes } from '@core/enums';
 import { EventManager } from '@context/events';
 import { TransactionManager } from '@context/transaction';
 import { LoggerInterface, MonitoringInterface } from '../monitoring';
-import { TriggerCreator } from 'orm/context/trigger-creator';
 import { TriggersManager } from '@context/triggers-manager';
-import { IndexCreator } from '@context/index-creator';
+import { IndexCreator, TriggerCreator } from '@context/creators';
 
 class DataSourceContext<DT extends DatabasesTypes> implements DataSourceContextInterface<DT> {
 	private _dataSource: DataSourceInterface<DT>;
@@ -93,11 +91,11 @@ class DataSourceContext<DT extends DatabasesTypes> implements DataSourceContextI
 		return new TableCreator<DT>(this._dataSource);
 	}
 
-	get triggerCreator(): TriggerCreatorInterface {
+	get triggerCreator(): IngotCreatorInterface<TriggerInterface<DT>> {
 		return new TriggerCreator<DT>(this._dataSource);
 	}
 
-	get indexCreator(): IndexCreatorInterface<DT> {
+	get indexCreator(): IngotCreatorInterface<IndexInterface<DT>> {
 		return new IndexCreator<DT>(this._dataSource);
 	}
 
