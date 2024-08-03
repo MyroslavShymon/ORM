@@ -8,6 +8,7 @@ import {
 	CacheInterface,
 	DataSourceContextInterface,
 	EventManagerInterface,
+	IndexCreatorInterface,
 	MigrationManagerInterface,
 	QueryBuilderInterface,
 	TableCreatorInterface,
@@ -20,8 +21,9 @@ import { DatabasesTypes } from '@core/enums';
 import { EventManager } from '@context/events';
 import { TransactionManager } from '@context/transaction';
 import { LoggerInterface, MonitoringInterface } from '../monitoring';
-import { TriggerCreator } from '@context/triger-creator';
+import { TriggerCreator } from 'orm/context/trigger-creator';
 import { TriggersManager } from '@context/triggers-manager';
+import { IndexCreator } from '@context/index-creator';
 
 class DataSourceContext<DT extends DatabasesTypes> implements DataSourceContextInterface<DT> {
 	private _dataSource: DataSourceInterface<DT>;
@@ -93,6 +95,10 @@ class DataSourceContext<DT extends DatabasesTypes> implements DataSourceContextI
 
 	get triggerCreator(): TriggerCreatorInterface {
 		return new TriggerCreator<DT>(this._dataSource);
+	}
+
+	get indexCreator(): IndexCreatorInterface<DT> {
+		return new IndexCreator<DT>(this._dataSource);
 	}
 
 	get migrationManager(): MigrationManagerInterface<DT> {

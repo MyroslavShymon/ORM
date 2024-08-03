@@ -63,7 +63,7 @@ class DatabaseManager<DT extends DatabasesTypes> implements DatabaseManagerInter
 		try {
 			FileStructureManager.manage(this._connectionData);
 
-			const databaseIngot: DatabaseIngotInterface<DT> = { tables: [], triggers: [] };
+			const databaseIngot: DatabaseIngotInterface<DT> = { tables: [], triggers: [], indexes: [] };
 
 			await this._dataSource.connectDatabase(this._connectionData);
 
@@ -90,6 +90,7 @@ class DatabaseManager<DT extends DatabasesTypes> implements DatabaseManagerInter
 
 			const tablesIngot = await this._dataSource.tableCreator.createIngotOfTables(this._connectionData);
 			const triggersIngot = await this._dataSource.triggerCreator.createIngotOfTrigger(this._connectionData);
+			const indexesIngot = await this._dataSource.indexCreator.createIngotOfIndex(this._connectionData);
 
 			if (!tablesIngot.length) {
 				const results = await this._dataSource.getCurrentTime();
@@ -98,6 +99,7 @@ class DatabaseManager<DT extends DatabasesTypes> implements DatabaseManagerInter
 
 			databaseIngot.tables = tablesIngot || [];
 			databaseIngot.triggers = triggersIngot || [];
+			databaseIngot.indexes = indexesIngot || [];
 
 			await this._dataSource.migrationManager.syncDatabaseIngot({
 				databaseName: this._connectionData.database,

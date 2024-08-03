@@ -2,6 +2,7 @@ import { ConnectionData } from '@core/types';
 import {
 	CacheInterface,
 	EventManagerInterface,
+	IndexCreatorInterface,
 	MigrationManagerInterface,
 	QueryBuilderInterface,
 	TableCreatorInterface,
@@ -28,6 +29,7 @@ export interface DataSourceContextInterface<DT extends DatabasesTypes> {
 	tableManipulation: TableManipulationInterface<DT>;
 	tableCreator: TableCreatorInterface<DT>;
 	triggerCreator: TriggerCreatorInterface;
+	indexCreator: IndexCreatorInterface<DT>;
 	migrationManager: MigrationManagerInterface<DT>;
 	eventManager: EventManagerInterface;
 	transactionManager: TransactionManagerInterface;
