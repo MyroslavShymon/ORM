@@ -90,7 +90,7 @@ END;
 
 		const initCurrentDatabaseIngotQuery = `
             INSERT INTO ${databaseName}.${tableName} (name, ingot)
-            VALUES ('${constants.currentDatabaseIngot}', '${JSON.stringify(databaseIngot)}');
+            VALUES ('${constants.currentDatabaseIngot}', '${JSON.stringify(databaseIngot).replace(/'/g, '\'\'')}');
 		`;
 
 		await dataSource.client.query(initCurrentDatabaseIngotQuery);
@@ -108,7 +108,7 @@ END;
 
 		const syncDatabaseIngotQuery = `
             UPDATE ${databaseName}.${tableName}
-            SET ingot = '${JSON.stringify(databaseIngot)}'
+            SET ingot = '${JSON.stringify(databaseIngot).replace(/'/g, '\'\'')}'
             WHERE name = '${constants.currentDatabaseIngot}';
 		`;
 
@@ -123,7 +123,7 @@ END;
 		if (!databaseName) {
 			throw new Error('Не вказано ім\'я бази даних');
 		}
-		
+
 		const getCurrentDatabaseIngotQuery = `SELECT ingot
                                               FROM ${databaseName}.${tableName}
                                               WHERE name = 'current_database_ingot'`;

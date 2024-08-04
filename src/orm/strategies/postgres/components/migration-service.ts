@@ -85,7 +85,7 @@ export class MigrationService implements MigrationServiceInterface {
 
 		const initCurrentDatabaseIngotQuery = `
             INSERT INTO ${tableSchema}.${tableName} (name, ingot)
-            VALUES ('${constants.currentDatabaseIngot}', '${JSON.stringify(databaseIngot)}');
+            VALUES ('${constants.currentDatabaseIngot}', '${JSON.stringify(databaseIngot).replace(/'/g, '\'\'')}');
 		`;
 
 		await dataSource.client.query(initCurrentDatabaseIngotQuery);
@@ -105,7 +105,7 @@ export class MigrationService implements MigrationServiceInterface {
 
 		const syncDatabaseIngotQuery = `
             UPDATE ${tableSchema}.${tableName}
-            SET ingot = '${JSON.stringify(databaseIngot)}'
+            SET ingot = '${JSON.stringify(databaseIngot).replace(/'/g, '\'\'')}'
             WHERE name = '${constants.currentDatabaseIngot}';
 		`;
 

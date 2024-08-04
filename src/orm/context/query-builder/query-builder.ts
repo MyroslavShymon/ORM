@@ -106,7 +106,6 @@ export class QueryBuilder<T, DT extends DatabasesTypes> implements QueryBuilderI
 		Array.isArray(condition.value) ?
 			this.parameters.push(...condition.value)
 			: this.parameters.push(condition.value);
-		;
 		this.selectQueryBuilder.rightJoin(table, condition);
 		return this;
 	}
@@ -247,7 +246,7 @@ export class QueryBuilder<T, DT extends DatabasesTypes> implements QueryBuilderI
 
 	async execute(enableMonitoring: boolean = true): Promise<T> {
 		if (this._connectionData.sanitizer)
-			this.parameters = this.parameters.map(parameter => Sanitizer.sanitize(parameter));
+			this.parameters = this.parameters.map(parameter => Sanitizer.sanitize(parameter.toString()));
 
 		const operation = () => this.queryMethod(this.build(), this.parameters);
 

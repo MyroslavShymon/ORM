@@ -1,1 +1,2 @@
-export type CacheType = 'redis' | 'memcached'
+export type CacheType = 'redis'
+//| 'memcached' - coming coon
