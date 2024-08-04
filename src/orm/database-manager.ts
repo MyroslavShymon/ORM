@@ -145,6 +145,7 @@ class DatabaseManager<DT extends DatabasesTypes> implements DatabaseManagerInter
 			console.error('Error while querying', error);
 			if (this._logger)
 				this._logger.error(JSON.stringify(error), sql, JSON.stringify(params));
+			throw error;
 		}
 	}
 

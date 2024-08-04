@@ -58,7 +58,9 @@ class DataSourceContext<DT extends DatabasesTypes> implements DataSourceContextI
 
 		this._client = await this._dataSource.client;
 
-		await this._monitoring.getMonitoringMetrics(this._dataSource);
+		if (this._connectionData.monitoring) {
+			await this._monitoring.getMonitoringMetrics(this._dataSource);
+		}
 	}
 
 	async getCurrentTime(): Promise<Object> {

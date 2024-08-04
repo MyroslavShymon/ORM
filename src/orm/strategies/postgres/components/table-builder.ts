@@ -92,7 +92,7 @@ export class TableBuilder implements TableBuilderInterface {
 			}
 
 			//default
-			if (options.defaultValue) {
+			if (options.defaultValue !== null && options.defaultValue !== undefined) {
 				const defaultValueString = `DEFAULT ${options.defaultValue}`;
 				columnAttributes.push(defaultValueString);
 			}
