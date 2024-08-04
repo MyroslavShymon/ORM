@@ -10,8 +10,12 @@
 
 import { ComparisonOperators } from '@core/types';
 
+type ElementType<T> = T extends (infer U)[] ? U : T;
+
 export type Condition<T = unknown> = {
-	[K in keyof T]?: {
-		[key in ComparisonOperators]?: key extends 'in' ? (string | number | string[] | number[]) : string | number;
-	}
+	[K in keyof ElementType<T>]?: {
+		[key in ComparisonOperators]?: key extends 'in'
+			? (string | number | string[] | number[])
+			: string | number;
+	};
 };
