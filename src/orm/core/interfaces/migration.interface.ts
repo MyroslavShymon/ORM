@@ -2,7 +2,7 @@ import { DatabaseManagerInterface } from '@core/interfaces/database-manager.inte
 import { DatabasesTypes } from '@core/enums';
 
 export interface MigrationInterface {
-	up(databaseManager: DatabaseManagerInterface<DatabasesTypes>): Promise<void>;
+	up(databaseManager: DatabaseManagerInterface<DatabasesTypes>): Promise<string>;
 
-	down(databaseManager: DatabaseManagerInterface<DatabasesTypes>): Promise<void>;
+	down(databaseManager: DatabaseManagerInterface<DatabasesTypes>): Promise<string>;
 }

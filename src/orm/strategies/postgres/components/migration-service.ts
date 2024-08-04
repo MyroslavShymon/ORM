@@ -23,6 +23,7 @@ export class MigrationService implements MigrationServiceInterface {
                     name       VARCHAR(256),
                     is_up      BOOLEAN   DEFAULT FALSE,
                     ingot      JSON NOT NULL,
+                    SQL        TEXT,
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 );`;
