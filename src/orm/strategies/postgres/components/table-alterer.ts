@@ -221,7 +221,7 @@ export class TableAlterer implements TableAltererInterface {
 	}
 
 	renameColumn(tableName: string, parameters: RenameColumnInterface): string {
-		return `ALTER TABLE ${tableName} RENAME COLUMN ${parameters.columnName} TO '${parameters.futureColumnName}';`;
+		return `ALTER TABLE ${tableName} RENAME COLUMN ${parameters.columnName} TO ${parameters.futureColumnName};`;
 	}
 
 	renameTable(tableName: string, parameters: RenameTableInterface): string {
