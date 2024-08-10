@@ -1,9 +1,12 @@
 {
-  "name": "MyORM",
-  "version": "1.0.0",
-  "repository": "git@github.com:MyroslavShymon/MyOrm.git",
+  "name": "@myroslavshymon/orm",
+  "version": "1.0.2",
+  "repository": "git@github.com:MyroslavShymon/ORM.git",
   "author": "Myroslav Shymkiv <myroslavshymon@gmail.com>",
   "license": "Apache-2.0",
+  "keywords": [
+    "ORM"
+  ],
   "scripts": {
     "compile": "tsc && tsc-alias"
   },
