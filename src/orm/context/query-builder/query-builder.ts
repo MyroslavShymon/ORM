@@ -19,7 +19,6 @@ import { ConditionParamsType, ConnectionData, JoinCondition, OrderOperators } fr
 import { DatabasesTypes } from '@core/enums';
 import { CacheOptionsInterface } from '@context/common/interfaces/query-builder/cache-options.interface';
 import { Crypto } from '@utils/crypto';
-import * as console from 'node:console';
 import { LoggerInterface, MonitoringInterface, MonitoringType } from '../../monitoring';
 import { Sanitizer } from '@utils/sanitizer';
 
@@ -87,25 +86,16 @@ export class QueryBuilder<T, DT extends DatabasesTypes> implements QueryBuilderI
 	}
 
 	innerJoin(table: string, condition: JoinCondition): QueryBuilderInterface<T> {
-		Array.isArray(condition.value) ?
-			this.parameters.push(...condition.value)
-			: this.parameters.push(condition.value);
 		this.selectQueryBuilder.innerJoin(table, condition);
 		return this;
 	}
 
 	leftJoin(table: string, condition: JoinCondition): QueryBuilderInterface<T> {
-		Array.isArray(condition.value) ?
-			this.parameters.push(...condition.value)
-			: this.parameters.push(condition.value);
 		this.selectQueryBuilder.leftJoin(table, condition);
 		return this;
 	}
 
 	rightJoin(table: string, condition: JoinCondition): QueryBuilderInterface<T> {
-		Array.isArray(condition.value) ?
-			this.parameters.push(...condition.value)
-			: this.parameters.push(condition.value);
 		this.selectQueryBuilder.rightJoin(table, condition);
 		return this;
 	}
@@ -229,15 +219,42 @@ export class QueryBuilder<T, DT extends DatabasesTypes> implements QueryBuilderI
 	}
 
 	//Building
-	build(): string {
+	build(isParametrized: boolean = true, isSemicolon: boolean = true, useCounter: boolean = true): string {
 		let sql = this.query.trim();
 
-		if (this._connectionData.type === DatabasesTypes.POSTGRES) {
+		if (!isParametrized) {
+			return this._replacePlaceholders(isSemicolon ? sql + ';' : sql, this.parameters);
+		}
+
+		if (useCounter && this._connectionData.type === DatabasesTypes.POSTGRES) {
 			let counter = 1;
 			sql = sql.replace(/\?/g, () => `$${counter++}`);
 		}
 
-		return sql + ';';
+		return isSemicolon ? sql + ';' : sql;
+	}
+
+	parametrize(parameters: any[]): QueryBuilderInterface<T> {
+		let sql = this.query.trim();
+		this.parameters = parameters;
+
+		if (this._connectionData.type === DatabasesTypes.POSTGRES) {
+			let counter = 1;
+			this.query = sql.replace(/\?/g, () => `$${counter++}`);
+		}
+
+		return this;
+	}
+
+	private _replacePlaceholders(query: string, parameters: any[]) {
+		let parameterIndex = 0;
+
+		return query.replace(/\?/g, (match) => {
+			if (parameterIndex < parameters.length) {
+				return parameters[parameterIndex++];
+			}
+			return match;
+		});
 	}
 
 	buildWithoutSemicolon(): string {
@@ -247,7 +264,6 @@ export class QueryBuilder<T, DT extends DatabasesTypes> implements QueryBuilderI
 	async execute(enableMonitoring: boolean = true): Promise<T> {
 		if (this._connectionData.sanitizer)
 			this.parameters = this.parameters.map(parameter => Sanitizer.sanitize(parameter.toString()));
-
 		const operation = () => this.queryMethod(this.build(), this.parameters);
 
 		try {

@@ -16,10 +16,10 @@ export class SelectQueries implements SelectQueriesInterface {
 
 	innerJoin(table: string, condition: JoinCondition): string {
 		const { column, operator, value } = condition;
-		let placeholder = '?';
+		let placeholder = value;
 
 		if (operator === 'IN' && Array.isArray(value)) {
-			placeholder = value.map(() => '?').join(', ');
+			placeholder = value.map((val) => val).join(', ');
 		}
 
 		return `INNER JOIN ${table} ON ${column} ${operator} ${placeholder} \n`;
@@ -27,10 +27,10 @@ export class SelectQueries implements SelectQueriesInterface {
 
 	leftJoin(table: string, condition: JoinCondition): string {
 		const { column, operator, value } = condition;
-		let placeholder = '?';
+		let placeholder = value;
 
 		if (operator === 'IN' && Array.isArray(value)) {
-			placeholder = value.map(() => '?').join(', ');
+			placeholder = value.map((val) => val).join(', ');
 		}
 
 		return `LEFT JOIN ${table} ON ${column} ${operator} ${placeholder} \n`;
@@ -38,10 +38,10 @@ export class SelectQueries implements SelectQueriesInterface {
 
 	rightJoin(table: string, condition: JoinCondition): string {
 		const { column, operator, value } = condition;
-		let placeholder = '?';
+		let placeholder = value;
 
 		if (operator === 'IN' && Array.isArray(value)) {
-			placeholder = value.map(() => '?').join(', ');
+			placeholder = value.map((val) => val).join(', ');
 		}
 
 		return `RIGHT JOIN ${table} ON ${column} ${operator} ${placeholder} \n`;

@@ -43,7 +43,7 @@ export abstract class IngotCreator<DT extends DatabasesTypes, T extends IngotInt
 
 		const newItems = this._getNewItems(preparedItems, currentItemsIngot);
 		const commonItems = this._getCommonItems(preparedItems, currentItemsIngot);
-
+		
 		return [...commonItems, ...newItems];
 	}
 
@@ -75,15 +75,22 @@ export abstract class IngotCreator<DT extends DatabasesTypes, T extends IngotInt
 	}
 
 	private _getCommonItems(preparedItems: T[], currentItemsIngot: T[]): T[] {
-		const currentItemsMap = new Map(currentItemsIngot.map(item => [item.indexName, item])); // або item.name
-		return preparedItems
-			.filter(preparedItem => currentItemsMap.has(preparedItem.indexName)) // або preparedItem.name
-			.map(preparedItem => {
-				const currentItem = currentItemsMap.get(preparedItem.indexName); // або item.name
-				return {
-					...preparedItem,
-					id: currentItem?.id // Залишаємо id як в існуючого елемента
-				};
-			});
+		return this._findMatchingObjects(currentItemsIngot, preparedItems);
 	}
+
+	private _findMatchingObjects(arr1: T[], arr2: T[]): T[] {
+		function areObjectsEqual(obj1: Omit<T, 'id'>, obj2: Omit<T, 'id'>) {
+			const keys1 = Object.keys(obj1).filter(key => key !== 'id');
+			const keys2 = Object.keys(obj2).filter(key => key !== 'id');
+
+			if (keys1.length !== keys2.length) {
+				return false;
+			}
+
+			return keys1.every(key => obj1[key] === obj2[key]);
+		}
+
+		return arr1.filter(obj1 => arr2.some(obj2 => areObjectsEqual(obj1, obj2)));
+	}
+
 }

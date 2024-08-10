@@ -49,7 +49,9 @@ export interface QueryBuilderInterface<T> {
 
 	cache(options: CacheOptionsInterface, enableMonitoring?: boolean): Promise<T>;
 
-	build(): string;
+	build(isParametrized?: boolean, isSemicolon?: boolean, useCounter?: boolean): string;
+
+	parametrize(parameters: any[]): QueryBuilderInterface<T>;
 
 	buildWithoutSemicolon(): string;
 
