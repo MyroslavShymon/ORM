@@ -1,9 +1,14 @@
 {
   "name": "@myroslavshymon/orm",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "repository": "git@github.com:MyroslavShymon/ORM.git",
   "author": "Myroslav Shymkiv <myroslavshymon@gmail.com>",
   "license": "Apache-2.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "keywords": [
     "ORM"
   ],
